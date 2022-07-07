@@ -1,0 +1,60 @@
+# overrides
+alias lf='lf -single'
+alias emacs='emacs -nw'
+alias tmux='tmux -u'
+alias lynx='lynx -vikeys -cookies=off -editor=nvim -homepage=file:// /home/mh/Source/HTML/lynx.html'
+alias ed="ed -Ep '(ed@linux)> '"
+alias gfetch='onefetch'
+alias feh='feh --scale-down -B "#303030"'
+alias ltrace='ltrace -F /mnt/ssd/root/etc/ltrace.conf'
+alias zathura='zathura -p /mnt/ssd/root/usr/lib/zathura'
+alias highlight='highlight -D /mnt/ssd/root/usr/share/highlight'
+alias figlet='figlet -d /mnt/ssd/root/usr/share/figlet/fonts'
+alias tree='tree -C'
+
+# shortenings
+alias x='xargs'
+alias mk='make'
+alias l='exa --color=always -l -g --sort type'
+alias xc='xclip -selection clipboard'
+alias wiki='nvim /home/mh/Wiki/index.md'
+alias journal='nvim /home/mh/Wiki/Journal/index.md'
+alias g='git'
+alias j='jobs -ld'
+alias rcs='doas rc-service'
+alias google='lynx google.com'
+alias ubat='bat -pp --color=always'
+
+# coreutils overrides
+alias grep='grep --color=always'
+alias ls='ls --color=always'
+alias rmdir='rmdir -v'
+alias mkdir='mkdir -v'
+alias chmod='chmod -v'
+alias chown='chown -v'
+alias rm='rm -Iv'
+alias cp='cp -iv'
+alias ln='ln -iv'
+alias mv='mv -iv'
+alias diff='/bin/diff --color=always -u'
+alias udiff='/bin/diff --color=always -y --suppress-common-lines'
+alias patch='patch -u'
+
+# directory
+alias .cd='popd >/dev/null'
+alias d='dirs -v'
+alias .d='dirs -c'
+alias ...='../..'
+alias ....='../../..'
+
+# environment
+alias py='PYTHONPATH=/mnt/ssd/root/usr/lib/python3.10/site-packages/'
+alias rb='RUBYLIB=/mnt/ssd/root/usr/lib/ruby'
+alias t='TMP=$TMP'
+
+# functional
+alias tmp='TMP=`mktemp -d`'
+alias man="LESS_TERMCAP_md=$'\e[01;31m' LESS_TERMCAP_me=$'\e[0m' LESS_TERMCAP_se=$'\e[0m' LESS_TERMCAP_so=$'\e[01;44;33m' LESS_TERMCAP_ue=$'\e[0m' LESS_TERMCAP_us=$'\e[01;32m' /usr/bin/man"
+alias cdtmp='tmp; cd $TMP'
+alias .cdtmp='cd $TMP'
+alias rmtmp='rm -vrf $TMP'

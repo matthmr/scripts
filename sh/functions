@@ -1,0 +1,69 @@
+function unix2date {
+	unix=$1
+	echo "date -d @${unix}" 1>&2
+	date -d @${unix}
+}
+
+function :cd {
+	pushd $1 >/dev/null
+	dirs -c
+}
+
+function task.get {
+	[[ -z $EDITOR ]] && EDITOR=vi
+
+	case $1 in
+		'-l'|'--list')
+			/bin/ls -l --color dev/task/**/$2*task
+			return 0
+			;;
+		'-e'|'--edit')
+			$EDITOR dev/task/**/$2*task
+			return 0
+			;;
+		'-h'|'--help')
+			echo "Usage: ({-l,--list}, list tasks), ({-e,--edit}, edit task)"
+			return 1
+			;;
+		*)
+			cat dev/task/**/$1*task
+			return 0
+			;;
+	esac
+}
+
+function mkscript {
+
+	case $1 in
+		'-h'|'--help')
+			echo "Usage: mkscript <script> [editor]"
+			return 1
+			;;
+	esac
+
+	touch "$1" && chmod --verbose +x "$1"
+	[[ ! -z "$2" ]] && "$2" "$1"
+}
+
+function session {
+
+	case $1 in
+		'-l'|'--list')
+			/bin/ls -l --color .vim/*
+			return 1
+			;;
+		'-h'|'--help')
+			echo "Usage: session [-l, --list] <name>"
+			return 1
+			;;
+	esac
+
+	{
+		[[ $# = 0 || $# -ge 2 ]]
+	} && {
+			return 1
+	}
+
+	$EDITOR -S .vim/$1.vim
+
+}

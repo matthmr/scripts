@@ -1,0 +1,31 @@
+#!/usr/bin/sh
+
+if [[ $1 = '-h' ]] || [[ $1 = '--help' ]]
+then
+	printf "variables: SUDO, SOURCE, SYSTEM\nmodes: ({,s}, set core), (r, reset core) \n" && exit 1
+fi
+
+if [[ "$USER" != 'root' ]]
+then
+	echo "Need to be root!"
+	exit 1
+fi
+
+[[ -z $SUDO ]] && SUDO='doas'
+[[ -z $SOURCE ]] && SOURCE=${PWD}
+[[ -z $SYSTEM ]] && SYSTEM='/mnt/hdd/core/%e.%p-%t.core'
+
+case $1 in
+	'-h'|'--help')
+		printf "variables: SUDO, SOURCE\nmodes: ({,s}, set core), (r, reset core) \n" && exit 1
+		;;
+	's')
+		$SUDO sysctl -w kernel.core_pattern ${PWD}/core/%e.%p-%t.core
+		;;
+	'r')
+		$SUDO sysctl -w kernel.core_pattern "$SYSTEM"
+		;;
+	*)
+		$SUDO sysctl -w kernel.core_pattern ${PWD}/core/%e.%p-%t.core
+		;;
+esac
