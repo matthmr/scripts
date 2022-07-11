@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+PID=`pgrep xcompmgr -x`
+
+if [[ ! -z $PID ]]
+
+then
+	kill -KILL $PID
+	exit
+
+else
+	exec xcompmgr
+
+fi

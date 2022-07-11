@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+# Made by mH (https://github.com/matthmr)
+
+#*****************************************************
+# change anything that is followed by "#change this" #
+#*****************************************************
+
+# mpc-dmenu: mpc integration with dmenu
+
+DMENU="/home/mh/Source/bin/dmenu" # change this
+MPC="/mnt/ssd/root/usr/bin/mpc" # change this
+NOTIFY="/usr/bin/notify-send -t 30000" # change this
+
+PROMPT="\
+play
+pause
+stop
+toggle
+next
+prev
+add
+crop
+current
+listall
+insert
+load
+save
+rm
+ls
+lsplaylists
+random
+repeat
+single
+shuffle
+update
+search
+searchadd
+searchplay
+seek
+seekthrough
+status
+volume
+clear
+consume
+playlist
+del
+rescan
+queued
+QUIT
+"
+
+LS=`$MPC ls`
+DIR=.
+
+feeddmenu() {
+	echo -ne "$1" | $DMENU -p "$2"
+}
+
+get_action() {
+	DMENU_ACTION=`feeddmenu "$PROMPT" 'action:'`
+	[ -z $DMENU_ACTION ] && exit 0
+	echo "$DMENU_ACTION"
+}
+
+is_visual() {
+	local VISUAL=('current' 'status' 'lsplaylists' 'playlist' 'listall' 'queued')
+
+	ACTION=$1
+
+	for action in ${VISUAL[@]}
+	do
+		if [[ "$ACTION" = "$action" ]]
+		then
+			return 0
+		fi
+	done
+	
+	return 1
+}
+
+is_blunt() {
+
+	local BLUNT=('play' 'pause' 'toggle' 'stop' 'crop' 'next' 'prev' 'random' 'repeat' 'shuffle' 'single' 'clear' 'consume' 'rescan')
+
+	ACTION=$1
+
+	for action in ${BLUNT[@]}
+	do
+		if [[ "$ACTION" = "$action" ]]
+		then
+			return 0
+		fi
+	done
+
+	return 1
+}
+
+is_input() {
+	local INPUT=('volume' 'add' 'insert' 'load' 'del' 'rm' 'save' 'seek' 'seekthrough' 'ls' 'search' 'searchadd' 'searchplay' 'move')
+
+	ACTION=$1
+
+	for action in ${INPUT[@]}
+	do
+		if [[ "$ACTION" = "$action" ]]
+		then
+			return 0
+		fi
+	done
+
+	return 1
+}
+
+handle_input() {
+
+	local action=$1
+
+	case $action in
+
+		'volume'|'seek'|'seekthrough'|'add'|'insert'|'load'|'rm'|'del'|'save')
+			COMMON=`feeddmenu "" "$action: "`
+			[[ -z $COMMON ]] && exit 0
+			OUTPUT=`$MPC $action $COMMON 2>&1` || {
+				$NOTIFY "ERROR:" "$OUTPUT" && return 1
+			} ;;
+
+		'ls')
+			LS=`feeddmenu "" "ls: "`
+			FILES=`$MPC ls $LS 2>&1` || {
+				$NOTIFY "ERROR:" "$FILES" && return 1
+			} && $NOTIFY "Contents: " "$FILES" ;;
+
+		'search'|'searchadd'|'searchplay')
+			SEARCH=`feeddmenu "" "search: "`
+			[[ -z $SEARCH ]] && exit 0
+			OUTPUT=`$MPC $action filename $SEARCH 2>&1` || {
+				$NOTIFY "ERROR:" "$OUTPUT" &&\
+				return 1
+			} && $NOTIFY "Found:" "$OUTPUT" ;;
+
+		'move')
+			FROM=`feeddmenu "" "from: "`
+			[[ -z $FROM ]] && exit 0
+			TO=`feeddmenu "" "to: "`
+			[[ -z $TO ]] && exit 0
+			OUTPUT=`$MPC move $FROM $TO 2>&1` || $NOTIFY "ERROR:" "$OUTPUT" ;;
+
+	esac
+
+}
+
+main() {
+
+	while :
+	do
+	DMENU_ACTION=
+	DMENU_ACTION=`get_action`
+
+	if [ "$DMENU_ACTION" = 'QUIT' ] || [ -z "$DMENU_ACTION" ]
+	then
+		break
+	else
+
+		`is_blunt $DMENU_ACTION` && {
+			$MPC "$DMENU_ACTION"
+			continue
+		}
+		`is_visual $DMENU_ACTION` && {
+			$NOTIFY "Currently playing:" "$($MPC "$DMENU_ACTION")"
+			continue
+		}
+		`is_input $DMENU_ACTION` && {
+			`handle_input "$DMENU_ACTION"`
+			continue
+		}
+
+		exit 0
+
+	fi
+
+	done
+
+}
+
+main

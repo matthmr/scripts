@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# Made by mH (https://github.com/matthmr)
+
+#*****************************************************
+# change anything that is followed by "#change this" #
+#*****************************************************
+
+# cmus-dmenu: cmus integration with dmenu
+
+DMENU="/home/mh/Source/bin/dmenu" # change this
+AMIXER="/usr/bin/amixer" # change this
+NOTIFY="/usr/bin/notify-send" # change this
+
+PROMPT="\
+perc+
+db+
+perc-
+db-
+perc
+db
+mute
+unmute
+current
+"
+
+feeddmenu() {
+	echo -ne "$1" | $DMENU -p "$2"
+}
+
+handle_command() {
+	CARD=$1
+	PROMPT=$2
+	ACTION=$3
+
+	COMMAND=`feeddmenu "" "$PROMPT"`
+
+	case $ACTION in
+		'perc')
+			COMMAND="$COMMAND%"
+			;;
+		'db')
+			COMMAND="${COMMAND}db"
+			;;
+		'perc+')
+			COMMAND="$COMMAND%+"
+			;;
+		'db+')
+			COMMAND="${COMMAND}db+"
+			;;
+		'perc-')
+			COMMAND="$COMMAND%-"
+			;;
+		'db-')
+			COMMAND="${COMMAND}db-"
+			;;
+	esac
+
+	[ -z $COMMAND ] && exit 0
+
+	$AMIXER set "$CARD" "$COMMAND"
+
+}
+
+get_card() {
+	CARDS=`$AMIXER scontrols | sed -e 's/Simple mixer control //g' -e "s/'\(.*\)',./\1/g"`
+	echo `feeddmenu "$CARDS" 'card:'`
+}
+
+main() {
+
+	CARD=`get_card`
+	[ -z $CARD ] && exit 0
+	DMENU_ACTION=`feeddmenu "$PROMPT" "$CARD: "`
+	[ -z $DMENU_ACTION ] && exit 0
+
+	case "$DMENU_ACTION" in
+
+	'perc+')
+		handle_command $CARD "[] %+: " "$DMENU_ACTION"
+		;;
+	'perc-')
+		handle_command $CARD "[] %-: " "$DMENU_ACTION"
+		;;
+	'db+')
+		handle_command $CARD "[] db+: " "$DMENU_ACTION"
+		;;
+	'db-')
+		handle_command $CARD "[] db-: " "$DMENU_ACTION"
+		;;
+	'perc')
+		handle_command $CARD "[] %: " "$DMENU_ACTION"
+		;;
+	'db')
+		handle_command $CARD "[] db: " "$DMENU_ACTION"
+		;;
+
+	'current')
+		$NOTIFY -u normal "Current Level of $CARD" "$($AMIXER get "$CARD")"
+		;;
+	'mute')
+		$AMIXER set "$CARD" mute
+		;;
+	'unmute')
+		$AMIXER set "$CARD" unmute
+		;;
+
+	esac
+
+}
+
+main

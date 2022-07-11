@@ -1,0 +1,11 @@
+#!/bin/sh
+
+PACMAN=/usr/bin/pacman
+DBPATH=/mnt/ssd/pacman/database
+CACHEDIR=/mnt/ssd/pacman/cache
+CONFIG=/mnt/ssd/pacman/pacman.conf
+LOGFILE=/mnt/ssd/pacman/pacman.log
+
+ARGS=("--dbpath  $DBPATH --cachedir $CACHEDIR --config $CONFIG --logfile $LOGFILE")
+
+exec $PACMAN --color=always $@ $ARGS

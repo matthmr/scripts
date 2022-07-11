@@ -1,0 +1,176 @@
+#!/usr/bin/env bash
+# Made by mH (https://github.com/matthmr)
+
+#*****************************************************
+# change anything that is followed by "#change this" #
+#*****************************************************
+
+# cmus-dmenu: cmus integration with dmenu
+
+DMENU="/home/mh/Source/bin/dmenu" # change this
+PLAYLIST_CACHE="/home/mh/.config/cmus/playlists/" # change this
+MUSIC_DIR="/home/mh/Music" # change this
+CMUS_REMOTE=cmus-remote # change this
+
+PROMPT="\
+ pause
+契 play
+> command
+ pause playback
+栗 stop
+怜 next
+玲 prev
+ file
+凌 repeat
+神 seek
+列 shuffle
+墳 vol
+ query
+! QUIT
+"
+#蘿 playlist
+
+feeddmenu() {
+	echo -ne "$1" | $DMENU -p "$2"
+}
+
+handle_command() {
+	COMMANDS="\
+add
+bind
+browser-up
+cd
+clear
+colorscheme
+echo
+factivate
+filter
+fset
+invert
+load
+mark
+player-next
+player-pause
+player-play
+quit
+refresh
+run
+save
+search-next
+search-prev
+seek
+set
+showbind
+shuffle
+source
+toggle
+unbind
+unmark
+view
+vol
+win-activate
+win-add-l
+win-add-p
+win-add-Q
+win-add-q
+win-bottom
+win-down
+win-mv-after
+win-mv-before
+win-next
+win-page-down
+win-page-up
+win-remove
+win-sel-cur
+win-toggle
+win-top
+win-up
+win-update
+"
+	COMMAND=`feeddmenu "$COMMANDS" '> '`
+	[ -z $COMMAND ] && exit 0
+
+	$CMUS_REMOTE -C $COMMAND
+
+	if [ "$COMMAND" = 'quit' ]
+	then
+		exit 0
+	fi
+}
+handle_seek() {
+	SEEK=`feeddmenu '' 'seek:'`
+	[ -z $SEEK ] && exit 0
+	$CMUS_REMOTE -k $SEEK
+}
+handle_vol() {
+	VOL=`feeddmenu '' 'vol:'`
+	[ -z $VOL ] && exit 0
+	$CMUS_REMOTE -v $VOL
+}
+handle_file() {
+	FILES=`find $MUSIC_DIR -type f`
+	FILE=`feeddmenu "$FILES" 'file'`
+	[ -z $FILE ] && exit 0
+	$CMUS_REMOTE -f $FILE
+}
+
+show_query() {
+	QUERY=`$CMUS_REMOTE -Q`
+	feeddmenu "$QUERY" '' > /dev/null
+}
+
+show_main_query() {
+	DMENU_ACTION=`feeddmenu "$PROMPT" 'action:'`
+	DMENU_ACTION=${DMENU_ACTION##* }
+	echo ${DMENU_ACTION}
+}
+
+main() {
+
+	while :
+	do
+	DMENU_ACTION=`show_main_query`
+
+	if [ "$DMENU_ACTION" = 'QUIT' ] || [ -z "$DMENU_ACTION" ]
+	then
+		break
+	else
+		case "$DMENU_ACTION" in
+
+		'pause')
+			$CMUS_REMOTE -u;;
+		'pause playback')
+			$CMUS_REMOTE -U;;
+		'stop')
+			$CMUS_REMOTE -s;;
+		'next')
+			$CMUS_REMOTE -n;;
+		'prev')
+			$CMUS_REMOTE -r;;
+		'repeat')
+			$CMUS_REMOTE -R;;
+		'shuffle')
+			$CMUS_REMOTE -S;;
+		'play')
+			$CMUS_REMOTE -p;;
+
+		'command')
+			handle_command;;
+		'seek')
+			handle_seek;;
+		'vol')
+			handle_vol;;
+		'file')
+			handle_file;;
+
+		'query')
+			show_query;;
+
+		esac
+	fi
+
+	done
+
+}
+
+main

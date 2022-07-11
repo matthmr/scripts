@@ -67,3 +67,7 @@ function session {
 	$EDITOR -S .vim/$1.vim
 
 }
+
+function datefmt {
+	date +'%d-%b-%y'
+}

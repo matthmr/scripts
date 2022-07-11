@@ -3,7 +3,7 @@ alias lf='lf -single'
 alias emacs='emacs -nw'
 alias tmux='tmux -u'
 alias lynx='lynx -vikeys -cookies=off -editor=nvim -homepage=file:// /home/mh/Source/HTML/lynx.html'
-alias ed="ed -Ep '(ed@linux)> '"
+alias ed="ed -Ep '(ed) '"
 alias gfetch='onefetch'
 alias feh='feh --scale-down -B "#303030"'
 alias ltrace='ltrace -F /mnt/ssd/root/etc/ltrace.conf'

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+MAX=64000 # 64MiB
+PID=`pidof dunst`
+
+[[ -z $PID ]] && exit 1
+
+MEM=`awk '/VmRSS:/ {print $2}' /proc/$PID/status`
+
+if [[ $MEM -gt $MAX ]]
+then
+	kill -TERM $PID && dunst &
+else
+	dunstctl close-all
+fi

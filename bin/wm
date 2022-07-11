@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# Made by mH (https://github.com/matthmr)
+
+set -o noglob
+
+INPUT="read -r -n 1 -s key"
+
+SAVE="\x1b[s"
+RESTORE="\x1b[u"
+
+HIGHLIGHT="\x1b[7;49;37m"
+BULLET=" * "
+CLEAR="\x1b[0m$BULLET"
+
+ AWESOME="$BULLET\x1b[1m awesome   \x1b[0m"
+     DWM="$BULLET\x1b[1m dwm       \x1b[0m"
+      I3="$BULLET\x1b[1m i3        \x1b[0m"
+TERMINAL="$BULLET\x1b[1m tty / pts \x1b[0m"
+
+#             0          1      2     3
+OPTIONSLIST=("$AWESOME" "$DWM" "$I3" "$TERMINAL")
+
+LIST_LEN=3
+LIST_I=0
+
+clear_current() {
+	printf "${OPTIONSLIST[LIST_I]}"
+}
+
+cursor_down() {
+
+	LIST_I=$((LIST_I+1))
+
+	if [[ $LIST_I > $LIST_LEN ]]
+	then
+		LIST_I=0
+		printf "\x1b[${LIST_LEN}F$HIGHLIGHT${OPTIONSLIST[LIST_I]}\x1b[0G"
+	else
+		printf "\x1b[1E$HIGHLIGHT${OPTIONSLIST[LIST_I]}\x1b[0G"
+	fi
+
+}
+
+cursor_up() {
+
+	LIST_I=$((LIST_I-1))
+
+	if [[ $LIST_I = '-1' ]]
+	then
+		LIST_I=$LIST_LEN
+		printf "\x1b[${LIST_LEN}E$HIGHLIGHT${OPTIONSLIST[LIST_I]}\x1b[0G"
+	else
+		printf "\x1b[1F$HIGHLIGHT${OPTIONSLIST[LIST_I]}\x1b[0G"
+	fi
+}
+
+run() {
+	export wm
+	case $LIST_I in
+		0)
+			printf "\x1b[1;92m * \x1b[0m Logging in with awesomewm\n\n"
+			wm="awesome" exec startx
+			;;
+		1)
+			printf "\x1b[1;92m * \x1b[0m Logging in with dwm\n\n"
+			wm="dwm" exec startx
+			;;
+		2)
+			printf "\x1b[1;92m * \x1b[0m Logging in with i3\n\n"
+			wm="i3" exec startx
+			;;
+		*)
+			printf "\x1b[1;92m * \x1b[0m Logging in with tty\n\n"
+			;;
+	esac
+}
+
+next() {
+	if [[ "$1" = "j" ]]
+	then
+		clear_current
+		cursor_down
+	elif [[ "$1" = "k" ]]
+	then
+		clear_current
+		cursor_up
+	fi
+}
+
+wm() {
+	clear
+	printf "\n\x1b[1;92m * \x1b[0m Choose a window manager to log in with\n
+$SAVE$HIGHLIGHT$AWESOME
+$DWM
+$I3
+$TERMINAL\n
+$RESTORE"
+
+	while [[ "$key" != "l" ]]
+	do
+		$INPUT
+		next $key
+	done
+
+	printf "\n"
+
+	clear
+	run
+
+}
+
+wm

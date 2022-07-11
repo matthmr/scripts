@@ -1,0 +1,13 @@
+#!/bin/sh
+# Made by mH (https://www.github.com/matthmr)
+
+MOUSE='YSPRINGTECH USB OPTICAL MOUSE'
+
+XINPUT=`xinput list-props "$MOUSE" | grep -w 'libinput Left Handed Enabled [^a-zA-Z].*:'`
+
+if [[ "${XINPUT:(-1)}" == '1' ]]
+then
+	xinput set-prop "$MOUSE" 'libinput Left Handed Enabled' 0
+else
+	xinput set-prop "$MOUSE" 'libinput Left Handed Enabled' 1
+fi

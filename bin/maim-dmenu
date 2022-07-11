@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Made by mH (https://github.com/matthmr)
+
+#*****************************************************
+# change anything that is followed by "#change this" #
+#*****************************************************
+
+# maim-dmenu: maim integration with dmenu
+
+DMENU="/home/mh/Source/bin/dmenu" # change this
+MAIM="/mnt/ssd/root/usr/bin/maim --quiet -o -B -d 0.25 -u" # change this
+
+OPT="\
+window root
+select
+"
+
+feeddmenu() {
+	echo -ne "$1" | $DMENU -p "$2"
+}
+
+# options() {
+
+# }
+
+main() {
+
+	FILENAME=`feeddmenu "" "filename"`
+
+	if [[ -z $FILENAME || $FILENAME = '\n' ]]
+	then
+		FILENAME=$(date +"%Y%m%d%k%M")
+	fi
+
+	OPT=`feeddmenu "$OPT" "option"`
+
+	$MAIM --$OPT > Images/Screenshots/$FILENAME.png
+	notify-send 'Screenshot taken' "Save as Images/Screenshots/$FILENAME.png"
+}
+
+main

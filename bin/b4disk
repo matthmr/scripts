@@ -1,0 +1,27 @@
+#!/bin/sh
+
+set -o noglob
+
+if [[ "$USER" != 'root' ]]
+then
+	echo "You need to be root"
+	exit 1
+fi
+
+cmd=${0##*/}
+
+case $cmd in
+	's2disk')
+			echo [ ** ] Turning swap on
+			echo [ == ] swapon /mnt/hdd/memory.swap
+			swapon /mnt/hdd/memory.swap
+			sleep 2
+			echo [ == ] loginctl hibernate
+			loginctl hibernate
+		;;
+	'b4disk')
+			echo [ ** ] Turning swap off
+			echo [ == ] swapoff /mnt/hdd/memory.swap
+			swapoff /mnt/hdd/memory.swap
+		;;
+esac
