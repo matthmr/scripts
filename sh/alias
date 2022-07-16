@@ -6,11 +6,11 @@ alias lynx='lynx -vikeys -cookies=off -editor=nvim -homepage=file:// /home/mh/So
 alias ed="ed -Ep '(ed) '"
 alias gfetch='onefetch'
 alias feh='feh --scale-down -B "#303030"'
+alias tree='tree -C'
 alias ltrace='ltrace -F /mnt/ssd/root/etc/ltrace.conf'
 alias zathura='zathura -p /mnt/ssd/root/usr/lib/zathura'
 alias highlight='highlight -D /mnt/ssd/root/usr/share/highlight'
 alias figlet='figlet -d /mnt/ssd/root/usr/share/figlet/fonts'
-alias tree='tree -C'
 
 # shortenings
 alias x='xargs'
@@ -22,8 +22,9 @@ alias journal='nvim /home/mh/Wiki/Journal/index.md'
 alias g='git'
 alias j='jobs -ld'
 alias rcs='doas rc-service'
-alias google='lynx google.com'
 alias ubat='bat -pp --color=always'
+alias high='highlight -O ansi'
+alias devlog='nvim /home/mh/Git/MH/sd/dev/log/devlog.md'
 
 # coreutils overrides
 alias grep='grep --color=always'

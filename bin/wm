@@ -3,7 +3,10 @@
 
 set -o noglob
 
-INPUT="read -r -n 1 -s key"
+# hide the cursor (tty only)
+printf '\x1b[?16;c'
+
+READINPUT="read -r -n 1 -s key"
 
 SAVE="\x1b[s"
 RESTORE="\x1b[u"
@@ -12,70 +15,95 @@ HIGHLIGHT="\x1b[7;49;37m"
 BULLET=" * "
 CLEAR="\x1b[0m$BULLET"
 
- AWESOME="$BULLET\x1b[1m awesome   \x1b[0m"
-     DWM="$BULLET\x1b[1m dwm       \x1b[0m"
-      I3="$BULLET\x1b[1m i3        \x1b[0m"
-TERMINAL="$BULLET\x1b[1m tty / pts \x1b[0m"
+SESSIONS=('awesome' 'dwm' 'i3' 'dwm-git' 'tty')
+SESSION=
 
-#             0          1      2     3
-OPTIONSLIST=("$AWESOME" "$DWM" "$I3" "$TERMINAL")
+LEN=${#SESSIONS[@]}
+LEN=$(($LEN - 1))
+SEQ=$(seq 0 $LEN | tr '\n' ' ')
+I=0
 
-LIST_LEN=3
-LIST_I=0
+# get longest session name; populate the session entry length manifest
+HIGH=0
+for i in $SEQ
+do
+	SESSIONLEN+=("${#SESSIONS[i]}")
+	if (( $HIGH < ${SESSIONLEN[i]} ))
+	then
+		HIGH=${SESSIONLEN[i]}
+	fi
+done
 
+# format session entry
+fmt() {
+	if (( $2 < $HIGH ))
+	then
+		local DIFF=$(($HIGH - $2 - 1))
+		local PADDING=$(eval "printf ' %.0s' {0..$DIFF}")
+	fi
+
+	echo "$1$PADDING"
+}
+
+# populate session entry
+for i in $SEQ
+do
+	SESSIONENTRY+=("$BULLET\x1b[1m $(fmt ${SESSIONS[i]} ${SESSIONLEN[i]}) \x1b[0m")
+done
+
+# print entry without highlight
 clear_current() {
-	printf "${OPTIONSLIST[LIST_I]}"
+	printf "${SESSIONENTRY[I]}"
 }
 
+# move the cursor down:
+#  - if on last; return to the saved position
 cursor_down() {
+	I=$((I+1))
 
-	LIST_I=$((LIST_I+1))
-
-	if [[ $LIST_I > $LIST_LEN ]]
+	if [[ $I > $LEN ]]
 	then
-		LIST_I=0
-		printf "\x1b[${LIST_LEN}F$HIGHLIGHT${OPTIONSLIST[LIST_I]}\x1b[0G"
+		I=0
+		printf "\x1b[${LEN}F$HIGHLIGHT${SESSIONENTRY[I]}\x1b[0G"
 	else
-		printf "\x1b[1E$HIGHLIGHT${OPTIONSLIST[LIST_I]}\x1b[0G"
+		printf "\x1b[1E$HIGHLIGHT${SESSIONENTRY[I]}\x1b[0G"
 	fi
 
 }
 
+# move the cursor up:
+#  - if on first; return to the saved position
 cursor_up() {
+	I=$((I-1))
 
-	LIST_I=$((LIST_I-1))
-
-	if [[ $LIST_I = '-1' ]]
+	if [[ $I = '-1' ]]
 	then
-		LIST_I=$LIST_LEN
-		printf "\x1b[${LIST_LEN}E$HIGHLIGHT${OPTIONSLIST[LIST_I]}\x1b[0G"
+		I=$LEN
+		printf "\x1b[${LEN}E$HIGHLIGHT${SESSIONENTRY[I]}\x1b[0G"
 	else
-		printf "\x1b[1F$HIGHLIGHT${OPTIONSLIST[LIST_I]}\x1b[0G"
+		printf "\x1b[1F$HIGHLIGHT${SESSIONENTRY[I]}\x1b[0G"
 	fi
 }
 
-run() {
+# start the session
+#  - if chosen the last one, quit the program
+run()
+{
 	export wm
-	case $LIST_I in
-		0)
-			printf "\x1b[1;92m * \x1b[0m Logging in with awesomewm\n\n"
-			wm="awesome" exec startx
-			;;
-		1)
-			printf "\x1b[1;92m * \x1b[0m Logging in with dwm\n\n"
-			wm="dwm" exec startx
-			;;
-		2)
-			printf "\x1b[1;92m * \x1b[0m Logging in with i3\n\n"
-			wm="i3" exec startx
+	case $I in
+		$LEN)
+			printf "\x1b[1;92m * \x1b[0m Logging in with tty\n\n"
+			printf '\x1b[?6;c'
 			;;
 		*)
-			printf "\x1b[1;92m * \x1b[0m Logging in with tty\n\n"
+			printf "\x1b[1;92m * \x1b[0m Logging in with $SESSION\n\n"
+			wm="$SESSION" exec startx
 			;;
 	esac
 }
 
-next() {
+# handle keypress
+handle() {
 	if [[ "$1" = "j" ]]
 	then
 		clear_current
@@ -87,26 +115,29 @@ next() {
 	fi
 }
 
+list-sessions() {
+	for i in $SEQ
+	do
+		echo "${SESSIONENTRY[i]}"
+	done
+}
+
 wm() {
 	clear
-	printf "\n\x1b[1;92m * \x1b[0m Choose a window manager to log in with\n
-$SAVE$HIGHLIGHT$AWESOME
-$DWM
-$I3
-$TERMINAL\n
-$RESTORE"
+	printf "\n\x1b[1;92m * \x1b[0m Choose a window manager to log in with\n"
+	printf "\n$SAVE$HIGHLIGHT$(list-sessions)\n$RESTORE"
 
 	while [[ "$key" != "l" ]]
 	do
-		$INPUT
-		next $key
+		$READINPUT
+		handle $key
 	done
 
+	SESSION=${SESSIONS[I]}
 	printf "\n"
 
 	clear
 	run
-
 }
 
 wm

@@ -19,10 +19,6 @@ feeddmenu() {
 	echo -ne "$1" | $DMENU -p "$2"
 }
 
-# options() {
-
-# }
-
 main() {
 
 	FILENAME=`feeddmenu "" "filename"`
@@ -33,6 +29,8 @@ main() {
 	fi
 
 	OPT=`feeddmenu "$OPT" "option"`
+
+	[[ -z $OPT ]] && exit 1
 
 	$MAIM --$OPT > Images/Screenshots/$FILENAME.png
 	notify-send 'Screenshot taken' "Save as Images/Screenshots/$FILENAME.png"
