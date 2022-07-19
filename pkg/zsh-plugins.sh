@@ -2,7 +2,8 @@
 
 case $1 in
 	'-h'|'--help')
-		echo "Usage: zsh-plugins.sh"
+		echo "Usage:       zsh-plugins.sh"
+		echo "Description: Updates git-controlled \`zsh' plugins"
 		echo "Variables:
 	GIT : git-like command"
 		exit 1

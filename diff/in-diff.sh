@@ -2,7 +2,8 @@
 
 case $1 in
 	'-h'|'--help')
-		echo "Usage: in-diff.sh [--new] <infile>"
+		echo "Usage:       in-diff.sh [--new] [infile]"
+		echo "Description: Diffs [infile] with its macro-substituted source, or the opposite"
 		echo "Variables:
 	DIFF : diff-like command"
 		exit 1

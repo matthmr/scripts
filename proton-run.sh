@@ -1,20 +1,12 @@
 #!/usr/bin/sh
 
-function usage {
-	printf "\
-VARIABLES:
-	PROTON : proton command path(file)
-	STEAM : common steam client path(dir)
-	PREFIX : wine prefix(dir)
-CMDLINE:
-	proton-run.sh <base:base dir of the game> <exec:path to game executable>
-	proton-run.sh -e <exec:path to game executable>\n"
-	return 0
-}
-
 case $1 in
 	'-h'|'--help')
-		usage
+		echo "Usage:       proton-run.sh [-e] [dir|prog] [prog]"
+		echo "  * -e : pass-in \`prog' as the program executable"
+		echo "  * : pass-in \`dir' as the base dir of the game and \`prog' the program executable"
+		echo "Description: Generates a proton command to run [prog]"
+		echo "Variables "
 		exit 1
 		;;
 esac

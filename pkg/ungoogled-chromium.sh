@@ -1,5 +1,17 @@
 #!/usr/bin/sh
 
+FORCE=false
+case "$1" in
+	'-f'|'--force')
+		FORCE=true
+		;;
+	'-h'|'--help')
+		echo "Usage:       ungoogled-chromium [-f|--force]"
+		echo "Description: Queries and updates the \`ungoogled-chromium' package"
+	exit 1
+	;;
+esac
+
 DEST_PKG="/mnt/ssd/source/pkg/ungoogled-chromium"
 DEST_BIN="/mnt/ssd/source/bin/ungoogled-chromium"
 PKG="/tmp/ungoogled-chromium.appimage"
@@ -9,20 +21,6 @@ URL="https://raw.githubusercontent.com/ungoogled-software/ungoogled-chromium-bin
 CURL="/usr/bin/curl"
 XML="/mnt/ssd/root/usr/bin/xml"
 LAST_LOCAL_VERSION=$(cat "$CHROMIUM_HOME/Last Version")
-
-FORCE=false
-case "$1" in
-	'-f'|'--force')
-		FORCE=true
-		;;
-	'-h'|'--help')
-		cat <<EOF
-Made by mH (https://github.com/matthmr)
-	ungoogled-chromium.sh [-f|--force] : forces an update
-EOF
-	exit 1
-	;;
-esac
 
 echo "[ .. ] Starting update on ungoogled-chromium"
 

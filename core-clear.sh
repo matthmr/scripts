@@ -2,7 +2,8 @@
 
 case $1 in
 	'-h'|'--help')
-		echo "Usage: core-clear.sh"
+		echo "Usage:       core-clear.sh"
+		echo "Description: Clear the core at \``cat /proc/sys/kernel/core_pattern`'"
 		exit 1
 esac
 

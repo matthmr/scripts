@@ -5,7 +5,8 @@
 
 case $1 in
 	'-h'|'--help')
-		echo "Usage: github.sh [--old] <repository:branch> <file path>"
+		echo "Usage:       github.sh [--old] <repository:branch> <file path>"
+		echo "Description: Diffs a file with its remote github instance"
 		echo "Variables:
 	GHUSER : default user
 	CURL : curl-like command

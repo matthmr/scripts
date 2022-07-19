@@ -1,5 +1,13 @@
 #!/usr/bin/sh
 
+case $1 in
+	'-h'|'--help')
+		echo "Usage:       sd-find.sh [word]"
+		echo "Description: Finds a [word] on the \`SD' source tree"
+		exit 1
+esac
+
+
 sd_find() {
 	grep -rwin "$1" /home/mh/Git/MH/sd/ \
 		--exclude='tags'\

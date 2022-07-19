@@ -2,7 +2,8 @@
 
 case $1 in
 	'-h'|'--help')
-		echo "Usage: bin.sh"
+		echo "Usage:       bin.sh"
+		echo "Description: Find \`~/.local/bin' files that also are shell scripts"
 		exit 1
 esac
 

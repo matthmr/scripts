@@ -6,6 +6,13 @@ then
 	exit 1
 fi
 
+case $1 in
+	'-h'|'--help')
+		echo "Usage:       firefox.sh"
+		echo "Description: Updates \`firefox's script with \`sed'"
+		exit 1
+esac
+
 BIN_PREFIX=/mnt/ssd/root/usr/bin
 
 echo "[ .. ] Editing firefox path"

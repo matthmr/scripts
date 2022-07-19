@@ -1,5 +1,12 @@
 #!/bin/sh
 
+case $1 in
+	'-h'|'--help')
+		echo "Usage:       dmenu-gencache.sh"
+		echo "Description: Generate \`dmenu' cache"
+		exit 1
+esac
+
 cachedir="/home/mh/.cache/"
 cache="$cachedir/dmenu_run"
 
