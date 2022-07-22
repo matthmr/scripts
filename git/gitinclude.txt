@@ -1,0 +1,8 @@
+pfetch
+shell-color-scripts
+st-suckless
+dmenu-suckless
+voidrice
+zsh-autosuggestions
+zsh-syntax-highlighting
+YT/pytube
