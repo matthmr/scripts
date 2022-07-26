@@ -15,7 +15,7 @@ alias figlet='figlet -d /mnt/ssd/root/usr/share/figlet/fonts'
 # shortenings
 alias x='xargs'
 alias mk='make'
-alias l='exa --color=always -l -g --sort type'
+alias l='exa --color=always -l -g --sort type --icons'
 alias xc='xclip -selection clipboard'
 alias wiki='nvim /home/mh/Wiki/index.md'
 alias journal='nvim /home/mh/Wiki/Journal/index.md'
@@ -25,6 +25,10 @@ alias rcs='doas rc-service'
 alias ubat='bat -pp --color=always'
 alias high='highlight -O ansi'
 alias devlog='nvim /home/mh/Git/MH/sd/dev/log/devlog.md'
+
+# dictionaries & spell-checkers
+alias je='dict -d jpn-eng'
+alias ej='dict -d eng-jpn'
 
 # coreutils overrides
 alias grep='grep --color=always'

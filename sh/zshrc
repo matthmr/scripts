@@ -104,5 +104,11 @@ echo "\
 [34m    /      \\        [0m __ _ _ _ __| |_   | (_)_ _ _  ___ __
 [34m   /   ,,   \\       [0m/ _\` | '_/ _| ' \\  | | | ' \\ || \\ \\ /
 [34m  /   |  |  -\\      [0m\\__,_|_| \\__|_||_| |_|_|_||_\\_,_/_\\_\\
-[34m /_-''    ''-_\\
+[34m /_-''    ''-_\\ [0m
 "
+
+# Run extra commands if starting in a xinit sleep-process
+
+if [[ ! -z "$XINITSLEEP" ]]; then
+	"$XINITSLEEP"
+fi

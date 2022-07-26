@@ -9,7 +9,7 @@ function :cd {
 	dirs -c
 }
 
-function task.get {
+function taskget {
 	[[ -z $EDITOR ]] && EDITOR=vi
 
 	case $1 in
@@ -33,7 +33,6 @@ function task.get {
 }
 
 function mkscript {
-
 	case $1 in
 		'-h'|'--help')
 			echo "Usage: mkscript <script> [editor]"
@@ -46,7 +45,6 @@ function mkscript {
 }
 
 function session {
-
 	case $1 in
 		'-l'|'--list')
 			/bin/ls -l --color .vim/*
@@ -65,9 +63,8 @@ function session {
 	}
 
 	$EDITOR -S .vim/$1.vim
-
 }
 
 function datefmt {
-	date +'%d-%b-%y'
+	date +'%Y%m%d-%H%M'
 }

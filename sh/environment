@@ -1,12 +1,16 @@
 # Development flags
-export LOCAL=("--root" "/mnt/ssd/root")
+export PREFIX="/mnt/ssd/root"
+export LOCAL=("--root" "$PREFIX")
 
 # General
-export LESS="-S -R -I -q -x 2 --use-color --mouse --incsearch"
+export LESS="-S -R -I -Q -x2 --use-color --mouse --incsearch"
 export EDITOR="nvim"
 export PAGER="less"
 
+# Program specific
+export DICPATH="/home/mh/.local/share/hunspell"
+
 # ZSH-specific
-export FZF_DEFAULT_OPTS='--no-height --no-reverse'
-export FZF_TMUX=1
-export KEYTIMEOUT=1
+export FZF_DEFAULT_OPTS="--no-height --no-reverse"
+export FZF_TMUX="1"
+export KEYTIMEOUT="1"

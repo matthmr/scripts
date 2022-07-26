@@ -3,7 +3,7 @@
 echo "#[ Running root scripts ... ]"
 
 echo "[ Setting up \`tmp' ]"
-TMP=$(mktemp -d "pacman.XXX")
+TMP=$(mktemp -d "/tmp/pacman.XXX")
 
 echo "[ Updating pacman's database ]"
 /home/mh/.local/bin/pman -Sy
@@ -25,6 +25,9 @@ chmod -Rv a+w $TMP
 
 echo "[ Synchronizing clock ]"
 ./sync-clock.sh
+
+echo "[ Moving tmp to a standardised location ]"
+mv -v $TMP /tmp/pacman
 
 echo "[ Done with root scripts! ]"
 

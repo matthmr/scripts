@@ -94,6 +94,7 @@ run()
 		$LEN)
 			printf "\x1b[1;92m * \x1b[0m Logging in with tty\n\n"
 			printf '\x1b[?6;c'
+			exec bash
 			;;
 		*)
 			printf "\x1b[1;92m * \x1b[0m Logging in with $SESSION\n\n"
