@@ -7,43 +7,53 @@ case $1 in
 		echo "Variables:
 	SUDO: sudo-like command"
 		exit 1
+		;;
 esac
 
 read -p "[ ?? ] Start scheduled system run-up? [Y/n] " ans
 
 if [[ $ans = "n" ]]
 then
+	notify-send \`linux.sh\' "System run-up was ignored. Run linux.sh on a shell to execute the run-up"
 	echo "[ !! ] Ignoring ... "
 	sleep 1
+	SHELL_PID=$$
+	_ppid="$(ps -p $SHELL_PID -O ppid)"
+	ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
+	kill -KILL $ppid
 	exit 1
 fi
 
 
 [[ -z $SUDO ]] && SUDO=doas
 
-echo "\$[ Running user scripts ... ]"
+echo "\$[ .. ] Running user scripts"
 
-echo "[ cd-ing to the \`~/Scripts' directory ]"
+echo "[ .. ] cd-ing to the \`~/Scripts' directory"
 pushd /home/mh/Scripts
 
-echo "[ Updating Git-controlled packages ]"
+echo "[ .. ] Updating Git-controlled packages"
 ./git/git.sh
 
-echo "[ Updating source-controlled packages ]"
+echo "[ .. ] Updating source-controlled packages"
 ./pkg/ungoogled-chromium.sh
 
-echo "[ Generating dmenu cache ]"
+echo "[ .. ] Generating dmenu cache"
 ./dmenu-gencache.sh
 
-echo "[ Preparing to run root scripts]"
-$SUDO ./linux-root.sh
+echo "[ .. ] Preparing to run root scripts"
+# always try to get the root password
+while ! $SUDO ./system/linux-root.sh
+do
+	continue
+done
 
-echo "[ cd-ing back ]"
+echo "[ .. ] cd-ing back"
 popd
 
-echo "[ Done! ]"
+echo "[ OK ] Done!"
 
-echo "[ Login command hooks... ]"
+echo "[ .. ] Login command hooks"
 if [[ -d /home/mh/Hooks/linux.sh && /home/mh/Hooks/linux.sh/cmd.hook ]]
 then
 	echo "[ OK ] Found command hook:
@@ -55,7 +65,7 @@ else
 	echo "[ !! ] No command hook found!" 1>&2
 fi
 
-echo "[ TODO hooks... ]"
+echo "[ .. ] TODO hooks"
 if [[ -f /home/mh/TODO ]]
 then
 	echo "[ OK ] Found \`TODO':
@@ -67,4 +77,10 @@ else
 	echo "[ !! ] No \`TODO' file found!" 1>&2
 fi
 
-exit 0
+SHELL_PID=$$
+notify-send \`linux.sh\' "System run-up was finished"
+sleep 1
+_ppid="$(ps -p $SHELL_PID -O ppid)"
+ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
+kill -KILL $ppid
+exit 1

@@ -110,5 +110,5 @@ echo "\
 # Run extra commands if starting in a xinit sleep-process
 
 if [[ ! -z "$XINITSLEEP" ]]; then
-	"$XINITSLEEP"
+	"$XINITSLEEP" "$XINITSLEEPARGS"
 fi

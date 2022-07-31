@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 case $1 in
 	'-h'|'--help')
 		echo "Usage:       git.sh"
@@ -15,6 +17,13 @@ pushd $GITDIR
 
 while read repo
 do
+
+	if [[ $repo =~ ^#.* ]]
+	then
+		echo "[ !! ] Ignoring \`${repo##*#}'"
+		continue
+	fi
+
 	pushd $repo > /dev/null
 	echo "[ Pulling repository: $repo ]"
 	$GIT pull

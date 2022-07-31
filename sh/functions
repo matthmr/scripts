@@ -66,5 +66,58 @@ function session {
 }
 
 function datefmt {
-	date +'%Y%m%d-%H%M'
+	date +'%y%m%d-%H%M'
+}
+
+function dum {
+	while ! doas $@
+	do
+		continue
+	done
+}
+
+function unicode {
+	printf "$@" | iconv -f UTF8 -t UTF16BE | xxd
+}
+
+function copy {
+	echo "$@" | xclip -selection clipboard
+}
+
+### JAPANESE ###
+
+function jspeak {
+	[[ -z "$1" ]] && VOICE=neutral || VOICE="$1"
+
+	open_jtalk \
+	-x /mnt/ssd/root/usr/share/open-jtalk/dic \
+	-m /home/mh/Git/NONGIT/tohoku/tohoku-$VOICE.htsvoice \
+	-ow /dev/stdout /dev/stdin
+}
+
+function kana {
+	echo "$1" |\
+		KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
+		ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
+		kakasi -i utf8 -JH -KH
+}
+
+function roma {
+	[[ -z $2 ]] && LVL=2 || LVL=$2
+	echo "$1" |\
+		cmigemo -d /mnt/ssd/root/usr/share/migemo/utf-8/roma2hira.dat -w |\
+		tr -d ' ' |\
+		cut -d '|' -f 3 |\
+		sed "s/\$/ $LVL/g" |\
+		kkc |\
+		awk -F: '/^([0-9]+:|>> 0:) <[^mcQ]/ {
+			line=""
+			split($2, splitter, "/")
+			lim=length(splitter)
+			for (i = 0; i < lim; i++) {
+				sub(/^([ \n]*<|.*<)/, "", splitter[i])
+				line=(line splitter[i])
+			}
+			print line
+		}'
 }

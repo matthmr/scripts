@@ -1,2 +1,25 @@
 #!/bin/sh
-doas openrc-shutdown -r now
+
+TERM=st
+SUDO=doas
+SHUTDOWN=openrc-shutdown
+
+if [[ -d /tmp/pacman ]]
+then
+	if [[ -f /tmp/pacman/lock-pacman ]]
+	then
+		notify-send "Package lock found" "found package lock set by \`linux.sh'. Wait to shutdown"
+		if [[ -f /tmp/pacman/lock-pacman-artix ]]
+		then
+			notify-send "Package lock found (subsystem)" "also found lock for \`artix'"
+		fi
+		sleep 5
+		export XINITSLEEP=/home/mh/Scripts/system/package-lock.sh
+		export XINITSLEEPARGS=reboot
+		$TERM -e zsh
+	else
+		$SUDO $SHUTDOWN -r now
+	fi
+else
+	$SUDO $SHUTDOWN -r now
+fi
