@@ -11,8 +11,8 @@ fi
 
 case $COMMAND in
 	'-h'|'--help')
-		echo "Usage:       lock.sh"
-		echo "Description: Lock the sytem ACPI reboot/shutdown to update packages"
+		echo "Usage:       package-lock.sh"
+		echo "Description: Lock the system ACPI reboot/shutdown to update packages"
 		echo "Variables:
 	SUDO: sudo-like command"
 		exit 1;;

@@ -14,9 +14,9 @@ read -p "[ ?? ] Start scheduled system run-up? [Y/n] " ans
 
 if [[ $ans = "n" ]]
 then
-	notify-send \`linux.sh\' "System run-up was ignored. Run linux.sh on a shell to execute the run-up"
+	notify-send 'linux.sh' "System run-up was ignored. Run linux.sh on a shell to execute the run-up"
 	echo "[ !! ] Ignoring ... "
-	sleep 1
+	sleep 5
 	SHELL_PID=$$
 	_ppid="$(ps -p $SHELL_PID -O ppid)"
 	ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
@@ -24,62 +24,52 @@ then
 	exit 1
 fi
 
-
 [[ -z $SUDO ]] && SUDO=doas
 
 echo "\$[ .. ] Running user scripts"
 
-echo "[ .. ] cd-ing to the \`~/Scripts' directory"
-pushd /home/mh/Scripts
-
 echo "[ .. ] Updating Git-controlled packages"
-./git/git.sh
+/home/mh/Scripts/git/git.sh
 
 echo "[ .. ] Updating source-controlled packages"
-./pkg/ungoogled-chromium.sh
+/home/mh/Scripts/pkg/ungoogled-chromium.sh
 
 echo "[ .. ] Generating dmenu cache"
-./dmenu-gencache.sh
+/home/mh/Scripts/dmenu-gencache.sh
+
+echo "[ .. ] Syncing cron-like hooks"
+/home/mh/Scripts/sync-cron-like.sh
 
 echo "[ .. ] Preparing to run root scripts"
-# always try to get the root password
-while ! $SUDO ./system/linux-root.sh
-do
-	continue
-done
-
-echo "[ .. ] cd-ing back"
-popd
+while ! $SUDO /home/mh/Scripts/system/linux-root.sh; do continue; done # always try to get the root password
 
 echo "[ OK ] Done!"
 
-echo "[ .. ] Login command hooks"
-if [[ -d /home/mh/Hooks/linux.sh && /home/mh/Hooks/linux.sh/cmd.hook ]]
+echo "[ .. ] Finding hooks"
+if [[ -d /home/mh/Hooks/linux.sh && -d /home/mh/Hooks/IRL/ ]]
 then
-	echo "[ OK ] Found command hook:
+	echo "[ OK ] Hooks found:
 -----------------" 1>&2
-	sed 's/^/* /g' /home/mh/Hooks/linux.sh/cmd.hook
+	cat /home/mh/Hooks/linux.sh/*.hook /home/mh/Hooks/IRL/TODO
 	echo "
 ----------------" 1>&2
 else
-	echo "[ !! ] No command hook found!" 1>&2
+	echo "[ !! ] No hooks found!" 1>&2
 fi
 
-echo "[ .. ] TODO hooks"
-if [[ -f /home/mh/TODO ]]
+if [[ -d /tmp/cron ]]
 then
-	echo "[ OK ] Found \`TODO':
------------------" 1>&2
-	sed 's/^/* /g' /home/mh/TODO
-	echo "
-----------------" 1>&2
-else
-	echo "[ !! ] No \`TODO' file found!" 1>&2
+	echo "[ .. ] Found cron jobs. Handling their messages"
+	files=$(find /tmp/cron/* | sed 's/\/tmp\/cron\///g')
+	while read file
+	do
+		notify-send "cron" "$(cat /tmp/cron/$file)"
+	done <<< "$files"
+	sleep 5
 fi
 
 SHELL_PID=$$
-notify-send \`linux.sh\' "System run-up was finished"
-sleep 1
+sleep 5
 _ppid="$(ps -p $SHELL_PID -O ppid)"
 ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
 kill -KILL $ppid

@@ -4,7 +4,7 @@ function unix2date {
 	date -d @${unix}
 }
 
-function :cd {
+function icd {
 	pushd $1 >/dev/null
 	dirs -c
 }
@@ -66,7 +66,7 @@ function session {
 }
 
 function datefmt {
-	date +'%y%m%d-%H%M'
+	date +'%Y%m%d-%H%M'
 }
 
 function dum {
@@ -95,29 +95,33 @@ function jspeak {
 	-ow /dev/stdout /dev/stdin
 }
 
-function kana {
+function kana2roma {
+	echo "$1" |\
+		KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
+		ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
+		kakasi -i utf8 -Ha -Ka
+}
+
+function kana2kanji {
+	[[ -z $2 ]] && LVL=1 || LVL=$2
+	echo "$1" | sed "s/\$/ $LVL/g" | kkc | kkc.awk
+}
+
+function kanji2kana {
 	echo "$1" |\
 		KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
 		ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
 		kakasi -i utf8 -JH -KH
 }
 
-function roma {
-	[[ -z $2 ]] && LVL=2 || LVL=$2
+function kanji2roma {
 	echo "$1" |\
-		cmigemo -d /mnt/ssd/root/usr/share/migemo/utf-8/roma2hira.dat -w |\
-		tr -d ' ' |\
-		cut -d '|' -f 3 |\
-		sed "s/\$/ $LVL/g" |\
-		kkc |\
-		awk -F: '/^([0-9]+:|>> 0:) <[^mcQ]/ {
-			line=""
-			split($2, splitter, "/")
-			lim=length(splitter)
-			for (i = 0; i < lim; i++) {
-				sub(/^([ \n]*<|.*<)/, "", splitter[i])
-				line=(line splitter[i])
-			}
-			print line
-		}'
+		KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
+		ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
+		kakasi -i utf8 -Ja -Ha -Ka
+}
+
+function roma2kanji {
+	[[ -z $2 ]] && LVL=1 || LVL=$2
+	romaji "$1" | sed -f ~mh/p/romaji.c/scripts/norm.sed -e "s/\$/ $LVL/g" | kkc | kkc.awk
 }

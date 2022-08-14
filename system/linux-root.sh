@@ -30,7 +30,10 @@ chown -Rv mh:mh $TMP
 chmod -Rv a+w $TMP
 
 echo "[ .. ] Synchronizing clock"
-./sync-clock.sh
+/home/mh/Scripts/sync-clock.sh
+
+#echo "[ .. ] Synchronizing crontabs"
+#/home/mh/Scripts/sync-cron.sh
 
 echo "[ .. ] Moving tmp to a standardised location"
 mv -v $TMP /tmp/pacman
