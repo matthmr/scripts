@@ -14,7 +14,6 @@ read -p "[ ?? ] Start scheduled system run-up? [Y/n] " ans
 
 if [[ $ans = "n" ]]
 then
-	notify-send 'linux.sh' "System run-up was ignored. Run linux.sh on a shell to execute the run-up"
 	echo "[ !! ] Ignoring ... "
 	sleep 5
 	SHELL_PID=$$
@@ -60,10 +59,10 @@ fi
 if [[ -d /tmp/cron ]]
 then
 	echo "[ .. ] Found cron jobs. Handling their messages"
-	files=$(find /tmp/cron/* | sed 's/\/tmp\/cron\///g')
+	files=$(find /tmp/cron/* -not -name '*.sh' | sed 's./tmp/cron/..g')
 	while read file
 	do
-		notify-send "cron" "$(cat /tmp/cron/$file)"
+		cat "/tmp/cron/$file"
 	done <<< "$files"
 	sleep 5
 fi

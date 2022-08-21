@@ -4,22 +4,52 @@ TERM=st
 SUDO=doas
 SHUTDOWN=openrc-shutdown
 
+AS=${0##*/}
+AS=${AS/rc/}
+ARG=
+
 if [[ -d /tmp/pacman ]]
 then
 	if [[ -f /tmp/pacman/lock-pacman ]]
 	then
 		notify-send "Package lock found" "found package lock set by \`linux.sh'. Wait to shutdown"
-		if [[ -f /tmp/pacman/lock-pacman-artix ]]
-		then
-			notify-send "Package lock found (subsystem)" "also found lock for \`artix'"
-		fi
-		sleep 5
-		export XINITSLEEP=/home/mh/Scripts/system/package-lock.sh
-		export XINITSLEEPARGS=shutdown
-		$TERM -e zsh
-	else
-		$SUDO $SHUTDOWN -p now
+		ARG=p
 	fi
+
+	if [[ -f /tmp/pacman/lock-pacman-artix ]]
+	then
+		notify-send "Package lock found (subsystem)" "also found lock for \`artix'"
+		ARG="${ARG}a"
+	fi
+fi
+
+if [[ -d /tmp/cron ]]
+then
+	if [[ ! -z $(/bin/find /tmp/cron -name '*.sh') ]]
+	then
+		notify-send "Cron-like" "Cron-like lock set by \`linux.sh'. Wait to shutdown"
+		ARG="${ARG}c"
+
+	elif [[ ! -z $(/bin/find /tmp/cron -type f) ]]
+	then
+		notify-send "Cron-like" "Cron-like lock set by \`linux.sh'. Wait to shutdown"
+		ARG="${ARG}d"
+	fi
+fi
+
+if [[ ! -z $ARG ]]
+then
+	sleep 5
+	export XINITSLEEP="/home/mh/Scripts/system/lock.sh"
+	export XINITSLEEPARGS="${ARG}${AS}"
+	exec $TERM -e zsh # ACPI event is handled in the `XINITSLEEP' script
 else
-	$SUDO $SHUTDOWN -p now
+	case $AS in
+		'shutdown')
+			$SUDO $SHUTDOWN -p now;;
+		'reboot')
+			$SUDO $SHUTDOWN -r now;;
+		*) # fallback
+			$SUDO $SHUTDOWN -p now;;
+	esac
 fi

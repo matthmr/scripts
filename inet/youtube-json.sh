@@ -71,19 +71,22 @@ select(. != null) | \
 			exit 1
 		fi;;
 	'-h'|'--help')
-		echo "Usage:       youtube-json.sh [-c:clear <query>] [-s:static webpage] \"<query>\""
+		echo "Usage:       ytres [-c:clear <query>] [-s:static webpage] \"<query>\""
 		echo "Description: Generates a static, w3m-viewable webpage with the youtube results of <query> or a simple formated output"
 		echo "Variables:
 	JQ : jq-like command
 	CURL : curl-like command
 	GREP : grep-like command
 	SED : sed-like command"
-		exit 1
+		exit 1;;
+	'-v'|'--version')
+		echo "ytres v1.0.0"
+		exit 1;;
 esac
 
 if [[ $# -le 0 ]]
 then
-	echo "[ !! ] Bad usage. See youtube-json.sh --help" >&2 1>&2
+	echo "[ !! ] Bad usage. See ytres --help" >&2 1>&2
 	exit 1
 fi
 

@@ -1,12 +1,16 @@
 #!/usr/bin/sh
 
+usage() {
+	echo "Usage:       proton-run.sh [-e] [dir|prog] [prog]"
+	echo "  * -e : pass-in \`prog' as the program executable"
+	echo "  * : pass-in \`dir' as the base dir of the game and \`prog' the program executable"
+	echo "Description: Generates a proton command to run [prog]"
+	echo "Variables "
+}
+
 case $1 in
 	'-h'|'--help')
-		echo "Usage:       proton-run.sh [-e] [dir|prog] [prog]"
-		echo "  * -e : pass-in \`prog' as the program executable"
-		echo "  * : pass-in \`dir' as the base dir of the game and \`prog' the program executable"
-		echo "Description: Generates a proton command to run [prog]"
-		echo "Variables "
+		usage
 		exit 1
 		;;
 esac

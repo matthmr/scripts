@@ -97,18 +97,11 @@ export SHELL=/bin/zsh
 ### MH'S CONFIG END ###
 
 # Color script
-echo "\
-[1m[36m       /\\
-[36m      /  \\
-[36m     /\\   \\        [0m             _      _ _
-[34m    /      \\        [0m __ _ _ _ __| |_   | (_)_ _ _  ___ __
-[34m   /   ,,   \\       [0m/ _\` | '_/ _| ' \\  | | | ' \\ || \\ \\ /
-[34m  /   |  |  -\\      [0m\\__,_|_| \\__|_||_| |_|_|_||_\\_,_/_\\_\\
-[34m /_-''    ''-_\\ [0m
-"
+cat /home/mh/Documents/Ascii/linux.txt
 
 # Run extra commands if starting in a xinit sleep-process
-
-if [[ ! -z "$XINITSLEEP" ]]; then
+{
+	[[ ! -z "$XINITSLEEP" ]]
+} && {
 	"$XINITSLEEP" "$XINITSLEEPARGS"
-fi
+}

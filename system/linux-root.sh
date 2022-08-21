@@ -12,10 +12,10 @@ echo "[ .. ] Setting up \`tmp'"
 TMP=$(mktemp -d "/tmp/pacman.XXX")
 
 echo "[ .. ] Updating pacman's database"
-/home/mh/.local/bin/pman -Sy
+/home/mh/.local/bin/pman -Syy
 
 echo "[ .. ] Updating artix's pacman's database"
-/home/mh/.local/bin/pmanrc -Sy
+/home/mh/.local/bin/pmanrc -Syy
 
 echo "[ .. ] Generating update file for pacman"
 /home/mh/.local/bin/pman -Qu > $TMP/pacman-raw
