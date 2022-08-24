@@ -1,7 +1,7 @@
 /home/mh/Git/pfetch
-/home/mh/Git/shell-color-scripts
-/home/mh/Git/stagit
+#/home/mh/Git/stagit
 /home/mh/Git/voidrice
+/home/mh/Git/pipes.sh/
 /home/mh/Git/zsh-autosuggestions
 /home/mh/Git/zsh-syntax-highlighting
 #/home/mh/.local/share/nvim/plugged/fzf.vim

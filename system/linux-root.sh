@@ -53,12 +53,12 @@ echo "[ .. ] Setting update locks for pacman"
 
 echo "[ .. ] Setting update locks for artix's pacman"
 {
-	grep -Eiq '(^e[^2x]|udev|.*-openrc)' /tmp/pacman/pacman-artix
+	grep -Eiq '(^e[^2x]|udev|.*-openrc|lib(elogind|udev))' /tmp/pacman/pacman-artix
 } && {
 	echo "[ .. ] Found artix's pacman lock"
 	notify-send \`linux-root.sh\' "Pacman artix lock was found"
 	touch /tmp/pacman/lock-pacman-artix
-	/bin/grep -Ei '(^e[^2x]|udev|.*-openrc)' /tmp/pacman/pacman-artix \
+	/bin/grep -Ei '(^e[^2x]|udev|.*-openrc|lib(elogin|udev))' /tmp/pacman/pacman-artix \
 		> /tmp/pacman/pacman-artix-update
 } || {
 	echo "[ !! ] No lock was found for artix"

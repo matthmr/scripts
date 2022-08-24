@@ -117,7 +117,7 @@ function _artix {
 		echo "[ .. ] Updating artix"
 		if [[ -s /tmp/pacman/pacman-artix-update ]]
 		then
-			cat /tmp/pacman/pacman-artix-update | $SUDO xargs -o -i . pmanrc -S .
+			cat /tmp/pacman/pacman-artix-update | $SUDO xargs -o -I. /home/mh/.local/bin/pmanrc -S .
 		else
 			echo "[ !! ] Artix has no update available"
 		fi

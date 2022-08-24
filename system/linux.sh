@@ -65,6 +65,10 @@ then
 		cat "/tmp/cron/$file"
 	done <<< "$files"
 	sleep 5
+else
+	echo "[ .. ] No cron job was found; echoing their message just in case one got skipped"
+	/home/mh/Scripts/list-all-cron-like-jobs.sh
+	sleep 5
 fi
 
 SHELL_PID=$$
@@ -73,3 +77,4 @@ _ppid="$(ps -p $SHELL_PID -O ppid)"
 ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
 kill -KILL $ppid
 exit 1
+
