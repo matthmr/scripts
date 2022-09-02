@@ -13,7 +13,7 @@ case $1 in
 esac
 
 # carve out the command
-PACMAN= ARTIX= CRON=
+PACMAN= ARTIX= PARU= CRON=
 if [[ ${COMMAND:0:1} = 'p' ]] # pacman update
 then
 	PACMAN=y
@@ -22,6 +22,11 @@ fi
 if [[ ${COMMAND:0:1} = 'a' ]] # artix update
 then
 	ARTIX=y
+	COMMAND=${COMMAND:1}
+fi
+if [[ ${COMMAND:0:1} = 'n' ]] # paru update
+then
+	PARU=y
 	COMMAND=${COMMAND:1}
 fi
 if [[ ${COMMAND:0:1} = 'c' ]] # cron job update
@@ -126,6 +131,65 @@ function _artix {
 	fi
 }
 
+function _paru {
+	read -p "[ ?? ] Update AUR packages? [Y/n] " ans
+
+	if [[ $ans = 'n' ]]
+	then
+		echo "[ !! ] Ignoring ... "
+		notify-send "Ignore lock" "lock was ignored for paru"
+		return 0
+	fi
+
+	read -p "[ ?? ] Manual review? [y/N] " ans
+	[[ $ans = 'y' ]] && local MANUAL=y || local MANUAL=n
+
+	if [[ $MANUAL = 'y' ]]
+	then
+		echo "[ .. ] Updating database for manual review"
+		paru -Sy
+		echo "[ .. ] Generating new pacman updatable package file"
+		paru -Qu > /tmp/pacman/paru-update-raw
+		sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' /tmp/pacman/paru-update-raw |\
+			awk '{print $1}' > /tmp/pacman/paru-update
+		echo "[ .. ] Setting permissions"
+		chown -Rv mh:mh /tmp/pacman/paru-update /tmp/pacman/paru-update-raw
+		chmod -Rv a+w /tmp/pacman/paru-update /tmp/pacman/paru-update-raw
+		echo "[ .. ] Listing updatable packages"
+		/bin/less -R /tmp/pacman/paru-update-raw
+	fi
+
+	read -p "[ ?? ] Check against wiki? [Y/n] " ans
+	if [[ $ans = 'n' ]]
+	then
+		echo "[ !! ] Ignoring ... "
+	else
+		if [[ $MANUAL = 'y' ]]
+		then
+			/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/paru-update | /bin/less
+		else
+			/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/paru | /bin/less
+		fi
+	fi
+
+	read -p "[ ?? ] Handle SSD packages? [Y/n] " ans
+	if [[ $ans = 'n' ]]
+	then
+		echo "[ !! ] Ignoring ... "
+	else # open a new shell, wait for it to die, then continue
+		echo "[ OK ] Waiting for SSD packages to be handled"
+		unset XINITSLEEP
+		unset XINITSLEEPARGS
+		$USER_SHELL
+	fi
+
+	echo "[ .. ] Updating system"
+	paru -Su
+
+	echo "[ .. ] Removing lock"
+	rm -v /tmp/pacman/lock-paru
+}
+
 function _cron {
 	local SCRIPTS="$(/bin/find /tmp/cron/ -type f -name '*.sh' 2>/dev/null)"
 	read -p "[ ?? ] Cron-like script job found. Run it? [Y/n] " ans
@@ -159,6 +223,7 @@ function _cronmsg {
 
 [[ ! -z $PACMAN ]]  && _pacman
 [[ ! -z $ARTIX ]]   && _artix
+[[ ! -z $PARU ]]    && _paru
 [[ ! -z $CRON ]]    && _cron
 [[ ! -z $CRONMSG ]] && _cronmsg
 

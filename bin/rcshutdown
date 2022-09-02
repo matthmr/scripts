@@ -21,6 +21,12 @@ then
 		notify-send "Package lock found (subsystem)" "also found lock for \`artix'"
 		ARG="${ARG}a"
 	fi
+
+	if [[ -f /tmp/pacman/lock-paru ]]
+	then
+		notify-send "Package lock found (subsystem)" "also found lock for \`paru'"
+		ARG="${ARG}n"
+	fi
 fi
 
 if [[ -d /tmp/cron ]]

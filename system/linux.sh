@@ -25,7 +25,7 @@ fi
 
 [[ -z $SUDO ]] && SUDO=doas
 
-echo "\$[ .. ] Running user scripts"
+echo "[ .. ] Running user scripts"
 
 echo "[ .. ] Updating Git-controlled packages"
 /home/mh/Scripts/git/git.sh
