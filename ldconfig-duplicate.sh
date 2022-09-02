@@ -2,7 +2,7 @@
 
 case $1 in
 	'-h'|'--help')
-		echo "Usage:       ldconfig.sh"
+		echo "Usage:       ldconfig-duplicate.sh"
 		echo "Description: Find duplicated libraries on all system prefixes"
 		exit 1
 esac
