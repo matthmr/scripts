@@ -6,7 +6,7 @@ then
 	exit 1
 fi
 
-echo "#[ .. ] Running root scripts"
+echo "[ .. ] Running root scripts"
 
 echo "[ .. ] Setting up \`tmp'"
 TMP=$(mktemp -d "/tmp/pacman.XXX")
@@ -22,7 +22,7 @@ echo "[ .. ] Generating update file for pacman"
 /bin/sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/pacman-raw | awk '{print $1}' > $TMP/pacman
 
 echo "[ .. ] Generating update file for paru"
-paru -Qu > $TMP/paru-raw
+/mnt/ssd/root/usr/bin/paru -Qu > $TMP/paru-raw
 /bin/sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/paru-raw | awk '{print $1}' > $TMP/paru
 
 echo "[ .. ] Generating update file for artix's pacman"
