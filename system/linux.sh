@@ -44,6 +44,10 @@ while ! $SUDO /home/mh/Scripts/system/linux-root.sh; do continue; done # always 
 
 echo "[ OK ] Done!"
 
+echo "[ .. ] Running user-defined daemons"
+/home/mh/Scripts/bin/emacsserver start
+/home/mh/Scripts/tmp/copylog
+
 echo "[ .. ] Finding hooks"
 if [[ -d /home/mh/Hooks/linux.sh && -d /home/mh/Hooks/IRL/ ]]
 then

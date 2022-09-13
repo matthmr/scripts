@@ -87,9 +87,11 @@ function _pacman {
 	else
 		if [[ $MANUAL = 'y' ]]
 		then
-			/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/pacman-update | /bin/less
+			#/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/pacman-update | /bin/less
+			/home/mh/Scripts/find/wiki-find-pacman-index.sh /tmp/pacman/pacman-update | /bin/less
 		else
-			/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/pacman | /bin/less
+			#/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/pacman | /bin/less
+			/home/mh/Scripts/find/wiki-find-pacman-index.sh /tmp/pacman/pacman | /bin/less
 		fi
 	fi
 
@@ -166,9 +168,11 @@ function _paru {
 	else
 		if [[ $MANUAL = 'y' ]]
 		then
-			/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/paru-update | /bin/less
+			#/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/paru-update | /bin/less
+			/home/mh/Scripts/find/wiki-find-pacman-index.sh /tmp/pacman/paru-update | /bin/less
 		else
-			/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/paru | /bin/less
+			#/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/paru | /bin/less
+			/home/mh/Scripts/find/wiki-find-pacman-index.sh /tmp/pacman/paru | /bin/less
 		fi
 	fi
 

@@ -23,7 +23,8 @@ then
 fi
 
 echo "[ Sleeping... ]"
-sleep 5
+# sleep 5
+sleep 10
 
 echo "[ Turning off chrony ]"
 rc-service chrony stop
