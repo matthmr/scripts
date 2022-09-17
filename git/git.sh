@@ -10,9 +10,8 @@ esac
 while read repo
 do
 
-	if [[ $repo =~ ^#.* ]]
+	if [[ $repo =~ ^#.*$ || $repo =~ ^( \t)*$ ]]
 	then
-		echo "[ !! ] Ignoring \`${repo##*#}'"
 		continue
 	fi
 

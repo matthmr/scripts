@@ -8,7 +8,7 @@ case $1 in
 		;;
 esac
 
-DATE=$(date +%Y%m%d)
+DATE=$(date +%Y%m%d%H%M)
 
 echo "[ .. ] Copying as per state found on the ${DATE}"
 

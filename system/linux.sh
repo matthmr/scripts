@@ -30,6 +30,7 @@ echo "[ .. ] Running user scripts"
 echo "[ .. ] Updating Git-controlled packages"
 /home/mh/Scripts/git/git.sh
 
+# See (20220916)
 echo "[ .. ] Updating source-controlled packages"
 /home/mh/Scripts/pkg/ungoogled-chromium.sh
 
@@ -43,6 +44,9 @@ echo "[ .. ] Preparing to run root scripts"
 while ! $SUDO /home/mh/Scripts/system/linux-root.sh; do continue; done # always try to get the root password
 
 echo "[ OK ] Done!"
+
+echo "[ .. ] Listing out-of-date packages"
+less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw /tmp/pacman/pacman-artix-raw
 
 echo "[ .. ] Running user-defined daemons"
 /home/mh/Scripts/bin/emacsserver start

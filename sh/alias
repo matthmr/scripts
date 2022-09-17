@@ -24,14 +24,18 @@ alias xa='xargs'
 alias mk='make'
 alias ll='exa --color=always -l -g --sort type --icons'
 alias xc='xclip -selection clipboard'
-alias wiki='nvim /home/mh/Wiki/index.md'
-alias journal='nvim /home/mh/Wiki/Journal/index.md'
 alias g='git'
 alias js='jobs -ld'
 alias rcs='doas rc-service'
 alias ubat='bat -pp --color=always'
 alias high='highlight -O ansi'
 alias devlog='nvim /home/mh/Git/MH/sd/dev/log/devlog.md'
+
+# daily
+alias vwiki='nvim /home/mh/Wiki/index.md'
+alias vjournal='nvim /home/mh/Wiki/Journal/index.md'
+alias ewiki='emacs -nw /home/mh/Wiki/index.md'
+alias ejournal='emacs -nw /home/mh/Wiki/Journal/index.md'
 
 # dictionaries & spell-checkers
 alias d='dict -d'

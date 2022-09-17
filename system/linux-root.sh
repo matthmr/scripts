@@ -21,13 +21,13 @@ echo "[ .. ] Generating update file for pacman"
 /home/mh/.local/bin/pman -Qu > $TMP/pacman-raw
 /bin/sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/pacman-raw | awk '{print $1}' > $TMP/pacman
 
-echo "[ .. ] Generating update file for paru"
-/mnt/ssd/root/usr/bin/paru -Qu > $TMP/paru-raw
-/bin/sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/paru-raw | awk '{print $1}' > $TMP/paru
-
 echo "[ .. ] Generating update file for artix's pacman"
 /home/mh/.local/bin/pmanrc -Qu > $TMP/pacman-artix-raw
 /bin/sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/pacman-artix-raw | awk '{print $1}' > $TMP/pacman-artix
+
+echo "[ .. ] Generating update file for paru"
+/mnt/ssd/root/usr/bin/paru -Qu > $TMP/paru-raw
+/bin/sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/paru-raw | awk '{print $1}' > $TMP/paru
 
 echo "[ .. ] Setting persmissions for pacman-related files"
 chown -Rv mh:mh $TMP
@@ -73,8 +73,8 @@ echo "[ .. ] Setting update locks for artix's pacman"
 } && {
 	echo "[ .. ] Found artix's pacman lock"
 	touch /tmp/pacman/lock-pacman-artix
-	/bin/grep -Ei '(^e[^2x]|udev|.*-openrc|lib(elogin|udev))' /tmp/pacman/pacman-artix \
-		> /tmp/pacman/pacman-artix-update
+	chown -Rv mh:mh /tmp/pacman/lock-pacman-artix
+	chmod -Rv a+w /tmp/pacman/lock-pacman-artix
 } || {
 	echo "[ !! ] No lock was found for artix"
 }

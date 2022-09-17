@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/usr/bin/sh
+
+PACMANDIR=/mnt/ssd/pacman-artix
 
 PACMAN=/usr/bin/pacman
-DBPATH=/mnt/ssd/pacman-artix/database
-CACHEDIR=/mnt/ssd/pacman-artix/cache
-CONFIG=/mnt/ssd/pacman-artix/pacman.conf
-LOGFILE=/mnt/ssd/pacman-artix/pacman.log
+CONFIG=$PACMANDIR/pacman.conf
+HOOKDIR=$PACMANDIR/hooks
 
-ARGS=("--dbpath  $DBPATH --cachedir $CACHEDIR --config $CONFIG --logfile $LOGFILE")
+ARGS=("--config $CONFIG --hookdir $HOOKDIR")
 
 exec $PACMAN --color=always $@ $ARGS

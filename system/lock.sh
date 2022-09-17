@@ -53,7 +53,7 @@ esac
 [[ -z $SUDO ]] && SUDO=doas
 
 function _pacman {
-	read -p "[ ?? ] Update packages? [Y/n] " ans
+	read -p "[ ?? ] Update packages (pacman)? [Y/n] " ans
 
 	if [[ $ans = 'n' ]]
 	then
@@ -67,7 +67,7 @@ function _pacman {
 
 	if [[ $MANUAL = 'y' ]]
 	then
-		echo "[ .. ] Updating database for manual review"
+		echo "[ .. ] Updating pacman database for manual review"
 		while ! $SUDO pman -Sy; do continue; done
 		echo "[ .. ] Generating new pacman updatable package file"
 		pman -Qu > /tmp/pacman/pacman-update-raw
@@ -95,7 +95,7 @@ function _pacman {
 		fi
 	fi
 
-	read -p "[ ?? ] Handle SSD packages? [Y/n] " ans
+	read -p "[ ?? ] Handle SSD packages (pacman)? [Y/n] " ans
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
@@ -106,7 +106,7 @@ function _pacman {
 		$USER_SHELL
 	fi
 
-	echo "[ .. ] Updating system"
+	echo "[ .. ] Updating system (pacman)"
 	$SUDO pman -Su
 
 	echo "[ .. ] Removing lock"
@@ -114,27 +114,52 @@ function _pacman {
 }
 
 function _artix {
-	read -p "[ ?? ] Update artix? [Y/n] " ans
+	read -p "[ ?? ] Update packages (artix)? [Y/n] " ans
+
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
 		notify-send "Ignore lock" "lock was ignored for artix"
 		return 0
-	else
-		echo "[ .. ] Updating artix"
-		if [[ -s /tmp/pacman/pacman-artix-update ]]
-		then
-			cat /tmp/pacman/pacman-artix-update | $SUDO xargs -o -I. /home/mh/.local/bin/pmanrc -S .
-		else
-			echo "[ !! ] Artix has no update available"
-		fi
-		echo "[ .. ] Removing lock"
-		rm -v /tmp/pacman/lock-pacman-artix
 	fi
+	read -p "[ ?? ] Manual review? [y/N] " ans
+	[[ $ans = 'y' ]] && local MANUAL=y || local MANUAL=n
+
+	if [[ $MANUAL = 'y' ]]
+	then
+		echo "[ .. ] Updating pacman (artix) database for manual review"
+		while ! $SUDO pmanrc -Sy; do continue; done
+		echo "[ .. ] Generating new pacman updatable package file"
+		pman -Qu > /tmp/pacman/pacman-artix-update-raw
+		sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' /tmp/pacman/pacman-artix-update-raw |\
+			awk '{print $1}' > /tmp/pacman/pacman-artix-update
+		echo "[ .. ] Setting permissions"
+		chown -Rv mh:mh /tmp/pacman/pacman-artix-update /tmp/pacman/pacman-artix-update-raw
+		chmod -Rv a+w /tmp/pacman/pacman-artix-update /tmp/pacman/pacman-artix-update-raw
+		echo "[ .. ] Listing updatable packages"
+		/bin/less -R /tmp/pacman/pacman-artix-update-raw
+	fi
+
+	read -p "[ ?? ] Handle hooked packages (artix)? [Y/n] " ans
+	if [[ $ans = 'n' ]]
+	then
+		echo "[ !! ] Ignoring ... "
+	else # open a new shell, wait for it to die, then continue
+		echo "[ OK ] Waiting for SSD packages to be handled"
+		unset XINITSLEEP
+		unset XINITSLEEPARGS
+		$USER_SHELL
+	fi
+
+	echo "[ .. ] Updating system (artix)"
+	$SUDO pmanrc -Su
+
+	echo "[ .. ] Removing lock"
+	rm -v /tmp/pacman/lock-pacman-artix
 }
 
 function _paru {
-	read -p "[ ?? ] Update AUR packages? [Y/n] " ans
+	read -p "[ ?? ] Update packages (AUR)? [Y/n] " ans
 
 	if [[ $ans = 'n' ]]
 	then
@@ -187,7 +212,7 @@ function _paru {
 		$USER_SHELL
 	fi
 
-	echo "[ .. ] Updating system"
+	echo "[ .. ] Updating system (AUR)"
 	paru -Su
 
 	echo "[ .. ] Removing lock"

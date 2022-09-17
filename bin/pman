@@ -1,11 +1,22 @@
-#!/bin/sh
+#!/usr/bin/sh
+
+AS=${0##*/}
+
+case $AS in
+		'pman')
+				PACMANDIR=/mnt/ssd/pacman
+				PACMANOPTS=
+				;;
+		'pmanrc')
+				PACMANDIR=/mnt/ssd/pacman-artix
+				# artix's pacman does not install with dependencies
+				PACMANOPTS=-d
+				;;
+esac
 
 PACMAN=/usr/bin/pacman
-DBPATH=/mnt/ssd/pacman/database
-CACHEDIR=/mnt/ssd/pacman/cache
-CONFIG=/mnt/ssd/pacman/pacman.conf
-LOGFILE=/mnt/ssd/pacman/pacman.log
+CONFIG=$PACMANDIR/pacman.conf
 
-ARGS=("--dbpath  $DBPATH --cachedir $CACHEDIR --config $CONFIG --logfile $LOGFILE")
+ARGS=("--color=always --config $CONFIG")
 
-exec $PACMAN --color=always $@ $ARGS
+exec $PACMAN $ARGS $PACMANOPTS $@
