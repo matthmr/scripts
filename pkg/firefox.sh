@@ -1,10 +1,10 @@
 #!/usr/bin/sh
 
-if [[ "$USER" != 'root' ]]
-then
-	echo "[ !! ] Need to be root"
-	exit 1
-fi
+#if [[ "$USER" != 'root' ]]
+#then
+#	echo "[ !! ] Need to be root"
+#	exit 1
+#fi
 
 case $1 in
 	'-h'|'--help')

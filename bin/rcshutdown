@@ -43,6 +43,9 @@ then
 	fi
 fi
 
+# kill `emacsserver'
+emacsserver stop
+
 if [[ ! -z $ARG ]]
 then
 	sleep 5

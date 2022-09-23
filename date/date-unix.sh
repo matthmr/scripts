@@ -7,4 +7,4 @@ case $1 in
 		exit 1
 esac
 
-date +'%Y%m%d %H%M'
+date +'%s'

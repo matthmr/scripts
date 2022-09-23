@@ -1,8 +1,10 @@
 #!/usr/bin/sh
 
 _help() {
-		echo "Usage:       emacsserver [start|stop|status|restart]"
-		echo "Description: Starts an emacs server. Simpler version of \`emacs.mh'"
+		notify-send "emacsserver help"
+		"\
+Usage:       emacsserverx [start|stop|status|restart] \
+Description: Starts an emacs server. Similar to \`emacsserver', but with notifications"
 }
 
 case $1 in
@@ -13,19 +15,29 @@ case $1 in
 esac
 
 _start() {
-    echo "[ .. ] Starting emacs server"
+    {
+				[[ -d /run/user/$UID/emacs && -s /run/user/$UID/emacs/emacs.pid ]]
+    } && {
+				notify-send "emacsserver start" "An emacs server is already running"
+				exit 1
+    }
 
     SHELL=/usr/bin/sh \
 				EMACS=/usr/bin/emacs \
 				EMACSCLIENT=/usr/bin/emacsclient \
 				EMACSCLIENT_OPTS="-s /run/user/$UID/emacs/server" \
-        /home/mh/Scripts/emacs-wrapper.sh --daemon
+				/home/mh/Scripts/emacs-wrapper.sh --daemon
 
-		notify-send 'emacs-wrapper.sh' "Sucessfully started the emacs server"
+		notify-send "emacsserver start" "emacs server started"
 }
 
 _stop() {
-    echo "[ .. ] Stopping emacs server"
+    {
+				[[ -d /run/user/$UID/emacs && -s /run/user/$UID/emacs/emacs.pid ]]
+    } || {
+				notify-send "emacsserver stop" "no emacs server was found"
+				exit 1
+    }
 
     USER=$USER \
 				EMACSCLIENT=/usr/bin/emacsclient \
@@ -33,7 +45,7 @@ _stop() {
 				EMACS_TIMEOUT=10 \
 				/home/mh/Scripts/emacs-stop.sh
 
-				notify-send 'emacs-stop.sh' "Sucessfully stopped the emacs server"
+		notify-send "emacsserver stop" "emacs server stopped"
 }
 
 _restart() {
@@ -43,14 +55,14 @@ _restart() {
 }
 
 _status() {
-    echo "[ .. ] Getting status for the emacs server"
-
     {
 				[[ -d /run/user/$UID/emacs && -s /run/user/$UID/emacs/emacs.pid ]]
     } && {
-				notify-send "emacs server status" "Found an emacs server running with pid of $(cat /run/user/$UID/emacs/emacs.pid)"
+				notify-send "emacsserver status" "found an emacs server running with pid of $(cat /run/user/$UID/emacs/emacs.pid)"
+				exit 0
     } || {
-				notify-send "emacs server status" "No emacs server was found"
+				notify-send "emacsserver staus" "no emacs server was found"
+				exit 1
     }
 }
 

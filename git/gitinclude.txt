@@ -1,20 +1,25 @@
+## EMACS PLUGINS
 /home/mh/Git/EMACS/markdown-mode/
+/home/mh/Git/EMACS/evil-mode/
 
-/home/mh/Git/pfetch
-/home/mh/Git/voidrice
+## ZSH PLUGINS
+/home/mh/Git/zsh-autosuggestions/
+/home/mh/Git/zsh-syntax-highlighting/
+
+## VIM PLUGINS
+/home/mh/.local/share/nvim/plugged/nvim-lspconfig/
+/home/mh/.local/share/nvim/plugged/vimwiki/
+
+## MISC
+/home/mh/Git/pfetch/
+/home/mh/Git/voidrice/
 /home/mh/Git/pipes.sh/
 
-/home/mh/Git/zsh-autosuggestions
-/home/mh/Git/zsh-syntax-highlighting
-
-/home/mh/.local/share/nvim/plugged/nvim-lspconfig
-/home/mh/.local/share/nvim/plugged/nvim-treesitter
-/home/mh/.local/share/nvim/plugged/nvim-treesitter-context
-/home/mh/.local/share/nvim/plugged/vimwiki
-
+## NOT AUTO-UPDATED
 #/mnt/ssd/git/git-docs
-
 #/home/mh/Git/stagit
+#/home/mh/.local/share/nvim/plugged/nvim-treesitter
+#/home/mh/.local/share/nvim/plugged/nvim-treesitter-context
 #/home/mh/.local/share/nvim/plugged/vifm.vim
 #/home/mh/.local/share/nvim/plugged/vim-commentary
 #/home/mh/.local/share/nvim/plugged/vim-fugitive

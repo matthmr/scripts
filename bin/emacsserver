@@ -1,52 +1,70 @@
 #!/usr/bin/sh
 
 _help() {
-	echo "Usage:       emacsserver [start|stop|status|restart]"
-	echo "Description: Starts an emacs server. Simpler version of \`emacs.mh'"
+		echo "Usage:       emacsserver [start|stop|status|restart]"
+		echo "Description: Starts an emacs server. Simpler version of \`emacs.mh'"
 }
 
 case $1 in
     '-h'|'--help')
-	_help
-	exit 1
-	;;
+				_help
+				exit 1
+				;;
 esac
 
 _start() {
+    {
+				[[ -d /run/user/$UID/emacs && -s /run/user/$UID/emacs/emacs.pid ]]
+    } && {
+				echo "[ !! ] An emacs server is already running"
+				exit 1
+    }
+
     echo "[ .. ] Starting emacs server"
 
     SHELL=/usr/bin/sh \
-    EMACS=/usr/bin/emacs \
-    EMACSCLIENT=/usr/bin/emacsclient \
-    EMACSCLIENT_OPTS="-s /run/user/$UID/emacs/server" \
+				EMACS=/usr/bin/emacs \
+				EMACSCLIENT=/usr/bin/emacsclient \
+				EMACSCLIENT_OPTS="-s /run/user/$UID/emacs/server" \
         /home/mh/Scripts/emacs-wrapper.sh --daemon
 }
 
 _stop() {
+    {
+				[[ -d /run/user/$UID/emacs && -s /run/user/$UID/emacs/emacs.pid ]]
+    } || {
+				echo "[ !! ] No emacs server was found"
+				exit 1
+    }
+
     echo "[ .. ] Stopping emacs server"
 
     USER=$USER \
-    EMACSCLIENT=/usr/bin/emacsclient \
-    EMACSCLIENT_OPTS="-s /run/user/$UID/emacs/server" \
-    EMACS_TIMEOUT=10 \
-	/home/mh/Scripts/emacs-stop.sh
+				EMACSCLIENT=/usr/bin/emacsclient \
+				EMACSCLIENT_OPTS="-s /run/user/$UID/emacs/server" \
+				EMACS_TIMEOUT=10 \
+				/home/mh/Scripts/emacs-stop.sh
 }
 
 _restart() {
     _stop && \
-    sleep 5 && \
-    _start
+				echo "[ .. ] Sleeping" && \
+				sleep 5 && \
+				_start
 }
 
 _status() {
     echo "[ .. ] Getting status for the emacs server"
 
     {
-	[[ -d /run/user/$UID/emacs && -s /run/user/$UID/emacs/emacs.pid ]]
+				[[ -d /run/user/$UID/emacs && -s /run/user/$UID/emacs/emacs.pid ]]
     } && {
-	echo "[ OK ] Found an emacs server running with pid of $(cat /run/user/$UID/emacs/emacs.pid)"
+				EMACS_PID=$(cat /run/user/$UID/emacs/emacs.pid)
+				printf "[ OK ] Found an emacs server running with pid of $EMACS_PID"
+				exit 0
     } || {
-	echo "[ !! ] No emacs server was found"
+				echo "[ !! ] No emacs server was found"
+				exit 1
     }
 }
 
