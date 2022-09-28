@@ -1,7 +1,7 @@
 #!/usr/bin/sh
 
 _help() {
-		echo "Usage:       emacsserver [start|stop|status|restart]"
+		echo "Usage:       emacsserver [start|stop|status|restart|toggle|purge]"
 		echo "Description: Starts an emacs server. Simpler version of \`emacs.mh'"
 }
 
@@ -46,6 +46,28 @@ _stop() {
 				/home/mh/Scripts/emacs-stop.sh
 }
 
+_toggle() {
+		if [[ -d /run/user/$UID/emacs ]]; then
+				if [[ -f /run/user/$UID/emacs/emacs.pid ]]; then
+						_stop
+				else
+						_start
+				fi
+		else
+				_start
+		fi
+}
+
+_xtoggle() {
+	if [[ -d /run/user/$UID/emacs ]]; then
+    if [[ -f /run/user/$UID/emacs/emacs.pid ]]; then
+			_stop
+    fi
+  else
+    _start
+	fi
+}
+
 _restart() {
     _stop && \
 				echo "[ .. ] Sleeping" && \
@@ -60,7 +82,7 @@ _status() {
 				[[ -d /run/user/$UID/emacs && -s /run/user/$UID/emacs/emacs.pid ]]
     } && {
 				EMACS_PID=$(cat /run/user/$UID/emacs/emacs.pid)
-				printf "[ OK ] Found an emacs server running with pid of $EMACS_PID"
+				echo "[ OK ] Found an emacs server running with pid of $EMACS_PID"
 				exit 0
     } || {
 				echo "[ !! ] No emacs server was found"
@@ -68,11 +90,23 @@ _status() {
     }
 }
 
+_purge() {
+  if [[ -d /run/user/$UID/emacs && -f /run/user/$UID/emacs/emacs.pid ]]; then
+    echo "[ WW ] Found an instance of emacs"
+  fi
+
+  rm -rf /run/user/$UID/emacs/emacs.pid
+  echo "[ OK ] Purged emacs server"
+}
+
 case $1 in
-    'start')   _start	|| exit $?;;
-    'stop')    _stop	|| exit $?;;
-    'status')  _status	|| exit $?;;
-    'restart') _restart	|| exit $?;;
+    'start')   _start	   || exit $?;;
+    'stop')    _stop	   || exit $?;;
+    'status')  _status	 || exit $?;;
+    'restart') _restart	 || exit $?;;
+    'toggle')  _toggle   || exit $?;;
+    'purge')   _purge    || exit $?;;
+    'xtoggle') _xtoggle  || exit $?;;
     *) _help; exit 1;;
 esac
 

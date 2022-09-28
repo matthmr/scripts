@@ -1,0 +1,12 @@
+#!/usr/bin/sh
+
+AS=${0##*/}
+
+case $AS in
+		'emacsxc') EMACSOPTS=-c;;
+		'emacstc') EMACSOPTS=-t;;
+		*) EMACSOPTS=-c;;
+esac
+
+
+exec emacsclient $EMACSOPTS -s "/run/user/$UID/emacs/server" ${@:1}

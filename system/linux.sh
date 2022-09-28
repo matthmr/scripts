@@ -49,7 +49,8 @@ echo "[ .. ] Listing out-of-date packages"
 less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw /tmp/pacman/pacman-artix-raw
 
 echo "[ .. ] Running user-defined daemons"
-/home/mh/Scripts/bin/emacsserver start
+# See (20220924)
+#/home/mh/Scripts/bin/emacsserver start
 /home/mh/Scripts/tmp/copylog
 
 echo "[ .. ] Finding hooks"

@@ -12,6 +12,10 @@ case $AS in
 				# artix's pacman does not install with dependencies
 				PACMANOPTS=-d
 				;;
+		*)
+				PACMANDIR=/mnt/ssd/pacman
+				PACMANOPTS=
+				;;
 esac
 
 PACMAN=/usr/bin/pacman

@@ -1,0 +1,23 @@
+#!/usr/bin/sh
+
+usage() {
+	echo "Usage:       taskmsg [msg]"
+	echo "Description: Sets a message to the notification deamon to *always* display"
+}
+
+case $1 in
+	'-h'|'--help')
+		usage
+		exit 1
+esac
+
+if [[ -z $1 ]]
+then
+	usage
+	exit 1
+fi
+
+TASK="Current task"
+MSG="${@:1}"
+
+notify-send -t 0 "$TASK" "$MSG"

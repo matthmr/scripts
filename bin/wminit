@@ -1,0 +1,54 @@
+#!/usr/bin/sh
+
+WM=$1
+TERM=st
+TIMEOUT=10
+
+# wait for X to start, if it hasn't yet, keep waiting...
+sleep $TIMEOUT
+while :
+do
+	pidof Xorg > /dev/null && break || sleep $TIMEOUT
+done
+
+# create `/tmp/dbus-launch'
+WM_PID=$(pidof "$WM")
+
+if [[ -z $WM ]]; then
+		exit 0
+else
+		if [[ ! -f /tmp/dbus-launch ]]; then
+				touch /tmp/dbus-launch
+				chmod +x /tmp/dbus-launch
+		fi
+
+		# get the environment variable from the WM
+		VARIABLE=$(cat /proc/$WM_PID/environ | \
+									 tr '\000' '\n' | \
+									 grep "DBUS_SESSION_BUS_ADDRESS")
+
+		# write a new launch script
+		cat > /tmp/dbus-launch <<EOF
+#!/usr/bin/sh
+export $VARIABLE
+exec \$@
+EOF
+
+		# start WM-specific programs (that depend on `dbus')
+		case $WM in
+				'dwm'|'dwm-git')
+						/tmp/dbus-launch /mnt/ssd/root/usr/bin/dunst < /dev/null >& /dev/null &
+						;;
+		esac
+
+fi
+
+if [[ -f /tmp/wminit.lock ]]; then
+		exit 0
+else
+		touch /tmp/wminit.lock
+
+		# execute the script on a new terminal window
+		export XINITSLEEP=/home/mh/Scripts/system/linux.sh
+		$TERM -e zsh
+fi

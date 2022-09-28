@@ -1,0 +1,36 @@
+#!/usr/bin/bash
+
+_usage() {
+	echo "Usage:       doc [editor] [wiki|journal]"
+	echo "Description: Writes documentation on local document repositories"
+}
+
+case $1 in
+    '-h'|'--help')
+	_usage
+	exit 1
+	;;
+esac
+
+if (( $# <= 1 ))
+then
+		_usage
+		exit 1
+else
+		REPO=$(eval echo \$$#)
+
+		if [[ $REPO = wiki ]]
+		then
+				REPO=/home/mh/Documents/Org/Wiki/index.org
+		elif [[ $REPO = journal ]]
+		then
+				REPO=/home/mh/Documents/Org/Journal/index.org
+		else
+				_usage
+				exit 1
+		fi
+fi
+
+EDITOR=${@:1:$#-1}
+
+exec $EDITOR $REPO

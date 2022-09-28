@@ -4,7 +4,6 @@ alias emacs='emacs -nw'
 alias tmux='tmux -u'
 alias lynx='lynx -display_charset=utf8 -vikeys -cookies=off -editor=nvim -homepage=file:// /home/mh/Source/HTML/lynx.html'
 alias ed="ed -Ep '(ed) '"
-alias gfetch='onefetch'
 alias feh='feh --scale-down -B "#303030"'
 alias tree='tree -C'
 alias ltrace='ltrace -F /mnt/ssd/root/etc/ltrace.conf'
@@ -14,7 +13,7 @@ alias figlet='figlet -d /mnt/ssd/root/usr/share/figlet/fonts'
 alias webfsd='webfsd -F'
 alias chess='gnuchess -g'
 alias espeak='espeak --path=/mnt/ssd/root/usr/share/espeak-ng-data'
-alias flite='flite -voice slt'
+#alias flite='flite -voice slt'
 alias roma2kana='romaji'
 alias vim='nvim'
 alias vi='/bin/vim'
@@ -26,19 +25,7 @@ alias ll='exa --color=always -l -g --sort type --icons'
 alias xc='xclip -selection clipboard'
 alias g='git'
 alias js='jobs -ld'
-alias rcs='doas rc-service'
-alias ubat='bat -pp --color=always'
 alias high='highlight -O ansi'
-alias devlog='nvim /home/mh/Git/MH/sd/dev/log/devlog.md'
-
-# daily
-alias vwiki='nvim /home/mh/Wiki/index.md'
-alias vjournal='nvim /home/mh/Wiki/Journal/index.md'
-alias ewiki='emacs -nw /home/mh/Wiki/index.md'
-alias ejournal='emacs -nw /home/mh/Wiki/Journal/index.md'
-
-# dictionaries & spell-checkers
-alias d='dict -d'
 
 # coreutils overrides
 alias grep='grep --color=always'

@@ -10,7 +10,7 @@ esac
 file /home/mh/.local/bin/* |\
 awk '
 {
-	if ($2 == "POSIX" || $2 == "Bourne-Again") {
+	if ($0 ~ /text executable/) {
 		print $0
 	}
 }' |\

@@ -15,7 +15,7 @@ HIGHLIGHT="\x1b[7;49;37m"
 BULLET=" * "
 CLEAR="\x1b[0m$BULLET"
 
-SESSIONS=('awesome' 'dwm' 'i3' 'dwm-git' 'tty')
+SESSIONS=('dwm' 'i3' 'awesome' 'dwm-git' 'tty')
 SESSION=
 
 LEN=${#SESSIONS[@]}

@@ -2,4 +2,8 @@
 
 # kill `emacsserver' to prevent it from SIGSEGVing
 emacsserver stop >& /dev/null
-exec i3-msg exit
+
+# hook for `i3'
+if [[ ! -z `pidof i3` ]]; then
+		exec i3-msg exit
+fi

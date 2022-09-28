@@ -11,7 +11,7 @@ MAIM="/mnt/ssd/root/usr/bin/maim --quiet -o -d 0.25 -u" # change this
 
 main() {
 
-	FILENAME=$(date +"%Y%m%d%k%M")
+	FILENAME=$(date +"%Y%m%d%H%M")
 
 	$MAIM > /tmp/$FILENAME
 	notify-send 'Screenshot taken' "Save as /tmp/$FILENAME"

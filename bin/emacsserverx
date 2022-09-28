@@ -3,7 +3,7 @@
 _help() {
 		notify-send "emacsserver help"
 		"\
-Usage:       emacsserverx [start|stop|status|restart] \
+Usage:       emacsserverx [start|stop|status|restart|toggle|purge] \
 Description: Starts an emacs server. Similar to \`emacsserver', but with notifications"
 }
 
@@ -54,6 +54,18 @@ _restart() {
 				_start
 }
 
+_toggle() {
+		if [[ -d /run/user/$UID/emacs ]]; then
+				if [[ -f /run/user/$UID/emacs/emacs.pid ]]; then
+						_stop
+				else
+						_start
+				fi
+		else
+				_start
+		fi
+}
+
 _status() {
     {
 				[[ -d /run/user/$UID/emacs && -s /run/user/$UID/emacs/emacs.pid ]]
@@ -66,11 +78,19 @@ _status() {
     }
 }
 
+_purge() {
+  rm -rf /run/user/$UID/emacs/emacs.pid
+  notify-send "emacsserver purge" "purged emacs server"
+}
+
 case $1 in
-    'start')   _start	|| exit $?;;
-    'stop')    _stop	|| exit $?;;
-    'status')  _status	|| exit $?;;
-    'restart') _restart	|| exit $?;;
+    'start')   _start	   || exit $?;;
+    'stop')    _stop	   || exit $?;;
+    'status')  _status	 || exit $?;;
+    'restart') _restart	 || exit $?;;
+    'toggle')  _toggle   || exit $?;;
+    'purge')   _purge    || exit $?;;
+    'xtoggle') _xtoggle  || exit $?;;
     *) _help; exit 1;;
 esac
 
