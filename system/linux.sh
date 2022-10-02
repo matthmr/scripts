@@ -1,5 +1,10 @@
 #!/usr/bin/sh
 
+# `urxvt' works much better with `less' than `st'
+# does for some reason
+TERM=urxvt
+TERMCMD=-e
+
 case $1 in
 	'-h'|'--help')
 		echo "Usage:       linux.sh"
@@ -46,7 +51,7 @@ while ! $SUDO /home/mh/Scripts/system/linux-root.sh; do continue; done # always 
 echo "[ OK ] Done!"
 
 echo "[ .. ] Listing out-of-date packages"
-less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw /tmp/pacman/pacman-artix-raw
+$TERM $TERMCMD less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw /tmp/pacman/pacman-artix-raw &
 
 echo "[ .. ] Running user-defined daemons"
 # See (20220924)

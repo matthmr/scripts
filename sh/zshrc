@@ -103,5 +103,5 @@ cat /home/mh/Documents/Ascii/linux.txt
 {
 	[[ ! -z "$XINITSLEEP" ]]
 } && {
-	"$XINITSLEEP" "$XINITSLEEPARGS"
+	"$XINITSLEEP" $XINITSLEEPARGS
 }

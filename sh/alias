@@ -1,6 +1,5 @@
 # overrides
 alias lf='lf -single'
-alias emacs='emacs -nw'
 alias tmux='tmux -u'
 alias lynx='lynx -display_charset=utf8 -vikeys -cookies=off -editor=nvim -homepage=file:// /home/mh/Source/HTML/lynx.html'
 alias ed="ed -Ep '(ed) '"
@@ -22,6 +21,7 @@ alias vi='/bin/vim'
 alias xa='xargs'
 alias mk='make'
 alias ll='exa --color=always -l -g --sort type --icons'
+alias lli='exa --color=always -l -g --sort type'
 alias xc='xclip -selection clipboard'
 alias g='git'
 alias js='jobs -ld'
