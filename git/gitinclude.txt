@@ -1,6 +1,7 @@
 ## EMACS PLUGINS
 /home/mh/Git/EMACS/markdown-mode/
 /home/mh/Git/EMACS/evil-mode/
+/home/mh/Git/EMACS/base16-themes/
 
 ## ZSH PLUGINS
 /home/mh/Git/zsh-autosuggestions/

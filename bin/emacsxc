@@ -3,10 +3,15 @@
 AS=${0##*/}
 
 case $AS in
-		'emacsxc') EMACSOPTS=-c;;
-		'emacstc') EMACSOPTS=-t;;
-		*) EMACSOPTS=-c;;
+		'emacstc')
+			EMACSOPTS=-t
+			EMACSALTOPTS=-nw;;
+		*)
+			EMACSOPTS=-c
+			EMACSALTOPTS=;;
 esac
 
 
-exec emacsclient $EMACSOPTS -s "/run/user/$UID/emacs/server" ${@:1}
+exec emacsclient $EMACSOPTS -s \
+     "/run/user/$UID/emacs/server" ${@:1} \
+     -a "emacs $EMACSALTOPTS"

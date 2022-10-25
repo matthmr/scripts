@@ -47,4 +47,7 @@ UPTIME="$_HOUR$_MIN"
 _DATE=$(date +'%a %Y%m%d %H%M')
 DATE="$_DATE"
 
-echo "  $IP | 墳 $VOL |  $MEM |  $DISK |  $DATE |  $UPTIME "
+# Keyboard Layout
+LAYOUT=$(/home/mh/Git/MH/side/src/kbdlayout/kbdlayout)
+
+echo "   $LAYOUT |  $IP | 墳 $VOL |  $MEM |  $DISK |  $DATE |  $UPTIME "

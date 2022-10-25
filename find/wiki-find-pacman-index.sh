@@ -10,7 +10,7 @@ esac
 PACMAN_INDEX=/home/mh/Documents/Org/Wiki/System/Pacman/pacman-track.org
 
 wiki_find_pacman_index() {
-	grep -win -f "$1" $PACMAN_INDEX
+	grep --color=always -win -f "$1" $PACMAN_INDEX
 }
 
 wiki_find_pacman_index "$1"

@@ -24,5 +24,5 @@ if [[ ! $wm =~ dwm && -z `pidof fbxkb` ]]; then
 fi
 
 if [[ -z `pidof sxhkd` ]]; then
-	 sxhkd >& /dev/null &
+	 sxhkd < /dev/null >& /dev/null &
 fi
