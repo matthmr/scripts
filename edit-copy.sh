@@ -31,17 +31,21 @@ then
     printf "" > $CLIP
     FLAG=true;;
   '-e')
+    xsel --logfile /dev/null --clipboard -o > $CLIP
     FLAG=true;;
   '-i')
     xsel --logfile /dev/null --clipboard -i < $CLIP
     exit 1;;
   '-d')
-    xsel --logfile /dev/null --clipboard    > $CLIP
+    xsel --logfile /dev/null --clipboard -o > $CLIP
     exit 1;;
   *)
     usage
 		exit 1;;
   esac
+else
+  usage
+	exit 1
 fi
 
 if $FLAG; then
