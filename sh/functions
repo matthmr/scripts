@@ -84,6 +84,10 @@ function xcp {
 	echo "$@" | xclip -selection clipboard
 }
 
+function xcpstdin {
+	xclip -selection clipboard
+}
+
 ### JAPANESE ###
 
 function jspeak {
