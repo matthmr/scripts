@@ -12,17 +12,17 @@ echo "[ .. ] Setting up \`tmp'"
 TMP=$(mktemp -d "/tmp/pacman.XXX")
 
 echo "[ .. ] Updating pacman's database"
-/home/mh/.local/bin/pman -Syy # this also updates paru's
+/home/mh/.local/bin/pacman -Syy # this also updates paru's
 
 echo "[ .. ] Updating artix's pacman's database"
-/home/mh/.local/bin/pmanrc -Syy
+/home/mh/.local/bin/pacmanrc -Syy
 
 echo "[ .. ] Generating update file for pacman"
-/home/mh/.local/bin/pman -Qu > $TMP/pacman-raw
+/home/mh/.local/bin/pacman -Qu > $TMP/pacman-raw
 /bin/sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/pacman-raw | awk '{print $1}' > $TMP/pacman
 
 echo "[ .. ] Generating update file for artix's pacman"
-/home/mh/.local/bin/pmanrc -Qu > $TMP/pacman-artix-raw
+/home/mh/.local/bin/pacmanrc -Qu > $TMP/pacman-artix-raw
 /bin/sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/pacman-artix-raw | awk '{print $1}' > $TMP/pacman-artix
 
 echo "[ .. ] Generating update file for paru"

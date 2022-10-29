@@ -2,6 +2,7 @@
 
 TERM=xterm
 TERMCMD=-e
+TIMEOUT=5
 
 case $1 in
 	'-h'|'--help')
@@ -18,12 +19,28 @@ read -p "[ ?? ] Start scheduled system run-up? [Y/n] " ans
 if [[ $ans = "n" ]]
 then
 	echo "[ !! ] Ignoring ... "
-	sleep 5
+	sleep $TIMEOUT
 	SHELL_PID=$$
 	_ppid="$(ps -p $SHELL_PID -O ppid)"
 	ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
 	kill -KILL $ppid
 	exit 1
+else
+  # wait for a local ip address to be bound to this machine, otherwise we can't
+  # run inet-like scripts
+  echo "[ .. ] Waiting for a local ip address"
+  INTERFACE=eth0
+  while :; do
+    IP=$(ip addr show $INTERFACE | grep '192\.168')
+    if [[ -z $IP ]]; then
+      echo "[ !! ] Got no local ip address, waiting \`$TIMEOUT's"
+      sleep $TIMEOUT
+      continue
+    else
+      echo "[ OK ] Got local ip assigned"
+      break
+    fi
+  done
 fi
 
 [[ -z $SUDO ]] && SUDO=doas
@@ -76,15 +93,15 @@ then
 	do
 		cat "/tmp/cron/$file"
 	done <<< "$files"
-	sleep 5
+	sleep $TIMEOUT
 else
 	echo "[ .. ] No cron job was found; echoing their message just in case one got skipped"
 	/home/mh/Scripts/list-all-cron-like-jobs.sh
-	sleep 5
+	sleep $TIMEOUT
 fi
 
 SHELL_PID=$$
-sleep 5
+sleep $TIMEOUT
 _ppid="$(ps -p $SHELL_PID -O ppid)"
 ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
 kill -KILL $ppid

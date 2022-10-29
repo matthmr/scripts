@@ -2,7 +2,7 @@
 
 WM=$1
 TERM=st
-TIMEOUT=10
+TIMEOUT=5
 
 # wait for X to start, if it hasn't yet, keep waiting...
 sleep $TIMEOUT

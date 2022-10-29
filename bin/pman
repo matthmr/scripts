@@ -3,19 +3,15 @@
 AS=${0##*/}
 
 case $AS in
-		'pman')
-				PACMANDIR=/mnt/ssd/pacman
-				PACMANOPTS=
-				;;
-		'pmanrc')
-				PACMANDIR=/mnt/ssd/pacman-artix
-				# artix's pacman does not install with dependencies
-				PACMANOPTS=-d
-				;;
-		*)
-				PACMANDIR=/mnt/ssd/pacman
-				PACMANOPTS=
-				;;
+	'pacmanrc')
+		PACMANDIR=/mnt/ssd/pacman-artix
+		# artix's pacman does not install with dependencies
+		PACMANOPTS=-d
+		;;
+	*)
+		PACMANDIR=/mnt/ssd/pacman
+		PACMANOPTS=
+		;;
 esac
 
 PACMAN=/usr/bin/pacman
