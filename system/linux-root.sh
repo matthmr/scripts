@@ -12,13 +12,13 @@ echo "[ .. ] Setting up \`tmp'"
 TMP=$(mktemp -d "/tmp/pacman.XXX")
 
 echo "[ .. ] Updating pacman's database"
-/home/mh/.local/bin/pacman -Syy # this also updates paru's
+pacman -Syy # this also updates paru's
 
 echo "[ .. ] Updating artix's pacman's database"
 /home/mh/.local/bin/pacmanrc -Syy
 
 echo "[ .. ] Generating update file for pacman"
-/home/mh/.local/bin/pacman -Qu > $TMP/pacman-raw
+pacman -Qu > $TMP/pacman-raw
 /bin/sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/pacman-raw | awk '{print $1}' > $TMP/pacman
 
 echo "[ .. ] Generating update file for artix's pacman"
@@ -39,6 +39,9 @@ echo "[ .. ] Synchronizing clock"
 
 #echo "[ .. ] Synchronizing crontabs"
 #/home/mh/Scripts/sync-cron.sh
+
+echo "[ .. ] Updating the linux EFISTUB"
+/home/mh/Scripts/pkg/efistub.sh
 
 echo "[ .. ] Moving tmp to a standardised location"
 mv -v $TMP /tmp/pacman

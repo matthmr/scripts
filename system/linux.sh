@@ -31,8 +31,7 @@ else
   echo "[ .. ] Waiting for a local ip address"
   INTERFACE=eth0
   while :; do
-    IP=$(ip addr show $INTERFACE | grep '192\.168')
-    if [[ -z $IP ]]; then
+    if ! ip addr show $INTERFACE | grep -q '192\.168'; then
       echo "[ !! ] Got no local ip address, waiting \`$TIMEOUT's"
       sleep $TIMEOUT
       continue

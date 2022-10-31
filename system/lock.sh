@@ -68,9 +68,9 @@ function _pacman {
 	if [[ $MANUAL = 'y' ]]
 	then
 		echo "[ .. ] Updating pacman database for manual review"
-		while ! $SUDO pman -Sy; do continue; done
+		while ! $SUDO pacman -Sy; do continue; done
 		echo "[ .. ] Generating new pacman updatable package file"
-		pman -Qu > /tmp/pacman/pacman-update-raw
+		pacman -Qu > /tmp/pacman/pacman-update-raw
 		sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' /tmp/pacman/pacman-update-raw |\
 			awk '{print $1}' > /tmp/pacman/pacman-update
 		echo "[ .. ] Setting permissions"
@@ -107,7 +107,7 @@ function _pacman {
 	fi
 
 	echo "[ .. ] Updating system (pacman)"
-	$SUDO pman -Su
+	$SUDO pacman -Su
 
 	echo "[ .. ] Removing lock"
 	rm -v /tmp/pacman/lock-pacman
@@ -128,9 +128,9 @@ function _artix {
 	if [[ $MANUAL = 'y' ]]
 	then
 		echo "[ .. ] Updating pacman (artix) database for manual review"
-		while ! $SUDO pmanrc -Sy; do continue; done
+		while ! $SUDO pacmanrc -Sy; do continue; done
 		echo "[ .. ] Generating new pacman updatable package file"
-		pman -Qu > /tmp/pacman/pacman-artix-update-raw
+		pacmanrc -Qu > /tmp/pacman/pacman-artix-update-raw
 		sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' /tmp/pacman/pacman-artix-update-raw |\
 			awk '{print $1}' > /tmp/pacman/pacman-artix-update
 		echo "[ .. ] Setting permissions"
@@ -152,7 +152,7 @@ function _artix {
 	fi
 
 	echo "[ .. ] Updating system (artix)"
-	$SUDO pmanrc -Su
+	$SUDO pacmanrc -Su
 
 	echo "[ .. ] Removing lock"
 	rm -v /tmp/pacman/lock-pacman-artix
