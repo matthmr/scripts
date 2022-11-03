@@ -25,6 +25,7 @@ COREDIR=${COREDIR%/*}
 			exit 1
 			;;
 	esac
-	find -type f | xargs -r rm -rv
+	rm -rv $COREDIR/*
+	#find -type f | xargs -r rm -rv
 	popd > /dev/null
 }

@@ -40,9 +40,6 @@ echo "[ .. ] Synchronizing clock"
 #echo "[ .. ] Synchronizing crontabs"
 #/home/mh/Scripts/sync-cron.sh
 
-echo "[ .. ] Updating the linux EFISTUB"
-/home/mh/Scripts/pkg/efistub.sh
-
 echo "[ .. ] Moving tmp to a standardised location"
 mv -v $TMP /tmp/pacman
 
@@ -81,6 +78,9 @@ echo "[ .. ] Setting update locks for artix's pacman"
 } || {
 	echo "[ !! ] No lock was found for artix"
 }
+
+echo "[ .. ] Updating the linux EFISTUB"
+/home/mh/Scripts/pkg/efistub.sh
 
 echo "[ OK ] Done with root scripts!"
 
