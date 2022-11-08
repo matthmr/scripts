@@ -14,7 +14,7 @@ pid=$!
 echo "[emacs-wrapper.sh] got pid of \`$pid'"
 
 # Wait for Emacs daemon to detach
-for (( t=${EMACS_TIMEOUT:-30}; t > 0; t-- )); do
+for (( t=${EMACS_TIMEOUT:-10}; t > 0; t-- )); do
     echo "[emacs-wrapper.sh]::for(t) = $t"
     sleep 1
     if ! kill -0 ${pid} 2>/dev/null; then

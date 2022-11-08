@@ -1,0 +1,13 @@
+# XDG
+## user (mostly infered)
+export XDG_CONFIG_HOME=/home/mh/.config
+export XDG_DATA_HOME=/home/mh/.local/share
+export XDG_CACHE_HOME=/home/mh/.cache
+
+## system
+export XDG_DATA_DIRS=/usr/share:/mnt/ssd/root/usr/share
+export XDG_CONFIG_DIRS=/etc/xdg:/mnt/ssd/root/etc/xdg
+export XDG_RUNTIME_DIR=/run/user/1000
+
+# X
+export XAUTHORITY=/home/mh/.Xauthority

@@ -1,38 +1,25 @@
 #!/usr/bin/env bash
 # Made by mH (https://github.com/matthmr)
 
-set -o noglob
-
 # hide the cursor (tty only)
 printf '\x1b[?16;c'
 
+STARTX=sx
+SHELL=bash
+
 READINPUT="read -r -n 1 -s key"
 
-SAVE="\x1b[s"
-RESTORE="\x1b[u"
-
-HIGHLIGHT="\x1b[7;49;37m"
+HIGHLIGHT_ENTRY="\x1b[7;49;37m"
 BULLET=" * "
-CLEAR="\x1b[0m$BULLET"
+BULLET_INFO="\x1b[1;92m$BULLET\x1b[0m"
+BULLET_ERR="\x1b[1;91m$BULLET\x1b[0m"
 
 SESSIONS=('dwm' 'i3' 'awesome' 'dwm-git' 'tty')
 SESSION=
 
-LEN=${#SESSIONS[@]}
-LEN=$(($LEN - 1))
-SEQ=$(seq 0 $LEN | tr '\n' ' ')
 I=0
-
-# get longest session name; populate the session entry length manifest
 HIGH=0
-for i in $SEQ
-do
-	SESSIONLEN+=("${#SESSIONS[i]}")
-	if (( $HIGH < ${SESSIONLEN[i]} ))
-	then
-		HIGH=${SESSIONLEN[i]}
-	fi
-done
+LEN=
 
 # format session entry
 fmt() {
@@ -45,11 +32,30 @@ fmt() {
 	echo "$1$PADDING"
 }
 
+# get longest session name; populate the session entry length manifest
+getlen() {
+	while read i
+	do
+		SESSIONLEN+=("${#SESSIONS[i]}")
+		if (( $HIGH < ${SESSIONLEN[i]} ))
+		then
+			HIGH=${SESSIONLEN[i]}
+		fi
+	done < <(seq 0 $1)
+}
+
 # populate session entry
-for i in $SEQ
-do
-	SESSIONENTRY+=("$BULLET\x1b[1m $(fmt ${SESSIONS[i]} ${SESSIONLEN[i]}) \x1b[0m")
-done
+pop_entry() {
+	LEN=${#SESSIONS[@]}
+	LEN=$((LEN-1))
+
+	getlen $LEN
+
+	while read i
+	do
+		SESSIONENTRY+=("$BULLET\x1b[1m $(fmt ${SESSIONS[i]} ${SESSIONLEN[i]}) \x1b[0m")
+	done < <(seq 0 $LEN)
+}
 
 # print entry without highlight
 clear_current() {
@@ -64,11 +70,10 @@ cursor_down() {
 	if [[ $I > $LEN ]]
 	then
 		I=0
-		printf "\x1b[${LEN}F$HIGHLIGHT${SESSIONENTRY[I]}\x1b[0G"
+		printf "\x1b[${LEN}F$HIGHLIGHT_ENTRY${SESSIONENTRY[I]}\x1b[0G"
 	else
-		printf "\x1b[1E$HIGHLIGHT${SESSIONENTRY[I]}\x1b[0G"
+		printf "\x1b[1E$HIGHLIGHT_ENTRY${SESSIONENTRY[I]}\x1b[0G"
 	fi
-
 }
 
 # move the cursor up:
@@ -79,27 +84,26 @@ cursor_up() {
 	if [[ $I = '-1' ]]
 	then
 		I=$LEN
-		printf "\x1b[${LEN}E$HIGHLIGHT${SESSIONENTRY[I]}\x1b[0G"
+		printf "\x1b[${LEN}E$HIGHLIGHT_ENTRY${SESSIONENTRY[I]}\x1b[0G"
 	else
-		printf "\x1b[1F$HIGHLIGHT${SESSIONENTRY[I]}\x1b[0G"
+		printf "\x1b[1F$HIGHLIGHT_ENTRY${SESSIONENTRY[I]}\x1b[0G"
 	fi
 }
 
 # start the session
 #  - if chosen the last one, quit the program
-run()
-{
+run() {
 	export wm
 	printf '\x1b[?6;c'
-	case $I in
-		$LEN)
-			printf "\x1b[1;92m * \x1b[0m Logging in with tty\n\n"
-			exec bash
-			;;
+
+	case $SESSION in
+		tty)
+			printf "\n$BULLET_INFO Logging in with tty\n\n"
+			unset wm
+			exec $SHELL;;
 		*)
-			printf "\x1b[1;92m * \x1b[0m Logging in with $SESSION\n\n"
-			wm="$SESSION" exec startx
-			;;
+			printf "\n$BULLET_INFO Logging in with $SESSION\n\n"
+			wm="$SESSION" exec $STARTX;;
 	esac
 }
 
@@ -116,29 +120,32 @@ handle() {
 	fi
 }
 
-list-sessions() {
-	for i in $SEQ
+list_sessions() {
+	printf "$HIGHLIGHT_ENTRY"
+
+	while read i
 	do
-		echo "${SESSIONENTRY[i]}"
-	done
+		printf "${SESSIONENTRY[i]}\n"
+	done < <(seq 0 $LEN)
+
+	printf "\x1b[$((LEN+2))F\x1b[0G\n"
 }
 
-wm() {
-	clear
-	printf "\n\x1b[1;92m * \x1b[0m Choose a window manager to log in with\n"
-	printf "\n$SAVE$HIGHLIGHT$(list-sessions)\n$RESTORE"
+### MAIN ###
+#clear
+pop_entry
 
-	while [[ "$key" != "l" ]]
-	do
-		$READINPUT
-		handle $key
-	done
+printf "\n$BULLET_INFO Choose a window manager to log in with\n\n"
+list_sessions
 
-	SESSION=${SESSIONS[I]}
-	printf "\n"
+while [[ "$key" != "l" ]]
+do
+	$READINPUT
+	handle $key
+done
 
-	clear
-	run
-}
+SESSION=${SESSIONS[I]}
+printf "\n"
 
-wm
+run
+### MAIN ###

@@ -70,7 +70,6 @@ $TERM $TERMCMD less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw /tmp/pacman/pacm
 
 echo "[ .. ] Running user-defined daemons"
 #/home/mh/Scripts/bin/emacsserver start # See (20220924)
-#/home/mh/Scripts/tmp/copylog # See (20221028)
 
 echo "[ .. ] Finding hooks"
 if [[ -d /home/mh/Hooks/linux.sh && -d /home/mh/Hooks/IRL/ ]]

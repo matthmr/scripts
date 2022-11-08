@@ -8,48 +8,54 @@ TIMEOUT=5
 sleep $TIMEOUT
 while :
 do
-	pidof Xorg > /dev/null && break || sleep $TIMEOUT
+  pidof Xorg > /dev/null && break || sleep $TIMEOUT
 done
 
 # create `/tmp/dbus-launch'
 WM_PID=$(pidof "$WM")
 
 if [[ -z $WM ]]; then
-		exit 0
+  exit 0
 else
-		if [[ ! -f /tmp/dbus-launch ]]; then
-				touch /tmp/dbus-launch
-				chmod +x /tmp/dbus-launch
-		fi
+  if [[ ! -f /tmp/dbus-launch ]]; then
+    touch /tmp/dbus-launch
+    chmod +x /tmp/dbus-launch
+  fi
 
-		# get the environment variable from the WM
-		VARIABLE=$(cat /proc/$WM_PID/environ | \
-									 tr '\000' '\n' | \
-									 grep "DBUS_SESSION_BUS_ADDRESS")
+  # get the environment variable from the WM
+  VARIABLE=$(cat /proc/$WM_PID/environ | \
+             tr '\000' '\n' | \
+             grep "DBUS_SESSION_BUS_ADDRESS")
 
-		# write a new launch script
-		cat > /tmp/dbus-launch <<EOF
+  if [[ -z $VARIABLE ]]; then
+    EXPORT_VARIABLE=""
+  else
+    EXPORT_VARIABLE="export $VARIABLE"
+  fi
+
+  # write a new launch script
+  cat > /tmp/dbus-launch <<EOF
 #!/usr/bin/sh
-export $VARIABLE
+$EXPORT_VARIABLE
 exec \$@
 EOF
 
-		# start WM-specific programs
-		case $WM in
-				'dwm'|'dwm-git')
-						/tmp/dbus-launch /mnt/ssd/root/usr/bin/dunst < /dev/null >& /dev/null &
-            xsetroot -xcf /home/mh/.icons/McMojave-cursors/cursors/default 32 &
-						;;
-		esac
+  # start WM-specific programs
+  case $WM in
+    'dwm'|'dwm-git')
+      # See (20221106)
+      #/tmp/dbus-launch /mnt/ssd/root/usr/bin/dunst < /dev/null >& /dev/null &
+      xsetroot -xcf /home/mh/.icons/McMojave-cursors/cursors/default 32 &;;
+  esac
 
 fi
 
 if [[ -f /tmp/wminit.lock ]]; then
-		exit 0
+  exit 0
 else
-		touch /tmp/wminit.lock
+  touch /tmp/wminit.lock
 
-		# execute the script on a new terminal window
-		export XINITSLEEP=/home/mh/Scripts/system/linux.sh
-		$TERM -e zsh
+  # execute the script on a new terminal window
+  export XINITSLEEP=/home/mh/Scripts/system/linux.sh
+  $TERM -e zsh
 fi

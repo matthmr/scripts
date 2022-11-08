@@ -5,8 +5,6 @@ AS=${0##*/}
 case $AS in
 	'pacmanrc')
 		PACMANDIR=/mnt/ssd/pacman-artix
-		# artix's pacman does not install with dependencies
-		PACMANOPTS=-d
 		;;
 	*)
 		PACMANDIR=/mnt/ssd/pacman
@@ -19,4 +17,4 @@ CONFIG=$PACMANDIR/pacman.conf
 
 ARGS=("--color=always --config $CONFIG")
 
-exec $PACMAN $ARGS $PACMANOPTS $@
+exec $PACMAN $ARGS $@

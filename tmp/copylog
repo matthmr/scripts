@@ -3,7 +3,7 @@
 case $1 in
 	'-h'|'--help')
 		echo "Usage:       copylog.sh"
-		echo "Description: Temporary script for copying logs for the OpenRC spiel"
+		echo "Description: Temporary script for copying logs for the dmesg/elogind spiel"
 		exit 1
 		;;
 esac
@@ -12,4 +12,4 @@ DATE=$(date +%Y%m%d%H%M)
 
 echo "[ .. ] Copying as per state found on the ${DATE}"
 
-cp --preserve=all --verbose /openrc.log Log/openrc/openrc-${DATE}.log
+dmesg > /home/mh/Log/dmesg/dmesg-${DATE}.log

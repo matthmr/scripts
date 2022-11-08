@@ -8,6 +8,10 @@ fi
 
 echo "[ .. ] Running root scripts"
 
+# See (20221105)
+echo "[ .. ] Running temporary scripts"
+/home/mh/Scripts/tmp/copylog
+
 echo "[ .. ] Setting up \`tmp'"
 TMP=$(mktemp -d "/tmp/pacman.XXX")
 

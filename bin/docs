@@ -1,36 +1,110 @@
 #!/usr/bin/bash
 
-_usage() {
-	echo "Usage:       doc [editor] [wiki|journal]"
-	echo "Description: Writes documentation on local document repositories"
+function usage {
+  echo "Usage:       docs [wiki|journal] [-e editor] [-c command...]"
+  echo "Description: Writes documentation on local document repositories"
+  echo "Commands:
+  on \`wiki': <path>
+  on \`journal': <yy><mm>"
+  exit 1
+}
+
+WIKI=/home/mh/Documents/Org/Wiki
+JOURNAL=/home/mh/Documents/Org/Journal
+
+REPO=
+EDITOR=
+
+case $1 in
+  '-h'|'--help')
+    usage;;
+esac
+
+[[ -z $1 ]] && usage
+
+function do_defaults {
+  [[ -z $EDITOR ]] && EDITOR=emacsxc
+  [[ -z $REPO ]] && REPO=$WIKI/index.org
+}
+
+function wikicmd {
+  REPO+="/$1"
+}
+
+function journalcmd {
+  local yy= mm=
+
+  while :; do
+    if (( ${#1} != 4 )); then
+      break
+    fi
+
+    yy=${1:0:2}
+    mm=${1:2:2}
+
+    [[ -d $REPO/20$yy/ ]]        || break
+    [[ -f $REPO/20$yy/$mm.org ]] || break
+
+    REPO+="/20$yy/$mm.org"
+
+    return 0
+  done
+
+  echo "[ !! ] Command doesn't evaluate"
+  exit 1
+}
+
+function handle {
+  local repo=$1
+
+  case $repo in
+    'wiki')
+      REPO=$WIKI;;
+    'journal')
+      REPO=$JOURNAL;;
+  esac
+
+  local _editor=false _cmd=false
+
+  for opt in ${@:1}; do
+    if $_editor; then
+      EDITOR=$opt
+      _editor=false
+    elif $_cmd; then
+      local cmd=$opt
+      case $repo in
+        'wiki')
+          wikicmd $cmd;;
+        'journal')
+          journalcmd $cmd;;
+      esac
+    fi
+
+    if [[ $opt = '-e' ]]; then
+      _editor=true
+    elif [[ $opt = '-c' ]]; then
+      _cmd=true
+    fi
+  done
+
+  if $_editor; then
+    echo "[ !! ] Missing editor"
+    exit 1
+  elif ! $_cmd; then
+    REPO+="/index.org"
+  fi
 }
 
 case $1 in
-    '-h'|'--help')
-	_usage
-	exit 1
-	;;
+  'wiki')
+    handle ${@:1};;
+  'journal')
+    handle ${@:1};;
+  *)
+    echo "[ !! ] Invalid entry"
+    exit 1;;
 esac
 
-if (( $# <= 1 ))
-then
-		_usage
-		exit 1
-else
-		REPO=$(eval echo \$$#)
-
-		if [[ $REPO = wiki ]]
-		then
-				REPO=/home/mh/Documents/Org/Wiki/index.org
-		elif [[ $REPO = journal ]]
-		then
-				REPO=/home/mh/Documents/Org/Journal/index.org
-		else
-				_usage
-				exit 1
-		fi
-fi
-
-EDITOR=${@:1:$#-1}
+do_defaults
 
 exec $EDITOR $REPO

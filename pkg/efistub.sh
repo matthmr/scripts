@@ -31,6 +31,8 @@ function touch_lock {
     exit 1
   else
     touch $LCK_FILE
+    chown mh:mh $LCK_FILE
+    chmod 666 $LCK_FILE
   fi
 }
 
@@ -38,6 +40,8 @@ function pkg_copy {
   echo "[ .. ] Copying package cache"
   cp -v $CACHE/systemd-$VER-x86_64.pkg.tar.zst \
      $PKG_FILE
+  chown mh:mh $PKG_FILE
+  chmod 666 $PKG_FILE
 }
 
 function query_ver {

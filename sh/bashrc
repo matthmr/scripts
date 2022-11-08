@@ -13,7 +13,7 @@ PS2=" \[$red\]|> \[$reset\]"
 
 # Common source
 source /home/mh/Scripts/sh/alias
-source /home/mh/Scripts/sh/environment
+source /home/mh/Scripts/sh/bash_environment
 source /home/mh/Scripts/sh/functions
 cat /home/mh/Documents/Ascii/linux.txt
 

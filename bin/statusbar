@@ -50,4 +50,5 @@ DATE="$_DATE"
 # Keyboard Layout
 LAYOUT=$(/home/mh/Git/MH/side/src/kbdlayout/kbdlayout)
 
-echo "   $LAYOUT |  $IP | 墳 $VOL |  $MEM |  $DISK |  $DATE |  $UPTIME "
+echo " $LAYOUT > $IP > $VOL > $MEM > $DISK > $DATE > $UPTIME "
+#echo " $LAYOUT < $IP < $VOL < $MEM < $DISK < $DATE < $UPTIME "

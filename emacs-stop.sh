@@ -16,7 +16,7 @@ pid=$!
 echo "[emacs-stop.sh] got pid of \`$pid'"
 
 # Wait for emacsclient
-for (( t=${EMACS_TIMEOUT:-30}; t > 0; t-- )); do
+for (( t=${EMACS_TIMEOUT:-10}; t > 0; t-- )); do
     echo "[emacs-stop.sh]::for(t) = $t"
     sleep 1
 
