@@ -16,6 +16,7 @@ DMENU="/home/mh/Source/bin/dmenu" # change this
 SCREENSHOT="/mnt/ssd/root/usr/bin/shotgun" # change this
 SCREENSHOT_OPTS="" # change this
 SCREENSHOT_DIR="/home/mh/Images/Screenshots" # change this
+NOTIFY=herbe
 
 OPT_X11_GEOM="/mnt/ssd/root/usr/bin/hacksaw -r" # change this
 
@@ -62,4 +63,4 @@ if [[ $AS = 'screenshot-dir' ]]; then
 fi
 
 $SCREENSHOT $SCREENSHOT_OPTS $FILENAME
-notify-send 'Screenshot taken' "Save as $FILENAME"
+$NOTIFY 'Screenshot taken' "Save as $FILENAME"

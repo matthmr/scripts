@@ -9,7 +9,7 @@
 
 DMENU="/home/mh/Source/bin/dmenu" # change this
 AMIXER="/usr/bin/amixer" # change this
-NOTIFY="/usr/bin/notify-send" # change this
+NOTIFY="herbe" # change this
 
 PROMPT="\
 perc+

@@ -35,10 +35,10 @@ then
     FLAG=true;;
   '-i')
     xsel --logfile /dev/null --clipboard -i < $CLIP
-    exit 1;;
+    exit $?;;
   '-d')
     xsel --logfile /dev/null --clipboard -o > $CLIP
-    exit 1;;
+    exit $?;;
   *)
     usage
 		exit 1;;

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-HIBERNATE=
+HIBERNATE=/home/mh/Scripts/root/hibernate.sh
 
 if [[ "$USER" != 'root' ]]
 then
@@ -16,7 +16,7 @@ case $cmd in
 			echo "[ == ] swapon /mnt/hdd/memory.swap"
 			swapon /mnt/hdd/memory.swap
 			sleep 2
-			echo [ == ] loginctl hibernate
+			echo "[ == ] $HIBERNATE"
 			$HIBERNATE
 		;;
 	'b4disk')

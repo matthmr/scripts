@@ -137,4 +137,5 @@ parse_args $@
 
 VM_CMDLINE=$(echo $VM_CMDLINE | sed "s:~:$HOME:g")
 
+echo "[ == ] Running as: $VM $VM_CMDLINE"
 $VM $VM_CMDLINE &

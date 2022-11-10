@@ -22,9 +22,6 @@ VER_FILE=$PKG_DIR/efistub.txt
 LCK_FILE=$PMAN_DIR/lock-efistub
 PKG_FILE=$PMAN_DIR/efistub.tar.zstd
 
-UPDATE_LOCK=false
-UPDATE_DOWNLOAD=false
-
 function touch_lock {
   if [[ ! -d $PMAN_DIR ]]; then
     echo "[ !! ] No pacman directory. Did you run system/linux.sh?"

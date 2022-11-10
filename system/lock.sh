@@ -1,7 +1,10 @@
 #!/usr/bin/sh
 
 USER_SHELL=zsh
+NOTIFY=herbe
 COMMAND=$1
+AS=${COMMAND##*:}
+COMMAND=${COMMAND%%:*}
 
 case $1 in
 	'-h'|'--help')
@@ -13,34 +16,22 @@ case $1 in
 esac
 
 # carve out the command
-PACMAN= ARTIX= PARU= CRON=
-if [[ ${COMMAND:0:1} = 'p' ]] # pacman update
-then
-	PACMAN=y
-	COMMAND=${COMMAND:1}
-fi
-if [[ ${COMMAND:0:1} = 'a' ]] # artix update
-then
-	ARTIX=y
-	COMMAND=${COMMAND:1}
-fi
-if [[ ${COMMAND:0:1} = 'n' ]] # paru update
-then
-	PARU=y
-	COMMAND=${COMMAND:1}
-fi
-if [[ ${COMMAND:0:1} = 'c' ]] # cron job update
-then
-	CRON=y
-	COMMAND=${COMMAND:1}
-fi
-if [[ ${COMMAND:0:1} = 'd' ]] # cron job message update
-then
-	CRONMSG=y
-	COMMAND=${COMMAND:1}
-fi
+PACMAN= ARTIX= PARU= CRON= EFISTUB=
+len=${#COMMAND}
+len=$((len - 1))
+for (( i = 0 ; i <= len; i++ )); do
+  case ${COMMAND:i:1} in
+    'p') PACMAN=y;;
+    'a') ARTIX=y;;
+    'n') PARU=y;;
+    'e') EFISTUB=y;;
+    'c') CRON=y;;
+    'd') CRONMSG=y;;
+  esac
+  COMMAND=${COMMAND:i}
+done
 
-case $COMMAND in
+case $AS in
 	'shutdown')
 		COMMAND="openrc-shutdown -p now";;
 	'reboot')
@@ -58,7 +49,7 @@ function _pacman {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		notify-send "Ignore lock" "lock was ignored for pacman"
+		$NOTIFY "Ignore lock" "lock was ignored for pacman"
 		return 0
 	fi
 
@@ -119,7 +110,7 @@ function _artix {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		notify-send "Ignore lock" "lock was ignored for artix"
+		$NOTIFY "Ignore lock" "lock was ignored for artix"
 		return 0
 	fi
 	read -p "[ ?? ] Manual review? [y/N] " ans
@@ -164,7 +155,7 @@ function _paru {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		notify-send "Ignore lock" "lock was ignored for paru"
+		$NOTIFY "Ignore lock" "lock was ignored for paru"
 		return 0
 	fi
 
@@ -225,7 +216,7 @@ function _cron {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		notify-send "Ignore lock" "lock was ignored for cron"
+		$NOTIFY "Ignore lock" "lock was ignored for cron"
 		for file in $(echo $SCRIPTS|tr '\n' ' '); do rm -v $file ${file%%.sh}; done #remove the files
 		return 0
 	else
@@ -250,11 +241,27 @@ function _cronmsg {
 	for file in $(echo $JOBS|tr '\n' ' '); do rm -v $file; done #remove the files
 }
 
+function _efistub {
+  local PMAN_DIR=/tmp/pacman
+  local STUB=usr/lib/systemd/boot/efi/linuxx64.efi.stub 
+
+	echo "[ .. ] Copying old stub"
+	while ! $SUDO cp -v /$STUB /$STUB-old; do continue; done
+
+	echo "[ .. ] Extracting stub: $PMAN_DIR/efistub.tar.zstd "
+	tar xf $PMAN_DIR/efistub.tar.zstd $STUB --zstd -O |
+    while ! $SUDO tee /$STUB >/dev/null; do continue; done
+
+	echo "[ .. ] Removing lock"
+	rm -v $PMAN_DIR/lock-efistub
+}
+
 [[ ! -z $PACMAN ]]  && _pacman
 [[ ! -z $ARTIX ]]   && _artix
 [[ ! -z $PARU ]]    && _paru
 [[ ! -z $CRON ]]    && _cron
 [[ ! -z $CRONMSG ]] && _cronmsg
+[[ ! -z $EFISTUB ]] && _efistub
 
 read -p "[ ?? ] Hand over to openrc? [Y/n] " ans
 if [[ $ans = 'n' ]]
@@ -263,7 +270,7 @@ then
 	exit 1
 else
 	echo "[ OK ] Handing over to openrc"
-	notify-send "ACPI event sent" "waiting to send ACPI event; press C-c to ignore it"
+	$NOTIFY "ACPI event sent" "waiting to send ACPI event; press C-c to ignore it"
 	sleep 5
 	exec $SUDO $COMMAND
 fi

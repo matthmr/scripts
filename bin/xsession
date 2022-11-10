@@ -1,0 +1,56 @@
+#!/usr/bin/sh
+
+WM=$1
+TERM=st
+TIMEOUT=5
+
+# wait for X to start, if it hasn't yet, keep waiting...
+sleep $TIMEOUT
+while :
+do
+  pidof $WM > /dev/null && break || sleep $TIMEOUT
+done
+
+WM_PID=$(pidof "$WM")
+
+# create `/tmp/dbus-launch'
+if [[ ! -f /tmp/dbus-launch ]]; then
+  touch /tmp/dbus-launch
+  chmod +x /tmp/dbus-launch
+fi
+
+# get the environment variable from the WM
+VARIABLE=$(cat /proc/$WM_PID/environ | \
+           tr '\000' '\n' | \
+           grep "DBUS_SESSION_BUS_ADDRESS")
+
+if [[ -z $VARIABLE ]]; then
+  EXPORT_VARIABLE=""
+else
+  EXPORT_VARIABLE="export $VARIABLE"
+fi
+
+# write a new launch script
+cat > /tmp/dbus-launch <<EOF
+#!/usr/bin/sh
+$EXPORT_VARIABLE
+exec \$@
+EOF
+
+# start WM-specific programs
+case $WM in
+  'dwm'|'dwm-git')
+    # See (20221106)
+    /tmp/dbus-launch /mnt/ssd/root/usr/bin/dunst < /dev/null >& /dev/null &
+    xsetroot -xcf /home/mh/.icons/McMojave-cursors/cursors/default 32 &;;
+esac
+
+# execute a session script
+if [[ -f /tmp/xsession.lock ]]; then
+  exit 0
+else
+  touch /tmp/xsession.lock
+
+  export XINITSLEEP=/home/mh/Scripts/system/linux.sh
+  $TERM -e zsh
+fi

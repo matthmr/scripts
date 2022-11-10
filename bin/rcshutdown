@@ -3,6 +3,7 @@
 TERM=st
 SUDO=doas
 SHUTDOWN=openrc-shutdown
+NOTIFY=herbe
 
 AS=${0##*/}
 AS=${AS/rc/}
@@ -12,20 +13,26 @@ if [[ -d /tmp/pacman ]]
 then
 	if [[ -f /tmp/pacman/lock-pacman ]]
 	then
-		notify-send "Package lock found" "found package lock set by \`linux.sh'. Wait to shutdown"
+		$NOTIFY "Package lock found" "found package lock set by \`linux.sh'. Wait to shutdown" &
 		ARG=p
 	fi
 
 	if [[ -f /tmp/pacman/lock-pacman-artix ]]
 	then
-		notify-send "Package lock found (subsystem)" "also found lock for \`artix'"
+		$NOTIFY "Package lock found (subsystem)" "also found lock for \`artix'" &
 		ARG="${ARG}a"
 	fi
 
 	if [[ -f /tmp/pacman/lock-paru ]]
 	then
-		notify-send "Package lock found (subsystem)" "also found lock for \`paru'"
+		$NOTIFY "Package lock found (subsystem)" "also found lock for \`paru'" &
 		ARG="${ARG}n"
+	fi
+
+	if [[ -f /tmp/pacman/lock-efistub ]]
+	then
+		$NOTIFY "Efistub lock found" "found efistub lock set by \`linux.sh'. Wait to shutdown" &
+		ARG="${ARG}e"
 	fi
 fi
 
@@ -33,12 +40,12 @@ if [[ -d /tmp/cron ]]
 then
 	if [[ ! -z $(/bin/find /tmp/cron -name '*.sh') ]]
 	then
-		notify-send "Cron-like job found (script)" "Cron-like lock set by \`linux.sh'. Wait to shutdown"
+		$NOTIFY "Cron-like job found (script)" "Cron-like lock set by \`linux.sh'. Wait to shutdown" &
 		ARG="${ARG}c"
 
 	elif [[ ! -z $(/bin/find /tmp/cron -type f) ]]
 	then
-		notify-send "Cron-like job found" "Cron-like lock set by \`linux.sh'. Wait to shutdown"
+		$NOTIFY "Cron-like job found" "Cron-like lock set by \`linux.sh'. Wait to shutdown" &
 		ARG="${ARG}d"
 	fi
 fi
@@ -48,9 +55,10 @@ emacsserver stop
 
 if [[ ! -z $ARG ]]
 then
+  printf '\a' > /dev/tty${DISPLAY:1:1}
 	sleep 5
 	export XINITSLEEP="/home/mh/Scripts/system/lock.sh"
-	export XINITSLEEPARGS="${ARG}${AS}"
+	export XINITSLEEPARGS="${ARG}:${AS}"
 	exec $TERM -e zsh # ACPI event is handled in the `XINITSLEEP' script
 else
 	case $AS in

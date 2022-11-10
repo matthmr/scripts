@@ -9,6 +9,7 @@ case $1 in
 esac
 
 INTERVAL=2
+NOTIFY=herbe
 PID=$(pidof sxhkd)
 
 if [[ -z $PID ]]; then
@@ -16,7 +17,7 @@ if [[ -z $PID ]]; then
 else
   kill -TERM $PID
   sleep $INTERVAL
-  #notify-send "sxhkd" "reloaded daemon"
+  $NOTIFY "sxhkd" "reloaded daemon"
   sxhkd < /dev/null >& /dev/null &
   exit 0
 fi

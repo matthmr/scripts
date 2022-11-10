@@ -1,5 +1,5 @@
-#!/bin/sh
+#!/usr/bin/sh
 
-SUSPEND=
+SUSPEND=/home/mh/Scripts/root/suspend.sh
 
 $SUSPEND

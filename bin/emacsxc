@@ -1,8 +1,6 @@
 #!/usr/bin/sh
 
-AS=${0##*/}
-
-case $AS in
+case ${0##*/} in
 		'emacstc')
 			EMACSOPTS=-t
 			EMACSALTOPTS=-nw;;
@@ -11,7 +9,12 @@ case $AS in
 			EMACSALTOPTS=;;
 esac
 
+if [[ -z $XDG_RUNTIME_DIR ]]; then
+  BASE="$XDG_RUNTIME_DIR/emacs"
+else
+  BASE="/tmp/emacs-$UID"
+fi
 
 exec emacsclient $EMACSOPTS -s \
-     "/run/user/$UID/emacs/server" ${@:1} \
-     -a "emacs $EMACSALTOPTS"
+     "$BASE/server" ${@:1} \
+     -a "emacs $EMACSALTOPTS ${@:1}"

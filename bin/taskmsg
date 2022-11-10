@@ -1,5 +1,7 @@
 #!/usr/bin/sh
 
+NOTIFY=herbe
+
 usage() {
 	echo "Usage:       taskmsg [msg]"
 	echo "Description: Sets a message to the notification deamon to *always* display"
@@ -20,4 +22,4 @@ fi
 TASK="Current task"
 MSG="${@:1}"
 
-notify-send -t 0 "$TASK" "$MSG"
+$NOTIFY -t 0 "$TASK" "$MSG"

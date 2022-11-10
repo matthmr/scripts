@@ -2,7 +2,7 @@
 
 # start `xinit`-time daemons
 
-WM=$1
+wm=$1
 
 # [ -z `pidof dunst` ] && dunst & # started on `wminit'
 # [ -z `pidof xcompmgr` ] && xcompmgr & # I have no need for a compositor
@@ -16,7 +16,7 @@ if [[ -z `pidof clipmenud` ]]; then
 fi
 
 if [[ -z `pidof nitrogen` ]]; then
-    nitrogen --restore &
+  nitrogen --restore &
 fi
 
 #if [[ -z `pidof fbxkb` ]]; then

@@ -9,6 +9,7 @@
 
 DMENU="/home/mh/Source/bin/dmenu" # change this
 MAIM="/mnt/ssd/root/usr/bin/maim --quiet -o -B -d 0.25 -u" # change this
+NOTIFY=herbe
 
 OPT="\
 window root
@@ -33,7 +34,7 @@ main() {
 	[[ -z $OPT ]] && exit 1
 
 	$MAIM --$OPT > Images/Screenshots/$FILENAME.png
-	notify-send 'Screenshot taken' "Save as Images/Screenshots/$FILENAME.png"
+	$NOTIFY 'Screenshot taken' "Save as Images/Screenshots/$FILENAME.png"
 }
 
 main

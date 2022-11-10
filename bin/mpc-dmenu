@@ -9,7 +9,7 @@
 
 DMENU="/home/mh/Source/bin/dmenu" # change this
 MPC="/mnt/ssd/root/usr/bin/mpc" # change this
-NOTIFY="/usr/bin/notify-send -t 30000" # change this
+NOTIFY="herbe" # change this
 
 PROMPT="\
 play

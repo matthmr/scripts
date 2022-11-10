@@ -24,6 +24,7 @@ alias ll='exa --color=always -l -g --sort type --icons'
 alias lli='exa --color=always -l -g --sort type'
 alias xc='xclip -selection clipboard'
 alias g='git'
+alias b='busybox'
 alias js='jobs -ld'
 alias high='highlight -O ansi'
 
