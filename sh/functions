@@ -84,7 +84,7 @@ function xcp {
 	echo "$@" | xclip -selection clipboard
 }
 
-function xcpstdin {
+function xcpin {
 	xclip -selection clipboard
 }
 
@@ -127,5 +127,5 @@ function kanji2roma {
 
 function roma2kanji {
 	[[ -z $2 ]] && LVL=1 || LVL=$2
-	romaji "$1" | sed -f ~mh/p/romaji.c/scripts/norm.sed -e "s/\$/ $LVL/g" | kkc | kkc.awk
+	romaji "$1" | sed -f ~p/romaji.c/scripts/norm.sed -e "s/\$/ $LVL/g" | kkc | kkc.awk
 }
