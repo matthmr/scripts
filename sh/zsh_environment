@@ -2,7 +2,7 @@
 PREFIX="/mnt/ssd/root"
 export LOCAL=("--root" "$PREFIX")
 export RC="-dd"
-export SSH_TERMUX="u0_455"
+export SSH_TERMUX="u0_a455"
 
 # General
 export LESS="-S -R -I -Q -x2 --use-color --mouse --incsearch"

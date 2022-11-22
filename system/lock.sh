@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/bash
 
 USER_SHELL=zsh
 NOTIFY=herbe
@@ -33,9 +33,9 @@ done
 
 case $AS in
 	'shutdown')
-		COMMAND="openrc-shutdown -p now";;
+		COMMAND="poweroff now";;
 	'reboot')
-		COMMAND="openrc-shutdown -r now";;
+		COMMAND="reboot now";;
 		*)
 		echo "[ !! ] Cannot run this script manually; exiting..."
 		exit 1;;
@@ -242,6 +242,15 @@ function _cronmsg {
 }
 
 function _efistub {
+	read -p "[ ?? ] Update packages (efistub)? [Y/n] " ans
+
+	if [[ $ans = 'n' ]]
+	then
+		echo "[ !! ] Ignoring ... "
+		$NOTIFY "Ignore lock" "lock was ignored for efistub"
+		return 0
+	fi
+
   local PMAN_DIR=/tmp/pacman
   local STUB=usr/lib/systemd/boot/efi/linuxx64.efi.stub 
 

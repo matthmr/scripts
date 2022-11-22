@@ -7,7 +7,7 @@ case $1 in
 		exit 1
 esac
 
-PACMAN_INDEX=/home/mh/Documents/Org/Wiki/System/Pacman/pacman-track.org
+PACMAN_INDEX=/home/mh/Documents/Org/Wiki/sys/pman/pacman-track.org
 
 wiki_find_pacman_index() {
 	grep --color=always -win -f "$1" $PACMAN_INDEX

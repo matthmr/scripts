@@ -1,35 +1,24 @@
-function unix2date {
-	unix=$1
-	echo "date -d @${unix}" 1>&2
-	date -d @${unix}
+#!/usr/bin/bash
+function google {
+  [[ $# = 0 ]] && {
+    echo "[ !! ] See \`--help'"
+    return 1
+  }
+
+  case $1 in
+    '-h'|'--help')
+      echo "Usage: google '<query>'"
+      return 0;;
+  esac  
+
+  local QUERY="${1// /+}"
+
+  lynx "https://www.google.com/search?q=${QUERY}"
 }
 
 function icd {
 	pushd $1 >/dev/null
 	dirs -c
-}
-
-function taskget {
-	[[ -z $EDITOR ]] && EDITOR=vi
-
-	case $1 in
-		'-l'|'--list')
-			/bin/ls -l --color dev/task/**/$2*task
-			return 0
-			;;
-		'-e'|'--edit')
-			$EDITOR dev/task/**/$2*task
-			return 0
-			;;
-		'-h'|'--help')
-			echo "Usage: ({-l,--list}, list tasks), ({-e,--edit}, edit task)"
-			return 1
-			;;
-		*)
-			cat dev/task/**/$1*task
-			return 0
-			;;
-	esac
 }
 
 function mkscript {
@@ -44,42 +33,11 @@ function mkscript {
 	[[ ! -z "$2" ]] && "$2" "$1"
 }
 
-function session {
-	case $1 in
-		'-l'|'--list')
-			/bin/ls -l --color .vim/*
-			return 1
-			;;
-		'-h'|'--help')
-			echo "Usage: session [-l, --list] <name>"
-			return 1
-			;;
-	esac
-
-	{
-		[[ $# = 0 || $# -ge 2 ]]
-	} && {
-			return 1
-	}
-
-	$EDITOR -S .vim/$1.vim
-}
-
-function datefmt {
-	date +'%Y%m%d-%H%M'
-}
-
-function dum {
-	while ! doas $@
-	do
-		continue
-	done
-}
-
 function unicode {
 	printf "$@" | iconv -f UTF8 -t UTF16BE | xxd
 }
 
+### BEGIN: XCOPY ###
 function xcp {
 	echo "$@" | xclip -selection clipboard
 }
@@ -88,7 +46,12 @@ function xcpin {
 	xclip -selection clipboard
 }
 
-### JAPANESE ###
+function xcpout {
+	xclip -selection clipboard -out
+}
+### END: XCOPY ###
+
+### BEGIN: JAPANESE ###
 
 function jspeak {
 	[[ -z "$1" ]] && VOICE=neutral || VOICE="$1"
@@ -129,3 +92,5 @@ function roma2kanji {
 	[[ -z $2 ]] && LVL=1 || LVL=$2
 	romaji "$1" | sed -f ~p/romaji.c/scripts/norm.sed -e "s/\$/ $LVL/g" | kkc | kkc.awk
 }
+
+### END: JAPANESE ###

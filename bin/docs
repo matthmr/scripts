@@ -64,33 +64,39 @@ function handle {
       REPO=$JOURNAL;;
   esac
 
-  local _editor=false _cmd=false
+  local _editor=false _cmd=false _cmd_chg=false
 
   for opt in ${@:1}; do
-    if $_editor; then
-      EDITOR=$opt
+    if [[ $opt = '-c' ]]; then
       _editor=false
+      _cmd=true
+      continue
+    elif [[ $opt = '-e' ]]; then
+      _cmd=false
+      _editor=true
+      continue
+    fi
+
+    if $_editor; then
+      EDITOR+=" $opt"
     elif $_cmd; then
+
       local cmd=$opt
       case $repo in
         'wiki')
+          _cmd_chg=true
           wikicmd $cmd;;
         'journal')
+          _cmd_chg=true
           journalcmd $cmd;;
       esac
     fi
-
-    if [[ $opt = '-e' ]]; then
-      _editor=true
-    elif [[ $opt = '-c' ]]; then
-      _cmd=true
-    fi
   done
 
-  if $_editor; then
+  if [[ -z $EDITOR ]]; then
     echo "[ !! ] Missing editor"
     exit 1
-  elif ! $_cmd; then
+  elif ! $_cmd_chg; then
     REPO+="/index.org"
   fi
 }

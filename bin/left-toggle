@@ -1,7 +1,7 @@
 #!/bin/sh
 # Made by mH (https://www.github.com/matthmr)
 
-MOUSE='YSPRINGTECH USB OPTICAL MOUSE'
+MOUSE='Mouse0'
 
 XINPUT=`xinput list-props "$MOUSE" | grep -w 'libinput Left Handed Enabled [^a-zA-Z].*:'`
 

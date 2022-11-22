@@ -1,24 +1,15 @@
 #!/usr/bin/env bash
-# Made by mH (https://github.com/matthmr)
-
-#*****************************************************
-# change anything that is followed by "#change this" #
-#*****************************************************
-
-# screenshot: generic screenshot dmenu utility
-#  - screenshot (prompt for full path)
-#  - screenshot-dir (save in <dir>)
-#  - screenshot-quick (save in <tmp>)
+#UPDATE(20221122): no longer using `~p/scripts/date/long.sh'
 
 AS=${0##*/}
 
-DMENU="/home/mh/Source/bin/dmenu" # change this
-SCREENSHOT="/mnt/ssd/root/usr/bin/shotgun" # change this
-SCREENSHOT_OPTS="" # change this
-SCREENSHOT_DIR="/home/mh/Images/Screenshots" # change this
+DMENU="/home/mh/Source/bin/dmenu" 
+SCREENSHOT="/mnt/ssd/root/usr/bin/shotgun" 
+SCREENSHOT_OPTS="" 
+SCREENSHOT_DIR="/home/mh/Images/Screenshots" 
 NOTIFY=herbe
 
-OPT_X11_GEOM="/mnt/ssd/root/usr/bin/hacksaw -r" # change this
+OPT_X11_GEOM="/mnt/ssd/root/usr/bin/hacksaw -r" 
 
 OPT="\
 window root
@@ -43,7 +34,7 @@ function feedopt {
 }
 
 if [[ $AS = 'screenshot-quick' ]]; then
-  FILENAME=/tmp/$(/home/mh/Scripts/date/date-join.sh).png
+  FILENAME=/tmp/$(date +"%Y%m%d%H%M%S").png
   SCREENSHOT_OPTS='-s'
 	#OPT=`feeddmenu "$OPT" "option"`
   #SCREENSHOT_OPTS=$(feedopt "$OPT")

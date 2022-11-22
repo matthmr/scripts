@@ -14,7 +14,7 @@
 ## MISC
 /home/mh/Git/pfetch/
 /home/mh/Git/voidrice/
-/home/mh/Git/pipes.sh/
+#/home/mh/Git/pipes.sh/
 
 ## NOT AUTO-UPDATED
 #/mnt/ssd/git/git-docs

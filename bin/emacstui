@@ -1,3 +1,10 @@
 #!/usr/bin/sh
 
-exec emacs -nw $@
+AS=${0##*/}
+
+case $AS in
+  'emacsbasic')
+    EMACSOPT='-Q -l /home/p/config/emacs-basic';;
+esac
+
+exec emacs $EMACSOPT -nw $@

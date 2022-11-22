@@ -2,7 +2,8 @@
 
 TERM=st
 SUDO=doas
-SHUTDOWN=openrc-shutdown
+SHUTDOWN='poweroff now'
+REBOOT='reboot now'
 NOTIFY=herbe
 
 AS=${0##*/}
@@ -63,10 +64,10 @@ then
 else
 	case $AS in
 		'shutdown')
-			$SUDO $SHUTDOWN -p now;;
+			$SUDO $SHUTDOWN;;
 		'reboot')
-			$SUDO $SHUTDOWN -r now;;
+			$SUDO $REBOOT;;
 		*) # fallback
-			$SUDO $SHUTDOWN -p now;;
+			$SUDO $SHUTDOWN;;
 	esac
 fi

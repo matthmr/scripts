@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+DMENU="/home/mh/Source/bin/dmenu"
+EDITCLIP="/home/mh/Scripts/edit-copy.sh"
+CLIPFILE="/tmp/clipboard"
+
+PROMPT="\
+roma -> kana
+roma -> kanji
+kanji -> kana
+kanji -> roma
+kana -> kanji
+"
+
+function feed {
+	echo -ne "$1" | $DMENU -p "$2"
+}
+
+MODE=$(feed "$PROMPT" "mode")
+
+[[ -z $MODE ]] && exit 1
+
+WORD=$(feed "" "write")
+
+[[ -z $WORD ]] && exit 1
+
+case $MODE in
+  "roma -> kana")
+    romaji "$WORD" | tr -d '\000' | sed -f ~p/romaji.c/scripts/norm.sed > $CLIPFILE;;
+  "roma -> kanji")
+    romaji "$WORD" | tr -d '\000' | sed -f ~p/romaji.c/scripts/norm.sed -e 's:$: 1:' | kkc | kkc.awk > $CLIPFILE;;
+  "kanji -> kana")
+	  echo "$WORD" |\
+		  KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
+		    ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
+		    kakasi -i utf8 -JH -KH > $CLIPFILE;;
+  "kanji -> roma")
+	  echo "$WORD" |\
+		  KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
+		    ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
+		    kakasi -i utf8 -Ja -Ha -Ka > $CLIPFILE;;
+  "kana -> kanji")
+    echo "$WORD" |\
+      sed 's:$: 1:' | kkc | kkc.awk > $CLIPFILE;;
+esac
+
+$EDITCLIP -i

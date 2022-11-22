@@ -19,21 +19,18 @@ if [[ ! -f /tmp/dbus-launch ]]; then
   chmod +x /tmp/dbus-launch
 fi
 
-# get the environment variable from the WM
-VARIABLE=$(cat /proc/$WM_PID/environ | \
-           tr '\000' '\n' | \
-           grep "DBUS_SESSION_BUS_ADDRESS")
+PREAMBLE=$(cat /proc/$WM_PID/environ |\
+             tr '\0' '\n' |\
+             grep "DBUS_SESSION_BUS_ADDRESS=")
 
-if [[ -z $VARIABLE ]]; then
-  EXPORT_VARIABLE=""
-else
-  EXPORT_VARIABLE="export $VARIABLE"
+if [[ ! -z $PREAMBLE ]]; then
+  PREAMBLE="export $PREAMBLE"
 fi
 
 # write a new launch script
 cat > /tmp/dbus-launch <<EOF
 #!/usr/bin/sh
-$EXPORT_VARIABLE
+$PREAMBLE
 exec \$@
 EOF
 
@@ -41,7 +38,7 @@ EOF
 case $WM in
   'dwm'|'dwm-git')
     # See (20221106)
-    /tmp/dbus-launch /mnt/ssd/root/usr/bin/dunst < /dev/null >& /dev/null &
+    #/tmp/dbus-launch /mnt/ssd/root/usr/bin/dunst < /dev/null >& /dev/null &
     xsetroot -xcf /home/mh/.icons/McMojave-cursors/cursors/default 32 &;;
 esac
 

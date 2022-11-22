@@ -7,8 +7,8 @@ case $1 in
 		exit 1
 esac
 
-PACMAN=pman
-PACMAN_ARTIX=pmanrc
+PACMAN=pacman
+PACMAN_ARTIX=pacmanrc
 DATE=$(date +'%Y%m%d')
 
 $PACMAN -Q > /home/mh/Analysis/Pacman/Q/$DATE.color
