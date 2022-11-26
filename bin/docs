@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 function usage {
-  echo "Usage:       docs [wiki|journal] [-e editor] [-c command...]"
+  echo "Usage:       docs [wiki|journal|project] [-p project] [-e editor] [-c command...]"
   echo "Description: Writes documentation on local document repositories"
   echo "Commands:
   on \`wiki': <path>
@@ -9,11 +9,12 @@ function usage {
   exit 1
 }
 
-WIKI=/home/mh/Documents/Org/Wiki
-JOURNAL=/home/mh/Documents/Org/Journal
+WIKI="/home/mh/Documents/Org/Wiki"
+JOURNAL="/home/mh/Documents/Org/Journal"
+PROJECT="/home/mh/Git/MH"
 
-REPO=
-EDITOR=
+REPO=''
+EDITOR=''
 
 case $1 in
   '-h'|'--help')
@@ -24,11 +25,15 @@ esac
 
 function do_defaults {
   [[ -z $EDITOR ]] && EDITOR=emacsxc
-  [[ -z $REPO ]] && REPO=$WIKI/index.org
+  [[ -z $REPO ]]   && REPO=$WIKI/index.org
 }
 
 function wikicmd {
-  REPO+="/$1"
+  REPO+="/$1.org"
+}
+
+function projectcmd {
+  REPO+="/$1.org"
 }
 
 function journalcmd {
@@ -62,41 +67,60 @@ function handle {
       REPO=$WIKI;;
     'journal')
       REPO=$JOURNAL;;
+    'project')
+      REPO=$PROJECT;;
   esac
 
-  local _editor=false _cmd=false _cmd_chg=false
+  local _editor=false      \
+        _cmd=false         \
+        _project=false     \
+        _did_cmd=false     \
+        _did_project=false
 
   for opt in ${@:1}; do
     if [[ $opt = '-c' ]]; then
-      _editor=false
       _cmd=true
+      _editor=false
+      _project=false
+      continue
+    elif [[ $opt = '-p' ]]; then
+      _cmd=false
+      _project=true
       continue
     elif [[ $opt = '-e' ]]; then
       _cmd=false
+      _project=false
       _editor=true
       continue
     fi
 
     if $_editor; then
       EDITOR+=" $opt"
+    elif $_project; then
+      REPO+="/$opt/dev"
+      _did_project=true
     elif $_cmd; then
-
       local cmd=$opt
       case $repo in
         'wiki')
-          _cmd_chg=true
+          _did_cmd=true
           wikicmd $cmd;;
         'journal')
-          _cmd_chg=true
+          _did_cmd=true
           journalcmd $cmd;;
+        'project')
+          _did_cmd=true
+          projectcmd $cmd;;
       esac
     fi
   done
 
-  if [[ -z $EDITOR ]]; then
-    echo "[ !! ] Missing editor"
+  if [[ $repo = 'project' ]] && ! $_did_project; then
+    echo "[ !! ] Missing project"
     exit 1
-  elif ! $_cmd_chg; then
+  fi
+
+  if ! $_did_cmd; then
     REPO+="/index.org"
   fi
 }
@@ -105,6 +129,8 @@ case $1 in
   'wiki')
     handle ${@:1};;
   'journal')
+    handle ${@:1};;
+  'project')
     handle ${@:1};;
   *)
     echo "[ !! ] Invalid entry"

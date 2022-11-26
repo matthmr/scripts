@@ -11,6 +11,27 @@ do
   pidof $WM > /dev/null && break || sleep $TIMEOUT
 done
 
+# start WM-specific programs
+case $WM in
+  'dwm'|'dwm-git')
+    # See (20221106)
+    #/tmp/dbus-launch /mnt/ssd/root/usr/bin/dunst < /dev/null >& /dev/null &
+    xsetroot -xcf /home/mh/.icons/McMojave-cursors/cursors/default 32 &;;
+esac
+
+# ignore everything if the user did not decide to start
+# an xsession
+if [[ -z $2 ]]; then
+  # compatibility for `sxhkd'
+  cat > /tmp/dbus-launch <<EOF
+#!/usr/bin/sh
+$PREAMBLE
+exec \$@
+EOF
+  chmod +x /tmp/dbus-launch
+  exit 0
+fi
+
 WM_PID=$(pidof "$WM")
 
 # create `/tmp/dbus-launch'
@@ -34,20 +55,14 @@ $PREAMBLE
 exec \$@
 EOF
 
-# start WM-specific programs
-case $WM in
-  'dwm'|'dwm-git')
-    # See (20221106)
-    #/tmp/dbus-launch /mnt/ssd/root/usr/bin/dunst < /dev/null >& /dev/null &
-    xsetroot -xcf /home/mh/.icons/McMojave-cursors/cursors/default 32 &;;
-esac
-
 # execute a session script
 if [[ -f /tmp/xsession.lock ]]; then
   exit 0
 else
   touch /tmp/xsession.lock
 
-  export XINITSLEEP=/home/mh/Scripts/system/linux.sh
-  $TERM -e zsh
+  if [[ ! -z $2 ]]; then
+    export XINITSLEEP=/home/mh/Scripts/system/linux.sh
+    $TERM -e zsh
+  fi
 fi

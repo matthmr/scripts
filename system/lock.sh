@@ -251,18 +251,7 @@ function _efistub {
 		return 0
 	fi
 
-  local PMAN_DIR=/tmp/pacman
-  local STUB=usr/lib/systemd/boot/efi/linuxx64.efi.stub 
-
-	echo "[ .. ] Copying old stub"
-	while ! $SUDO cp -v /$STUB /$STUB-old; do continue; done
-
-	echo "[ .. ] Extracting stub: $PMAN_DIR/efistub.tar.zstd "
-	tar xf $PMAN_DIR/efistub.tar.zstd $STUB --zstd -O |
-    while ! $SUDO tee /$STUB >/dev/null; do continue; done
-
-	echo "[ .. ] Removing lock"
-	rm -v $PMAN_DIR/lock-efistub
+	while ! $SUDO /home/mh/Scripts/root/efistub.sh; do continue; done
 }
 
 [[ ! -z $PACMAN ]]  && _pacman

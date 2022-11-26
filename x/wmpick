@@ -92,8 +92,14 @@ cursor_up() {
 
 # start the session
 #  - if chosen the last one, quit the program
-run() {
+run_session() {
 	export wm
+  export session_type
+
+  if [[ ! -z $1 ]]; then
+    session_type=$1
+  fi
+
 	printf '\x1b[?6;c'
 
 	case $SESSION in
@@ -103,7 +109,7 @@ run() {
 			exec $SHELL;;
 		*)
 			printf "\n$BULLET_INFO Logging in with $SESSION\n\n"
-			wm="$SESSION" exec $STARTX;;
+			session_type="$session_type" wm="$SESSION" exec $STARTX;;
 	esac
 }
 
@@ -131,21 +137,33 @@ list_sessions() {
 	printf "\x1b[$((LEN+2))F\x1b[0G\n"
 }
 
-### MAIN ###
-#clear
-pop_entry
+choose_session() {
+  pop_entry
+  printf "\n$BULLET_INFO Choose a window manager to log in with\n\n"
+  list_sessions
 
-printf "\n$BULLET_INFO Choose a window manager to log in with\n\n"
-list_sessions
+  while [[ "$key" != "l" ]]
+  do
+	  $READINPUT
+	  handle $key
+  done
 
-while [[ "$key" != "l" ]]
-do
-	$READINPUT
-	handle $key
-done
+  SESSION=${SESSIONS[I]}
+  printf "\033[?25h\033[?6;c\n\033[999;999H "
+  printf "$BULLET_INFO Run with xsession? [Y/n] "
+}
 
-SESSION=${SESSIONS[I]}
-printf "\n"
+choose_session_type() {
+  read ans
 
-run
-### MAIN ###
+  if [[ $ans = 'n' ]]; then
+    return 1
+  else
+    echo "yes"
+  fi
+}
+
+### BEGIN: MAIN ###
+choose_session
+run_session $(choose_session_type)
+### END: MAIN ###
