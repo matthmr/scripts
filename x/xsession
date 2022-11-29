@@ -21,11 +21,11 @@ esac
 
 # ignore everything if the user did not decide to start
 # an xsession
-if [[ -z $2 ]]; then
+if [[ $2 = "" ]]; then
   # compatibility for `sxhkd'
   cat > /tmp/dbus-launch <<EOF
 #!/usr/bin/sh
-$PREAMBLE
+
 exec \$@
 EOF
   chmod +x /tmp/dbus-launch
