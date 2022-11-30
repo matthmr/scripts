@@ -1,8 +1,9 @@
 # Development flags
 PREFIX="/mnt/ssd/root"
-export LOCAL=("--root" "$PREFIX")
-export RC="-dd"
-export SSH_TERMUX="u0_a455"
+LOCAL=("--root" "$PREFIX")
+RC="-dd"
+SSH_TERMUX="u0_a455"
+#GIT_TERMUX="data/data/com.termux/files/home"
 
 # General
 export LESS="-S -R -I -Q -x2 --use-color --mouse --incsearch"
