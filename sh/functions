@@ -9,7 +9,7 @@ function google {
     '-h'|'--help')
       echo "Usage: google '<query>'"
       return 0;;
-  esac  
+  esac
 
   local QUERY="${1// /+}"
 
@@ -17,80 +17,102 @@ function google {
 }
 
 function icd {
-	pushd $1 >/dev/null
-	dirs -c
+  pushd $1 >/dev/null
+  dirs -c
 }
 
 function mkscript {
-	case $1 in
-		'-h'|'--help')
-			echo "Usage: mkscript <script> [editor]"
-			return 1
-			;;
-	esac
+  case $1 in
+    '-h'|'--help')
+      echo "Usage: mkscript <script> [editor]"
+      return 1;;
+  esac
 
-	touch "$1" && chmod --verbose +x "$1"
-	[[ ! -z "$2" ]] && "$2" "$1"
+  touch "$1" && chmod --verbose +x "$1"
+  [[ ! -z "$2" ]] && "${@:2}" "$1"
+}
+function mkproj {
+  case $1 in
+    '-h'|'--help')
+      printf "Usage: mkproj [-s] <project> [editor]\n"
+      printf "Options:\n  -s: <project> is relative to the standard source, otherwise it's absolute\n"
+      return 1;;
+  esac
+
+  local dir=
+  local off=2
+  local stdsrc=/home/mh/Git/MH
+
+  if [[ "$1" = '-s' ]]; then
+    off=3
+    dir="$stdsrc/$2"
+  else
+    dir=$1
+  fi
+
+  mkdir -vp "$dir" && cd "$dir" && git init
+  if [[ ! -z ${@[$off]} ]]; then
+    echo "[ == ] Editing as: ${@:$off}" "README.md"
+    "${@:$off}" "README.md"
+  fi
 }
 
 function unicode {
-	printf "$@" | iconv -f UTF8 -t UTF16BE | xxd
+  printf "$@" | iconv -f UTF8 -t UTF16BE | xxd
 }
 
 ### BEGIN: XCOPY ###
 function xcp {
-	echo "$@" | xclip -selection clipboard
+  echo "$@" | xclip -selection clipboard
 }
 
 function xcpin {
-	xclip -selection clipboard
+  xclip -selection clipboard
 }
 
 function xcpout {
-	xclip -selection clipboard -out
+  xclip -selection clipboard -out
 }
 ### END: XCOPY ###
 
 ### BEGIN: JAPANESE ###
-
 function jspeak {
-	[[ -z "$1" ]] && VOICE=neutral || VOICE="$1"
+  [[ -z "$1" ]] && VOICE=neutral || VOICE="$1"
 
-	open_jtalk \
-	-x /mnt/ssd/root/usr/share/open-jtalk/dic \
-	-m /home/mh/Git/NONGIT/tohoku/tohoku-$VOICE.htsvoice \
-	-ow /dev/stdout /dev/stdin
+  open_jtalk \
+  -x /mnt/ssd/root/usr/share/open-jtalk/dic \
+  -m /home/mh/Git/NONGIT/tohoku/tohoku-$VOICE.htsvoice \
+  -ow /dev/stdout /dev/stdin
 }
 
 function kana2roma {
-	echo "$1" |\
-		KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
-		ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
-		kakasi -i utf8 -Ha -Ka
+  echo "$1" |\
+    KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
+    ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
+    kakasi -i utf8 -Ha -Ka
 }
 
 function kana2kanji {
-	[[ -z $2 ]] && LVL=1 || LVL=$2
-	echo "$1" | sed "s/\$/ $LVL/g" | kkc | kkc.awk
+  [[ -z $2 ]] && LVL=1 || LVL=$2
+  echo "$1" | sed "s/\$/ $LVL/g" | kkc | kkc.awk
 }
 
 function kanji2kana {
-	echo "$1" |\
-		KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
-		ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
-		kakasi -i utf8 -JH -KH
+  echo "$1" |\
+    KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
+    ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
+    kakasi -i utf8 -JH -KH
 }
 
 function kanji2roma {
-	echo "$1" |\
-		KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
-		ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
-		kakasi -i utf8 -Ja -Ha -Ka
+  echo "$1" |\
+    KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
+    ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
+    kakasi -i utf8 -Ja -Ha -Ka
 }
 
 function roma2kanji {
-	[[ -z $2 ]] && LVL=1 || LVL=$2
-	romaji "$1" | sed -f ~p/romaji.c/scripts/norm.sed -e "s/\$/ $LVL/g" | kkc | kkc.awk
+  [[ -z $2 ]] && LVL=1 || LVL=$2
+  ~p/romaji.c/romaji "$1" | sed -f ~p/romaji.c/scripts/norm.sed -e "s/\$/ $LVL/g" | kkc | kkc.awk
 }
-
 ### END: JAPANESE ###

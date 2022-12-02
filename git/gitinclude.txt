@@ -2,6 +2,8 @@
 /home/mh/Git/EMACS/markdown-mode/
 /home/mh/Git/EMACS/evil-mode/
 /home/mh/Git/EMACS/base16-themes/
+/home/mh/Git/EMACS/eglot/
+#/home/mh/Git/EMACS/lsp-mode/
 
 ## ZSH PLUGINS
 /home/mh/Git/zsh-autosuggestions/
@@ -9,7 +11,7 @@
 
 ## VIM PLUGINS
 /home/mh/.local/share/nvim/plugged/nvim-lspconfig/
-/home/mh/.local/share/nvim/plugged/vimwiki/
+#/home/mh/.local/share/nvim/plugged/vimwiki/
 
 ## MISC
 /home/mh/Git/pfetch/
