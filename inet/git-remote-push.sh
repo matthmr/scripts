@@ -4,27 +4,25 @@ AS=${0##*/}
 
 case $1 in
   '-h'|'--help')
-    if [[ $AS = 'git-remote-push.sh' ]]; then
+    case $AS in
+      'git-remote-push.sh')
       echo "Usage:       git-remote-push.sh [-s] <local-repo> <remote-address> [<remote-name>] -- [git options]"
-      echo "Description: Pushes a git repository to the standard remote"
-      echo "Options:
-  -s: <local-repo> is relative to the standard source, otherwise it's
-      relative to the current working directory
-  -a <remote-name>: use <remote-name> instead of <local-repo> as the
-                    repo name in <remote-address>"
-      echo "VARIABLES:
-      GIT: [git client]"
-    elif [[ $AS = 'git-remote-pull.sh' ]]; then
+      echo "Description: Pushes a git repository to the standard remote";;
+      'git-remote-pull.sh')
       echo "Usage:       git-remote-pull.sh [-s] <local-repo> <remote-address> [<remote-name>] -- [git options]"
-      echo "Description: Pulls a git repository from the standard remote"
-      echo "Options:
+      echo "Description: Pulls a git repository from the standard remote";;
+      'git-remote-fetch.sh')
+      echo "Usage:       git-remote-fetch.sh [-s] <local-repo> <remote-address> [<remote-name>] -- [git options]"
+      echo "Description: Fetches [git options] from the standard remote";;
+    esac
+
+    echo "Options:
   -s: <local-repo> is relative to the standard source, otherwise it's
       relative to the current working directory
   -a <remote-name>: use <remote-name> instead of <local-repo> as the
                     repo name in <remote-address>"
-      echo "VARIABLES:
+    echo "VARIABLES:
       GIT: [git client]"
-    fi
     exit 1;;
 esac
 
@@ -41,7 +39,7 @@ has_repo=false has_remote=false
 
 for arg in $@; do
   if $lock_git; then
-    GIT_OPT+=$arg
+    GIT_OPT+="$arg "
     continue
   fi
 
@@ -86,7 +84,7 @@ fi
 if [[ -z $REMOTE ]]; then
   echo "[ !! ] Missing remote"
   exit 1
-elif [[ ! $REMOTE =~ [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3} ]]; then
+elif [[ ! $REMOTE =~ [0-9]{1,3}\.[0-9]{1,3} ]]; then
   echo "[ !! ] Remote \`$REMOTE' is not an ip address"
   exit 1
 fi
@@ -97,7 +95,9 @@ case $AS in
     CMD=pull;;
   'git-remote-push.sh')
     CMD=push;;
+  'git-remote-fetch.sh')
+    CMD=fetch;;
 esac
 
-echo "[ == ] Calling as: $GIT $GIT_OPT -C $BASE$REPO $CMD git://$REMOTE/$REMOTE_REPO"
-$GIT $GIT_OPT -C $BASE$REPO $CMD git://$REMOTE/$REMOTE_REPO
+echo "[ == ] Calling as: $GIT -C $BASE$REPO $CMD git://192.168.$REMOTE/$REMOTE_REPO $GIT_OPT"
+$GIT -C $BASE$REPO $CMD git://192.168.$REMOTE/$REMOTE_REPO $GIT_OPT

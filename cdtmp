@@ -1,0 +1,345 @@
+#!/usr/bin/bash
+
+case $1 in
+	'-h'|'--help')
+		echo "Usage:       cdtmp.sh [-IN] [-clm] [-Rnr] <name> [-f] <file> -- [command...]"
+		echo "Description: Change directory to one of the default temporary directories"
+    echo "Options:
+  DEFAULT: cd to <name>
+
+  -I: modify command that receives from <name> to receive from stdin
+  -N: modify command that receives from stdin to receive from <name>
+
+  -c: create, and possibly <name> from stdin, and \`cd' to it
+  -l: lists tmp instances
+  -m: create, and possibly <name> from stdin
+
+  -R: remove all instances from tmp
+  -n: rename <name> to stdin
+  -r: remove <name>
+
+  -f: do command on <file>"
+    echo "Variables:
+  MKTEMP=\`mktemp'-like command"
+		exit 1;;
+esac
+
+TMPPREFIX=/tmp
+
+TMP=
+CMD=
+TMPCMD=
+CMDFILE=
+
+FORCE_IN=false
+IGNORE_IN=false
+
+[[ -z $MKTEMP ]] && MKTEMP='mktemp -d'
+
+if [[ ! -d $TMPPREFIX ]]; then
+  echo "[ !! ] Temporary prefix doesn't exist"
+  exit 1
+fi
+
+function lstmp {
+  local LIST=
+
+  local entries=$(find $TMPPREFIX -maxdepth 1 \
+                       -type d -name 'tmp.*'  \
+                       -and -not -path $TMPPREFIX)
+
+  if [[ -z $entries ]]; then
+    echo "[ !! ] No instances"
+    exit 1
+  fi
+
+  for entry in $entries; do
+    if [[ -f $entry/.dir ]]; then
+      LIST+="$entry -> $(cat $entry/.dir)
+"
+    else
+      LIST+="$entry -> [no purpose]
+"
+    fi
+  done
+
+  echo "$LIST" | sed -n '/^\//p'
+  return 0
+}
+
+function cdtmp {
+  local entries=$(find $TMPPREFIX -maxdepth 1 \
+                       -type d -name 'tmp.*'  \
+                       -and -not -path $TMPPREFIX)
+
+  if [[ -z $entries ]]; then
+    echo "[ !! ] No instances"
+    exit 1
+  fi
+
+  for entry in $entries; do
+    if [[ -f $entry/.dir ]]; then
+      if [[ $(cat $entry/.dir) =~ $1 ]]; then
+        echo $entry
+        return 0
+      fi
+    fi
+  done
+
+  echo "[ !! ] \`$1' was not found in standard tmp"
+  return 1
+}
+
+function mktmp {
+  echo "[ .. ] Making temporary directory"
+
+  tmp=$($MKTEMP)
+
+  if ! $IGNORE_IN; then
+    printf "[ .. ] Name it: "
+    read name
+  else
+    name=$1
+  fi
+
+  echo "[ OK ] Writing \`$name' to $tmp/.dir"
+  echo $name > $tmp/.dir
+
+  return $?
+}
+
+function mvtmp {
+  LSTMP=$(lstmp)
+  echo "$LSTMP"
+
+  if [[ $LSTMP = "[ !! ] No instances" ]]; then
+    exit 1
+  fi
+
+  if $FORCE_IN; then
+    printf "[ .. ] Name it (prefix regex with \`@' to reference directory): "
+    read name
+
+    if [[ -z $name ]]; then
+      echo "[ !! ] Aborting"
+      exit 1
+    fi
+
+    if [[ ${name:0:1} == '@' ]]; then
+      regex="/tmp/tmp\..*${name:1}.* ->"
+    else
+      regex=" -> ${name}"
+    fi
+
+  else
+    regex=$TMP
+  fi
+
+  local found=false
+  local tmp=
+
+  IFS='
+'
+  for entry in $LSTMP; do
+    if [[ $entry =~ $regex ]]; then
+      TMP=$(echo "$entry" | sed 's/ \-> .*//g')
+      found=true
+    fi
+  done
+
+  if ! $found; then
+    echo "[ .. ] \`$name' was not found in standard tmp"
+    return 1
+  fi
+
+  printf "[ .. ] New name (operating on \`$TMP'): "
+  read name
+
+  echo "[ == ] Changing $TMP/.dir"
+  echo "$name" > $TMP/.dir
+  return $?
+}
+
+function rmtmp {
+  LSTMP=$(lstmp)
+  echo "$LSTMP"
+
+  if [[ $LSTMP = "[ !! ] No instances" ]]; then
+    exit 1
+  fi
+
+
+  if $FORCE_IN; then
+    printf "[ .. ] Name it (prefix regex with \`@' to reference directory): "
+    read name
+
+    if [[ -z $name ]]; then
+      echo "[ !! ] Aborting"
+      exit 1
+    fi
+
+    if [[ ${name:0:1} == '@' ]]; then
+      regex="/tmp/tmp\..*${name:1}.* ->"
+    else
+      regex=" -> ${name}"
+    fi
+
+  else
+    regex=$TMP
+  fi
+
+  local found=false
+  local tmp=
+
+  IFS='
+'
+  for entry in $LSTMP; do
+    if [[ $entry =~ $regex ]]; then
+      TMP=$(echo "$entry" | sed 's/ \-> .*//g')
+      found=true
+    fi
+  done
+
+  if ! $found; then
+    echo "[ .. ] \`$name' was not found in standard tmp"
+    return 1
+  fi
+
+  echo "[ == ] Removing \`$TMP'"
+  rm -rfv $TMP
+  return $?
+}
+
+tmp=false
+cmdfile=false
+pend_tmp=false
+pend_cmdfile=false
+lock_cmd=false
+
+function parseargs {
+  local tmp_from=''
+
+  for arg in $@; do
+    if $lock_cmd; then
+      CMD+="$arg "
+      continue
+    fi
+
+    if $pend_tmp; then
+      if $tmp; then
+        echo "[ !! ] Bad usage. See \`--help'"
+        exit 1
+      fi
+
+      case $tmp_from in
+        '-c')
+          mktmp $arg
+          cdtmp $arg
+          exit  $?;;
+        '-m')
+          mktmp $arg
+          exit  $?;;
+        '-n')
+          mvtmp $arg
+          exit  $?;;
+        '-r')
+          rmtmp $arg
+          exit  $?;;
+      esac
+      tmp=true
+      pend_tmp=false
+      tmp_from=''
+      continue
+    elif $pend_cmdfile; then
+      CMDFILE=$arg
+      cmdfile=true
+      pend_cmdfile=false
+      continue
+    fi
+
+    case $arg in
+      '-c'|'-m')
+        if $IGNORE_IN; then
+          pend_tmp=true
+          tmp_from=$arg
+        else
+          if [[ $arg == '-c' ]]; then
+              mktmp
+              cdtmp
+          else
+              mktmp
+          fi
+          exit $?
+        fi;;
+      '-n'|'-r')
+        if $FORCE_IN; then
+          if [[ $arg == '-n' ]]; then
+            mvtmp $arg
+          else
+            rmtmp $arg
+          fi
+          exit  $?
+        fi
+        pend_tmp=true
+        tmp_from=$arg;;
+      '-I')
+        if $IGNORE_IN; then
+          echo "[ !! ] Conflicting types"
+          exit 1
+        fi
+        FORCE_IN=true;;
+      '-N')
+        if $FORCE_IN; then
+          echo "[ !! ] Conflicting types"
+          exit 1
+        fi
+        IGNORE_IN=true;;
+      '-R')
+        RM=$(find $TMPPREFIX -maxdepth 1 -not -path $TMPPREFIX -and -type d -name 'tmp.*')
+        if [[ -z $RM ]]; then
+          echo "[ !! ] No instances"
+          exit 1
+        else
+          rm -rfv $RM
+          exit 0
+        fi;;
+      '-l')
+        lstmp
+        exit $?;;
+      '-f')
+        pend_cmdfile=true;;
+      '--')
+        if ! $tmp; then
+          echo "[ !! ] Bad usage. See \`--help'"
+          exit 1
+        else
+          lock_cmd=true
+        fi;;
+      *)
+        if $tmp; then
+          echo "[ !! ] Bad usage. See \`--help'"
+          exit 1
+        else
+          tmp=true
+          TMP=$arg
+        fi;;
+    esac
+  done
+}
+
+parseargs $@
+
+# 1. pending: -n, -r, -c, -m
+# 2. pending: -f
+if [[ $pend_tmp == true || $pend_cmdfile == true || $tmp == false ]]; then
+  echo "[ !! ] Bad usage. See \`--help'"
+  exit 1
+fi
+
+if $cmdfile; then
+  TMP=$(cdtmp $TMP)
+  echo "[ == ] Running as: $CMD $TMP/$CMDFILE"
+  $CMD $TMP/$CMDFILE
+else
+  cdtmp $TMP
+fi

@@ -49,7 +49,7 @@ function _pacman {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		$NOTIFY "Ignore lock" "lock was ignored for pacman"
+		$NOTIFY "Ignore lock" "lock was ignored for pacman" &
 		return 0
 	fi
 
@@ -110,7 +110,7 @@ function _artix {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		$NOTIFY "Ignore lock" "lock was ignored for artix"
+		$NOTIFY "Ignore lock" "lock was ignored for artix" &
 		return 0
 	fi
 	read -p "[ ?? ] Manual review? [y/N] " ans
@@ -155,7 +155,7 @@ function _paru {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		$NOTIFY "Ignore lock" "lock was ignored for paru"
+		$NOTIFY "Ignore lock" "lock was ignored for paru" &
 		return 0
 	fi
 
@@ -216,7 +216,7 @@ function _cron {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		$NOTIFY "Ignore lock" "lock was ignored for cron"
+		$NOTIFY "Ignore lock" "lock was ignored for cron" &
 		for file in $(echo $SCRIPTS|tr '\n' ' '); do rm -v $file ${file%%.sh}; done #remove the files
 		return 0
 	else
@@ -247,7 +247,7 @@ function _efistub {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		$NOTIFY "Ignore lock" "lock was ignored for efistub"
+		$NOTIFY "Ignore lock" "lock was ignored for efistub" &
 		return 0
 	fi
 
@@ -268,7 +268,7 @@ then
 	exit 1
 else
 	echo "[ OK ] Handing over to openrc"
-	$NOTIFY "ACPI event sent" "waiting to send ACPI event; press C-c to ignore it"
+	$NOTIFY "ACPI event sent" "waiting to send ACPI event; press C-c to ignore it" &
 	sleep 5
 	exec $SUDO $COMMAND
 fi

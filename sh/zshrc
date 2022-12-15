@@ -72,3 +72,4 @@ export SHELL=/bin/zsh
 } && {
 	"$XINITSLEEP" $XINITSLEEPARGS
 }
+:

@@ -1,3 +1,4 @@
+#!/usr/bin/bash
 # overrides
 alias lf='lf -single'
 alias tmux='tmux -u'
@@ -14,8 +15,7 @@ alias chess='gnuchess -g'
 alias espeak='espeak --path=/mnt/ssd/root/usr/share/espeak-ng-data'
 #alias flite='flite -voice slt'
 alias roma2kana='romaji'
-alias vim='nvim'
-alias vi='/bin/vim'
+#alias vim='nvim'
 
 # shortenings
 alias xa='xargs'
@@ -27,6 +27,7 @@ alias g='git'
 alias b='busybox'
 alias js='jobs -ld'
 alias high='highlight -O ansi'
+alias bap='bat -p'
 
 # coreutils overrides
 alias grep='grep --color=always'
@@ -53,12 +54,7 @@ alias ....='../../..'
 # environment
 alias py='PYTHONPATH=/mnt/ssd/root/usr/lib/python3.10/site-packages/'
 alias rb='RUBYLIB=/mnt/ssd/root/usr/lib/ruby'
-alias tmp='TMP=$TMP'
-alias lstmp='echo $TMP'
 
 # functional
 alias man="LESS_TERMCAP_md=$'\e[01;31m' LESS_TERMCAP_me=$'\e[0m' LESS_TERMCAP_se=$'\e[0m' LESS_TERMCAP_so=$'\e[01;44;33m' LESS_TERMCAP_ue=$'\e[0m' LESS_TERMCAP_us=$'\e[01;32m' /usr/bin/man"
-alias cdtmp='TMP=`mktemp -d`; cd $TMP'
-alias pdtmp='cd $TMP'
-alias rmtmp='rm -vrf $TMP'
 alias kakasi="KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict kakasi -i utf8"

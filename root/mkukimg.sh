@@ -8,6 +8,7 @@ case $1 in
   kernel=the kernel image
   initrd=the init{rd,ramfs} image
   stub=the EFI stub
+  cmdline=the command line file
   ukimg=the resulting ukimg"
     exit 1;;
 esac
@@ -37,16 +38,18 @@ function try_opts {
         STUB=$opt_val;;
       'ukimg')
         UKIMG=$opt_val;;
+      'cmdline')
+        CMDLINE=$opt_val;;
     esac
   done
 }
 
 function try_defaults {
-  [[ -z $KERNEL ]] && KERNEL=/boot/vmlinuz-linux
-  [[ -z $INITRD ]] && INITRD=/boot/initramfs-linux.img
-  [[ -z $STUB ]]   && STUB=/usr/lib/systemd/boot/efi/linuxx64.efi.stub
-  [[ -z $UKIMG ]]  && UKIMG=/boot/EFI/BOOT/BOOTX64.EFI
-  CMDLINE=/etc/kernel/cmdline
+  [[ -z $KERNEL ]]  && KERNEL=/boot/vmlinuz-linux
+  [[ -z $INITRD ]]  && INITRD=/boot/initramfs-linux.img
+  [[ -z $STUB ]]    && STUB=/usr/lib/systemd/boot/efi/linuxx64.efi.stub
+  [[ -z $UKIMG ]]   && UKIMG=/boot/EFI/BOOT/BOOTX64.EFI
+  [[ -z $CMDLINE ]] && CMDLINE=/etc/kernel/cmdline
 }
 
 try_opts $@
@@ -64,6 +67,8 @@ initrd_offs=$((linux_offs  + $(stat -c%s "$KERNEL")))
 ## end offsets ##
 
 echo "[ .. ] Copying the modified object"
+echo "[ == ] Calling as: objcopy --add-section .cmdline=$CMDLINE --change-section-vma .cmdline=$(printf 0x%x $cmdline_offs) --add-section .linux=$KERNEL --change-section-vma .linux=$(printf 0x%x $linux_offs) --add-section .initrd=$INITRD --change-section-vma .initrd=$(printf 0x%x $initrd_offs) $STUB $UKIMG"
+
 objcopy \
     --add-section .cmdline="$CMDLINE" \
     --change-section-vma .cmdline=$(printf 0x%x $cmdline_offs) \

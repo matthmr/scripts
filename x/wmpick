@@ -2,7 +2,7 @@
 # Made by mH (https://github.com/matthmr)
 
 # hide the cursor (tty only)
-printf '\x1b[?16;c'
+#printf '\x1b[?16;c'
 
 STARTX=sx
 SHELL=bash
@@ -106,7 +106,7 @@ run_session() {
   export wm
   export session_type
 
-  printf '\x1b[?6;c'
+  #printf '\x1b[?6;c'
 
   case $SESSION in
     tty)
