@@ -23,7 +23,7 @@ esac
 case $AS in
   'ssh-copy-from-remote.sh')
     USER=$1
-    HOST=$2
+    HOST=192.168.$2
     REMOTE=$3
     LOCAL=$4
 
@@ -37,7 +37,7 @@ case $AS in
   'ssh-copy-to-remote.sh')
     LOCAL=$1
     USER=$2
-    HOST=$3
+    HOST=192.168.$3
     REMOTE=$4
 
     [[ -z $USER || -z $HOST || -z $REMOTE || -z $LOCAL ]] && {

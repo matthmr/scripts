@@ -1,13 +1,25 @@
-#!/bin/sh
-# Made by mH (https://www.github.com/matthmr)
+#!/usr/bin/bash
 
 MOUSE='Mouse0'
+ACC='0.6'
 
-XINPUT=`xinput list-props "$MOUSE" | grep -w 'libinput Left Handed Enabled [^a-zA-Z].*:'`
+case $1 in
+  '-h'|'--help')
+    echo "Usage: left-toggle.sh [enable|disable]"
+    exit 1;;
+esac
 
-if [[ "${XINPUT:(-1)}" == '1' ]]
-then
-	xinput set-prop "$MOUSE" 'libinput Left Handed Enabled' 0
-else
-	xinput set-prop "$MOUSE" 'libinput Left Handed Enabled' 1
-fi
+COMMAND=$1
+
+case $COMMAND in
+  'enable')
+    echo "[ .. ] Enabling left"
+    xmodmap -e 'pointer = 1 2 3'
+    xinput set-prop $MOUSE 272 0.6
+    exit $?;;
+  'disable')
+    echo "[ .. ] Disabling left"
+    xmodmap -e 'pointer = 3 2 1'
+    xinput set-prop $MOUSE 272 1
+    exit $?;;
+esac

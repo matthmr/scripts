@@ -9,6 +9,7 @@ case $1 in
 
   -I: modify command that receives from <name> to receive from stdin
   -N: modify command that receives from stdin to receive from <name>
+  -S: supress verbose (useful when creating and cd-ing in one command)
 
   -c: create, and possibly <name> from stdin, and \`cd' to it
   -l: lists tmp instances
@@ -33,6 +34,7 @@ CMDFILE=
 
 FORCE_IN=false
 IGNORE_IN=false
+IGNORE_VERBOSE=false
 
 [[ -z $MKTEMP ]] && MKTEMP='mktemp -d'
 
@@ -91,7 +93,7 @@ function cdtmp {
 }
 
 function mktmp {
-  echo "[ .. ] Making temporary directory"
+  ! $IGNORE_VERBOSE && echo "[ .. ] Making temporary directory"
 
   tmp=$($MKTEMP)
 
@@ -102,7 +104,12 @@ function mktmp {
     name=$1
   fi
 
-  echo "[ OK ] Writing \`$name' to $tmp/.dir"
+  if $IGNORE_VERBOSE; then
+    echo $tmp
+  else
+    echo "[ OK ] Writing \`$name' to $tmp/.dir"
+  fi
+
   echo $name > $tmp/.dir
 
   return $?
@@ -303,6 +310,8 @@ function parseargs {
           rm -rfv $RM
           exit 0
         fi;;
+      '-S')
+        IGNORE_VERBOSE=true;;
       '-l')
         lstmp
         exit $?;;
