@@ -15,11 +15,14 @@ case $COMMAND in
   'enable')
     echo "[ .. ] Enabling left"
     xmodmap -e 'pointer = 1 2 3'
-    xinput set-prop $MOUSE 272 0.6
+    xinput set-prop $MOUSE 272 $ACC
     exit $?;;
   'disable')
     echo "[ .. ] Disabling left"
     xmodmap -e 'pointer = 3 2 1'
     xinput set-prop $MOUSE 272 1
     exit $?;;
+  *)
+    echo "Usage: left-toggle.sh [enable|disable]"
+    exit 1;;
 esac
