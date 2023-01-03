@@ -11,3 +11,6 @@ export XDG_RUNTIME_DIR=/run/user/1000
 
 # X
 export XAUTHORITY=/home/mh/.Xauthority
+
+## Python
+export PYTHONSTARTUP=/home/mh/.pythonrc

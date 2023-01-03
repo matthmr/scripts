@@ -13,8 +13,7 @@ done
 
 # start WM-specific programs
 case $WM in
-  *)
-  #'dwm'|'dwm-git')
+  'DISABLED')
     # See (20221106)
     #/tmp/dbus-launch /mnt/ssd/root/usr/bin/dunst < /dev/null >& /dev/null &
     xsetroot -xcf /home/mh/.icons/McMojave-cursors/cursors/default 32 &;;

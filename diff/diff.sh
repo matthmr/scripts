@@ -2,11 +2,12 @@
 
 case $1 in
   '-h'|'--help')
-    echo "Usage:       diff.sh [-] [file] [+] [file] -- [diff-opts]"
+    echo "Usage:       diff.sh [-d] [-] [file] [+] [file] -- [diff-opts]"
     echo "Description: Verbose diff"
     echo "Options:
-  -: take [file] as the file with the missing lines
-  +: take [file] as the file with the added lines"
+  -:  take [file] as the file with the missing lines
+  +:  take [file] as the file with the added lines
+  -d: use default diff"
     echo "Variables:
   DIFF=\`diff'-like command"
     exit 1;;
@@ -53,6 +54,8 @@ for arg in $@; do
   fi
 
   case $arg in
+    '-d')
+      DIFF=diff;;
     '-')
       lock_minus=true;;
     '+')
@@ -76,5 +79,5 @@ if [[ -z $MINUS_FILE ]] || [[ -z $PLUS_FILE ]]; then
   die
 fi
 
-echo "[ == ] Running as: $DIFF $DIFF_OPT $MINUS_FILE $PLUS_FILE"
+echo "[ == ] Running as: $DIFF $DIFF_OPT $MINUS_FILE $PLUS_FILE" 1>&2
 $DIFF $DIFF_OPT $MINUS_FILE $PLUS_FILE
