@@ -49,6 +49,9 @@ echo "[ .. ] Running user scripts"
 echo "[ .. ] Updating Git-controlled packages"
 /home/mh/Scripts/git/git.sh
 
+echo "[ .. ] Updating locally Git-controlled packages"
+/home/mh/Scripts/git/mh-local.sh
+
 # See (20220916)
 echo "[ .. ] Updating source-controlled packages"
 /home/mh/Scripts/pkg/ungoogled-chromium.sh
@@ -104,4 +107,3 @@ _ppid="$(ps -p $SHELL_PID -O ppid)"
 ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
 kill -KILL $ppid
 exit 1
-

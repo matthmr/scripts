@@ -14,6 +14,7 @@ if [[ $USER != root ]]; then
 fi
 
 PACMAN=pacman
+TARGET=systemd
 CACHE=/mnt/ssd/pacman/cache
 PKG_DIR=/home/mh/Scripts/pkg
 PMAN_DIR=/tmp/pacman
@@ -28,8 +29,8 @@ function touch_lock {
     exit 1
   else
     touch $LCK_FILE
-    chown mh:mh $LCK_FILE
-    chmod 666 $LCK_FILE
+    chown -v mh:mh $LCK_FILE
+    chmod -v 666 $LCK_FILE
   fi
 }
 
@@ -37,13 +38,13 @@ function pkg_copy {
   echo "[ .. ] Copying package cache"
   cp -v $CACHE/systemd-$VER-x86_64.pkg.tar.zst \
      $PKG_FILE
-  chown mh:mh $PKG_FILE
-  chmod 666 $PKG_FILE
+  chown -v mh:mh $PKG_FILE
+  chmod -v 666 $PKG_FILE
 }
 
 function query_ver {
   echo "[ .. ] Querying a new version of systemd"
-  VER=$(pacman -Si systemd | awk -F: '/^Version/ {print $2}')
+  VER=$(pacman -Si $TARGET | awk -F: '/^Version/ {print $2}')
   VER=${VER# }
 }
 
@@ -61,7 +62,9 @@ function update_stat {
       exit 0
     fi
 
-    if echo "$VER" | diff - $VER_FILE >& /dev/null; then
+    local VER_FILE_VER=$(cat $VER_FILE)
+
+    if [[ "$VER" = "$VER_FILE_VER" ]]; then
       echo "[ OK ] Up-to-date"
       exit 0
     else
@@ -80,7 +83,7 @@ update_stat
 
 if $UPDATE; then
   echo "[ .. ] Downloading package"
-  $PACMAN -Sddww systemd
+  $PACMAN -Sddww $TARGET
 
   if [[ $? != 0 ]]; then
     echo "[ !! ] Aborting"

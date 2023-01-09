@@ -1,0 +1,5 @@
+## See 20230108
+
+/home/mh/Git/EMACS/simpc-mode
+/home/mh/Git/EMACS/base16-themes
+/home/mh/Git/pfetch

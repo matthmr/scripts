@@ -12,7 +12,6 @@ if [[ $USER != root ]]; then
 	exit 1
 fi
 
-TARGET=systemd
 PMAN_DIR=/tmp/pacman
 PKG_FILE=/home/mh/Scripts/pkg/efistub.txt
 STUB=usr/lib/systemd/boot/efi/linuxx64.efi.stub
@@ -36,8 +35,11 @@ else
 	echo "[ .. ] Removing lock"
 	rm -v $PMAN_DIR/lock-efistub
 	echo "[ .. ] Removing local lock"
-	cat "$PKG_FILE" | cut -d' ' -f2 > /tmp/efistub-pkgfile
-	mv -v /tmp/efistub-pkgfile $PKG_FILE
+	cat "$PKG_FILE" | cut -d' ' -f2 > $PKG_FILE
+	# mv -v /tmp/efistub-pkgfile $PKG_FILE
+
+  # chown -v mh:mh $PKG_FILE
+  # chmod -v 666 $PKG_FILE
 fi
 
 echo "[ OK ] Done"
