@@ -51,6 +51,10 @@ function start {
   local emacs_daemon_pid=$(emacseval "(emacs-pid)")
   echo "[ == ] Got deamon PID of \`$pid'"
   echo ${emacs_daemon_pid} > $BASE/emacs.pid
+
+  echo "[ .. ] Enabling VI emulation"
+  sleep ${SHORT_TIMEOUT:-3}
+  emacseval "(viper-enable)"
 }
 
 function stop {

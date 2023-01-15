@@ -2,7 +2,7 @@
 HISTFILE=/home/mh/.zsh_history
 HISTSIZE=500
 SAVEHIST=500
-ZSH_MODE='emacs'
+ZSH_MODE='vi'
 setopt autocd autopushd
 setopt PROMPT_SUBST
 set -k

@@ -101,9 +101,4 @@ else
 	sleep $TIMEOUT
 fi
 
-SHELL_PID=$$
-sleep $TIMEOUT
-_ppid="$(ps -p $SHELL_PID -O ppid)"
-ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
-kill -KILL $ppid
 exit 1
