@@ -1,20 +1,35 @@
 #!/usr/bin/sh
 
-case ${0##*/} in
-		'emacstc')
-			EMACSOPTS=-t
-			EMACSALTOPTS=-nw;;
-		*)
-			EMACSOPTS=-c
-			EMACSALTOPTS=;;
+AS=${0##*/}
+
+EMACSCLIENT=emacsclient
+EMACSALT=emacs
+
+case $1 in
+  '--help'|'-h')
+  echo "Usage:       $AS"
+  echo "Description: Connects to an emacs client"
+esac
+
+case $AS in
+  'emacstc')
+    EMACSOPTS=-t
+    EMACSALTOPTS=-nw;;
+  'emacsnc')
+    EMACSOPTS=-t
+    EMACSCLIENT='/home/mh/Source/emacs-nox/usr/bin/emacsclient'
+    EMACSALT='emacsnox';;
+  'emacsxc')
+    EMACSOPTS=-c
+    EMACSALTOPTS=;;
 esac
 
 if [[ -z $XDG_RUNTIME_DIR ]]; then
-  BASE="$XDG_RUNTIME_DIR/emacs"
-else
   BASE="/tmp/emacs-$UID"
+else
+  BASE="$XDG_RUNTIME_DIR/emacs"
 fi
 
-exec emacsclient $EMACSOPTS -s \
+exec $EMACSCLIENT $EMACSOPTS -s \
      "$BASE/server" ${@:1} \
-     -a "emacs $EMACSALTOPTS ${@:1}"
+     -a "$EMACSALT $EMACSALTOPTS ${@:1}"

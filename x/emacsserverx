@@ -47,8 +47,6 @@ function start {
 
   local emacs_daemon_pid=$(emacseval "(emacs-pid)")
   echo ${emacs_daemon_pid} > $BASE/emacs.pid
-
-  $NOTIFY "start" "started and emacs server" &
 }
 
 function stop {
