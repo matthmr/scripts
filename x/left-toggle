@@ -1,26 +1,33 @@
 #!/usr/bin/bash
 
 MOUSE='Mouse0'
-ACC='0.6'
+PROP='Device Accel Constant Deceleration'
+FAST_ACC='0.6'
+LOW_ACC='1'
 
 case $1 in
   '-h'|'--help')
-    echo "Usage: left-toggle.sh [enable|disable]"
+    echo "Usage:       left-toggle.sh [left|right]"
+    echo "Description: Toggles between [left] or [right] mouse, with matching acceleration"
     exit 1;;
 esac
 
 COMMAND=$1
 
 case $COMMAND in
-  'enable')
+  'left')
     echo "[ .. ] Enabling left"
+    echo "[ == ] xmodmap -e 'pointer = 1 2 3'"
     xmodmap -e 'pointer = 1 2 3'
-    xinput set-prop $MOUSE 272 $ACC
+    echo "[ == ] xinput set-prop $MOUSE \"$PROP\" $FAST_ACC"
+    xinput set-prop $MOUSE "$PROP" $FAST_ACC
     exit $?;;
-  'disable')
+  'right')
     echo "[ .. ] Disabling left"
+    echo "[ == ] xmodmap -e 'pointer = 3 2 1'"
     xmodmap -e 'pointer = 3 2 1'
-    xinput set-prop $MOUSE 272 1
+    echo "[ == ] xinput set-prop $MOUSE \"$PROP\" $LOW_ACC"
+    xinput set-prop $MOUSE "$PROP" $LOW_ACC
     exit $?;;
   *)
     echo "Usage: left-toggle.sh [enable|disable]"

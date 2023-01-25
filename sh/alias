@@ -9,13 +9,13 @@ alias tree='tree -C'
 alias ltrace='ltrace -F /mnt/ssd/root/etc/ltrace.conf'
 alias zathura='zathura -p /mnt/ssd/root/usr/lib/zathura'
 alias highlight='highlight -D /mnt/ssd/root/usr/share/highlight'
-#alias figlet='figlet -d /mnt/ssd/root/usr/share/figlet/fonts'
 alias webfsd='webfsd -F'
 alias chess='gnuchess -g'
 alias espeak='espeak --path=/mnt/ssd/root/usr/share/espeak-ng-data'
 #alias flite='flite -voice slt'
 alias roma2kana='romaji'
-#alias vim='nvim'
+alias vim='nvim'
+#alias emacs='emacstui' # using `emacsnox' for that now
 
 # shortenings
 alias xa='xargs'

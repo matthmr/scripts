@@ -1,8 +1,11 @@
 #!/usr/bin/bash
 
 function help {
-  echo "Usage:       emacsserver [start|stop|status|restart|toggle|purge]"
-  echo "Description: Starts an emacs server."
+  echo "Usage:       emacsserver [-t|-nox] [start|stop|status|restart|toggle|purge]"
+  echo "Description: Starts an emacs server"
+  echo "Options:
+  -t: start as tui
+  -nox: start as \`nox'"
 }
 
 case $1 in
@@ -18,8 +21,11 @@ else
 fi
 
 SHELL=/usr/bin/sh
-EMACS=/usr/bin/emacs
-EMACSCLIENT=/usr/bin/emacsclient
+
+EMACSERVER='/usr/bin/emacs'
+EMACSCLIENT='/usr/bin/emacsclient'
+
+EMACSSERVER_OPTS="--daemon"
 EMACSCLIENT_OPTS="-s $BASE/server"
 
 function emacseval {
@@ -40,8 +46,9 @@ function start {
   fi
 
   echo "[ .. ] Starting emacs server"
+  echo "[ == ] ${EMACSSERVER} ${EMACSSERVER_OPTS} &"
 
-  ${EMACS} --daemon & </dev/null &>/dev/null
+  ${EMACSSERVER} ${EMACSSERVER_OPTS} & </dev/null &>/dev/null
   pid=$!
 
   echo "[ .. ] Sleeping"
@@ -51,10 +58,6 @@ function start {
   local emacs_daemon_pid=$(emacseval "(emacs-pid)")
   echo "[ == ] Got deamon PID of \`$pid'"
   echo ${emacs_daemon_pid} > $BASE/emacs.pid
-
-  echo "[ .. ] Enabling VI emulation"
-  sleep ${SHORT_TIMEOUT:-3}
-  emacseval "(viper-enable)"
 }
 
 function stop {
@@ -152,6 +155,18 @@ function purge {
 }
 
 case $1 in
+  '-t')
+    MODE=$2
+    EMACSSERVER_OPTS="-nw ${EMACSSERVER_OPTS}";;
+  '-nox')
+    EMACSSERVER='emacsnox'
+    EMACSCLIENT='/home/mh/Source/emacs-nox/usr/bin/emacsclient'
+    MODE=$2;;
+  *)
+    MODE=$1;;
+esac
+
+case $MODE in
   'start')   start   || exit $?;;
   'stop')    stop    || exit $?;;
   'status')  status  || exit $?;;

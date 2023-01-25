@@ -17,7 +17,7 @@ if [[ -z $PID ]]; then
 else
   kill -TERM $PID
   sleep $INTERVAL
-  $NOTIFY "sxhkd" "reloaded daemon"
+  $NOTIFY "sxhkd" "reloaded daemon" &
   sxhkd < /dev/null >& /dev/null &
   exit 0
 fi

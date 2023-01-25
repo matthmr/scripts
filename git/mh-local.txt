@@ -2,4 +2,6 @@
 
 /home/mh/Git/EMACS/simpc-mode
 /home/mh/Git/EMACS/base16-themes
+/home/mh/Git/EMACS/eglot
 /home/mh/Git/pfetch
+/home/mh/Git/shcolor

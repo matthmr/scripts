@@ -1,6 +1,13 @@
 #!/usr/bin/sh
 
-OOD=false
+case $1 in
+  '-h'|'--help')
+    echo "Usage:       mh-local.sh"
+    echo "Description: Update locally git-controlled packages"
+    exit 1
+esac
+
+OOD=''
 GITLOCAL=/home/mh/Scripts/git/mh-local.txt
 
 function getcm {

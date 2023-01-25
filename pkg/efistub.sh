@@ -4,20 +4,24 @@ case "$1" in
   '-h'|'--help')
     echo "Usage:       efistub.sh"
     echo "Description: Updates the systemd-boot efistub"
-  exit 1
-  ;;
+  exit 1;;
 esac
 
-if [[ $USER != root ]]; then
-  echo "[ !! ] Need to be root"
+[[ -z $1 ]] && {
+  echo "[ !! ] Missing temporary directory"
   exit 1
-fi
+}
 
+UPDATE=false
+
+SUDO=doas
 PACMAN=pacman
 TARGET=systemd
+ARCH=x86_64
+
 CACHE=/mnt/ssd/pacman/cache
 PKG_DIR=/home/mh/Scripts/pkg
-PMAN_DIR=/tmp/pacman
+PMAN_DIR=$1
 
 VER_FILE=$PKG_DIR/efistub.txt
 LCK_FILE=$PMAN_DIR/lock-efistub
@@ -29,21 +33,16 @@ function touch_lock {
     exit 1
   else
     touch $LCK_FILE
-    chown -v mh:mh $LCK_FILE
-    chmod -v 666 $LCK_FILE
   fi
 }
 
 function pkg_copy {
   echo "[ .. ] Copying package cache"
-  cp -v $CACHE/systemd-$VER-x86_64.pkg.tar.zst \
-     $PKG_FILE
-  chown -v mh:mh $PKG_FILE
-  chmod -v 666 $PKG_FILE
+  cp -v $CACHE/$TARGET-$VER-$ARCH.pkg.tar.zst $PKG_FILE
 }
 
 function query_ver {
-  echo "[ .. ] Querying a new version of systemd"
+  echo "[ .. ] Querying a new version of $TARGET"
   VER=$(pacman -Si $TARGET | awk -F: '/^Version/ {print $2}')
   VER=${VER# }
 }
@@ -83,7 +82,7 @@ update_stat
 
 if $UPDATE; then
   echo "[ .. ] Downloading package"
-  $PACMAN -Sddww $TARGET
+  $SUDO $PACMAN -Sddww $TARGET
 
   if [[ $? != 0 ]]; then
     echo "[ !! ] Aborting"
@@ -94,3 +93,6 @@ if $UPDATE; then
   mk_update
   pkg_copy
 fi
+
+echo "[ OK ] pkg/efistub.sh: Done"
+exit 0

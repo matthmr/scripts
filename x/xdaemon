@@ -15,10 +15,6 @@ if [[ -z `pidof clipmenud` ]]; then
   clipmenud &
 fi
 
-if [[ -z `pidof nitrogen` ]]; then
-  nitrogen --restore &
-fi
-
 #if [[ -z `pidof fbxkb` ]]; then
 #  if [[ ! $wm =~ dwm ]]; then
 #    fbxkb &

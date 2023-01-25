@@ -7,10 +7,12 @@ function help {
   Include flags:
     +a: enable host audio
     +n: enable host networking (port forwarding)
+    +s: enable serialization
 
   Key-value pair flags:
     iso:<file>: vm iso file
     disk:<file>: vm virtual disk
+    dir:<path>: declare dir as 9p volume
     mem:<n>: host memory amount
     cpu:<n>: host cpu core count
 
@@ -33,14 +35,15 @@ esac
 VM_CMDLINE_COMMON="-enable-kvm -cpu host"
 VM_CMDLINE="$VM_CMDLINE_COMMON"
 
-OPT_INC=('a' 'n')
-OPT_PAIR=('iso' 'disk' 'mem' 'cpu')
+OPT_INC=('a' 'n' 's')
+OPT_PAIR=('iso' 'disk' 'mem' 'cpu' 'dir')
 
 AUDIO="-audiodev alsa,id=alsa,driver=alsa,out.frequency=48000,out.channels=2,out.dev=default,out.try-poll=off,timer-period=1000 \
 -device ich9-intel-hda \
 -device hda-output,audiodev=alsa"
 NETWORK="-net user,id=net0,hostfwd=tcp::60022-:22 \
 -net nic"
+SERIAL="-nographic"
 
 IFS=' '
 
@@ -66,6 +69,7 @@ function parse_include_opt {
         case $_opt in
           'a') VM_CMDLINE+=" $AUDIO"   ; continue;;
           'n') VM_CMDLINE+=" $NETWORK" ; continue;;
+          's') VM_CMDLINE+=" $SERIAL" ; continue;;
           *)   return 1;;
         esac
       fi
@@ -94,6 +98,7 @@ function parse_pair_opt {
         "disk") VM_CMDLINE+=" -boot c -hda $value" ; break;;
         "mem")  VM_CMDLINE+=" -m $value" ; break;;
         "cpu")  VM_CMDLINE+=" -smp $value" ; break;;
+        "dir")  VM_CMDLINE+=" -virtfs local,path=$value,mount_tag=hostdir,id=hostdir,security_model=passthrough" ; break;;
         *)      return 1;;
       esac
     fi
@@ -138,4 +143,4 @@ parse_args $@
 VM_CMDLINE=$(echo $VM_CMDLINE | sed "s:~:$HOME:g")
 
 echo "[ == ] Running as: $VM $VM_CMDLINE"
-$VM $VM_CMDLINE &
+$VM $VM_CMDLINE

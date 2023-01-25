@@ -16,13 +16,12 @@ case $1 in
 esac
 
 # carve out the command
-PACMAN= ARTIX= PARU= CRON= EFISTUB=
+PACMAN= PARU= CRON= EFISTUB=
 len=${#COMMAND}
 len=$((len - 1))
 for (( i = 0 ; i <= len; i++ )); do
   case ${COMMAND:i:1} in
     'p') PACMAN=y;;
-    'a') ARTIX=y;;
     'n') PARU=y;;
     'e') EFISTUB=y;;
     'c') CRON=y;;
@@ -102,51 +101,6 @@ function _pacman {
 
 	echo "[ .. ] Removing lock"
 	rm -v /tmp/pacman/lock-pacman
-}
-
-function _artix {
-	read -p "[ ?? ] Update packages (artix)? [Y/n] " ans
-
-	if [[ $ans = 'n' ]]
-	then
-		echo "[ !! ] Ignoring ... "
-		$NOTIFY "Ignore lock" "lock was ignored for artix" &
-		return 0
-	fi
-	read -p "[ ?? ] Manual review? [y/N] " ans
-	[[ $ans = 'y' ]] && local MANUAL=y || local MANUAL=n
-
-	if [[ $MANUAL = 'y' ]]
-	then
-		echo "[ .. ] Updating pacman (artix) database for manual review"
-		while ! $SUDO pacmanrc -Sy; do continue; done
-		echo "[ .. ] Generating new pacman updatable package file"
-		pacmanrc -Qu > /tmp/pacman/pacman-artix-update-raw
-		sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' /tmp/pacman/pacman-artix-update-raw |\
-			awk '{print $1}' > /tmp/pacman/pacman-artix-update
-		echo "[ .. ] Setting permissions"
-		chown -Rv mh:mh /tmp/pacman/pacman-artix-update /tmp/pacman/pacman-artix-update-raw
-		chmod -Rv a+w /tmp/pacman/pacman-artix-update /tmp/pacman/pacman-artix-update-raw
-		echo "[ .. ] Listing updatable packages"
-		/bin/less -R /tmp/pacman/pacman-artix-update-raw
-	fi
-
-	read -p "[ ?? ] Handle hooked packages (artix)? [Y/n] " ans
-	if [[ $ans = 'n' ]]
-	then
-		echo "[ !! ] Ignoring ... "
-	else # open a new shell, wait for it to die, then continue
-		echo "[ OK ] Waiting for SSD packages to be handled"
-		unset XINITSLEEP
-		unset XINITSLEEPARGS
-		$USER_SHELL
-	fi
-
-	echo "[ .. ] Updating system (artix)"
-	$SUDO pacmanrc -Su
-
-	echo "[ .. ] Removing lock"
-	rm -v /tmp/pacman/lock-pacman-artix
 }
 
 function _paru {
@@ -255,7 +209,6 @@ function _efistub {
 }
 
 [[ ! -z $PACMAN ]]  && _pacman
-[[ ! -z $ARTIX ]]   && _artix
 [[ ! -z $PARU ]]    && _paru
 [[ ! -z $CRON ]]    && _cron
 [[ ! -z $CRONMSG ]] && _cronmsg

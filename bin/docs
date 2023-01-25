@@ -183,8 +183,8 @@ esac
 
 EDITOR=${@:off}
 
-# default to emacs
-[[ -z $EDITOR ]] && EDITOR=emacs
+# default to emacsnox
+[[ -z $EDITOR ]] && EDITOR=emacsnox
 
 function feed {
  ans=$(echo "$@" | $INT)

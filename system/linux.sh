@@ -14,17 +14,22 @@ case $1 in
 		;;
 esac
 
+function kill_term {
+	local shell_pid=$1
+	local _ppid="$(ps -p $SHELL_PID -O ppid)"
+	ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
+	kill -KILL $ppid
+	exit 1
+}
+
+#################### GUARD ####################
 read -p "[ ?? ] Start scheduled system run-up? [Y/n] " ans
 
 if [[ $ans = "n" ]]
 then
 	echo "[ !! ] Ignoring ... "
 	sleep $TIMEOUT
-	SHELL_PID=$$
-	_ppid="$(ps -p $SHELL_PID -O ppid)"
-	ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
-	kill -KILL $ppid
-	exit 1
+  kill_term $$
 else
   # wait for a local ip address to be bound to this machine, otherwise we can't
   # run inet-like scripts
@@ -44,6 +49,7 @@ fi
 
 [[ -z $SUDO ]] && SUDO=doas
 
+#################### UPDATE LOCAL PACKAGES ####################
 echo "[ .. ] Running user scripts"
 
 echo "[ .. ] Updating Git-controlled packages"
@@ -52,28 +58,36 @@ echo "[ .. ] Updating Git-controlled packages"
 echo "[ .. ] Updating locally Git-controlled packages"
 /home/mh/Scripts/git/mh-local.sh
 
-# See (20220916)
+# TODO: make this a source list to something like `pacwrap' or `pkgm'
 echo "[ .. ] Updating source-controlled packages"
 /home/mh/Scripts/pkg/ungoogled-chromium.sh
+/home/mh/Scripts/pkg/emacs-nox.sh
+/home/mh/Scripts/pkg/efistub.sh $TMP
 
+# echo "[ .. ] Updating pacwrap packages"
+# pacwrap update
+
+#################### MISC ####################
 echo "[ .. ] Generating dmenu cache"
 /home/mh/Scripts/dmenu-gencache.sh
 
 echo "[ .. ] Syncing cron-like hooks"
 /home/mh/Scripts/sync-cron-like.sh
 
-echo "[ .. ] Preparing to run root scripts"
-while ! $SUDO /home/mh/Scripts/system/linux-root.sh; do continue; done # always try to get the root password
+echo "[ .. ] Running user-defined daemons"
+/home/mh/Scripts/bin/emacsserver -t start 1>/dev/null 2>/dev/null &
 
-echo "[ OK ] Done!"
+#################### ROOT / GLOBAL PACKAGES ####################
+echo "[ .. ] Preparing to run root scripts"
+
+# always try to get the root password
+while ! $SUDO /home/mh/Scripts/system/linux-root.sh; do continue; done
 
 # wait for the user to close the window
 echo "[ .. ] Listing out-of-date packages"
-$TERM $TERMCMD less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw /tmp/pacman/pacman-artix-raw
+$TERM $TERMCMD less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw # /tmp/pacman/pacman-artix-raw
 
-echo "[ .. ] Running user-defined daemons"
-#/home/mh/Scripts/bin/emacsserver start # See (20220924)
-
+#################### CRON / HOOKS ####################
 echo "[ .. ] Finding hooks"
 if [[ -d /home/mh/Hooks/linux.sh && -d /home/mh/Hooks/IRL/ ]]
 then
