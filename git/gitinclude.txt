@@ -4,7 +4,7 @@
 /home/mh/Git/EMACS/base16-themes/
 /home/mh/Git/EMACS/eglot/
 /home/mh/Git/EMACS/elisp-tree-sitter/
-#/home/mh/Git/EMACS/zen-mode/
+/home/mh/Git/EMACS/zen-mode/
 #/home/mh/Git/EMACS/evil-mode/
 
 ## ZSH PLUGINS

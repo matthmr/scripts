@@ -71,21 +71,6 @@ echo "[ .. ] Setting update locks for paru"
 	echo "[ !! ] No lock was found for paru"
 }
 
-echo "[ .. ] Setting update locks for artix's pacman"
-{
-	grep -Eiq '(^e[^2x]|udev|.*-openrc|lib(elogind|udev))' /tmp/pacman/pacman-artix
-} && {
-	echo "[ .. ] Found artix's pacman lock"
-	touch /tmp/pacman/lock-pacman-artix
-	chown -Rv mh:mh /tmp/pacman/lock-pacman-artix
-	chmod -Rv a+w /tmp/pacman/lock-pacman-artix
-} || {
-	echo "[ !! ] No lock was found for artix"
-}
-
-echo "[ .. ] Updating the linux EFISTUB"
-/home/mh/Scripts/pkg/efistub.sh
-
-echo "[ OK ] Done with root scripts!"
+echo "[ OK ] linux-root.sh: Done"
 
 exit 0

@@ -13,18 +13,22 @@ case $1 in
 		exit 1
 esac
 
-echo "[ Updating clock ]"
+echo "[ .. ] Updating clock"
 rc-service chrony start
 
 if [[ $1 = '-l' ]]
 then
-	echo "[ Latching on... ]"
+	echo "[ .. ] Latching on"
 	exit 1
 fi
 
-echo "[ Sleeping... ]"
+echo "[ .. ] Sleeping 10 seconds"
 # sleep 5
 sleep 10
 
-echo "[ Turning off chrony ]"
+echo "[ .. ] Turning off chrony"
 rc-service chrony stop
+
+echo "[ OK ] sync-clock.sh: Done"
+
+exit 0

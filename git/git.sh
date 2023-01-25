@@ -22,4 +22,6 @@ do
   # git pull origin
 done < $GITINCLUDE
 
-echo "[ OK ] Done"
+echo "[ OK ] git.sh: Done"
+
+exit 0

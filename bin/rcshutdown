@@ -18,12 +18,6 @@ then
 		ARG=p
 	fi
 
-	if [[ -f /tmp/pacman/lock-pacman-artix ]]
-	then
-		$NOTIFY "Package lock found (subsystem)" "also found lock for \`artix'" &
-		ARG="${ARG}a"
-	fi
-
 	if [[ -f /tmp/pacman/lock-paru ]]
 	then
 		$NOTIFY "Package lock found (subsystem)" "also found lock for \`paru'" &

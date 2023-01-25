@@ -14,21 +14,30 @@ do
     continue
   fi
 
+  echo "[ .. ] mh-local.sh: repo: $repo"
+
+  # behind HEAD there must the `master' branch:
+  #    . (HEAD -> mh-local)
+  #    |
+  #    . (master)
   HEAD_CM=$(git -C $repo show HEAD~1 | getcm)
   MASTER_CM=$(git -C $repo show remotes/origin/HEAD | getcm)
 
   if [[ $HEAD_CM != $MASTER_CM ]]
   then
-    OOD=true
     echo "[ !! ] \`${repo##*/}' is out-of-date"
+    OOD+=" ${repo##*/}"
   #else
     #echo "[ OK ] \`${repo##*/}' is updated"
   fi
 done < $GITLOCAL
 
-if $OOD
-then
-  echo "[ !! ] There are out-of-date repositories"
+if [[ ! -z $OOD ]]; then
+  echo "[ !! ] These repositories need to be merged: $(echo $OOD | sed 's/ /\n- /g')"
 else
   echo "[ OK ] All repositories are up-to-date"
 fi
+
+echo "[ OK ] mh-local.sh: Done"
+
+exit 0

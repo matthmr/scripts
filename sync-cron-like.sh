@@ -61,3 +61,7 @@ case $DATE in
 		found "$DATE"
 		write 'clean-computer' "Clean the computer, it has been dirty for almost a year!";;
 esac
+
+echo "[ OK ] sync-cron-like.sh: Done"
+
+exit 0

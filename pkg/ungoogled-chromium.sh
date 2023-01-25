@@ -89,4 +89,6 @@ EOF
 
 chmod +x $DEST_BIN
 
-echo "[ OK ] Done!"
+echo "[ OK ] ungoogled-chromium.sh: Done!"
+
+exit 0

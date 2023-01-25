@@ -162,4 +162,6 @@ case $1 in
   *)         help;      exit 1;;
 esac
 
+echo "[ OK ] emacsserver: Done"
+
 exit 0

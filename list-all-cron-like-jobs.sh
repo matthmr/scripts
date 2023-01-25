@@ -12,3 +12,7 @@ cat /home/mh/Scripts/sync-cron-like.sh | awk '
 BEGIN { line = 0 }
 /^case \$DATE in/ { line = NR }
 NR >= line && line != 0 { print }'
+
+echo "[ OK ] list-all-cron-like-jobs.sh: Done"
+
+exit 0

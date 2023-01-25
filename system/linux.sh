@@ -101,4 +101,6 @@ else
 	sleep $TIMEOUT
 fi
 
+echo "[ OK ] linux.sh: Done"
+
 exit 1

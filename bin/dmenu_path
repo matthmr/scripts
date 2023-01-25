@@ -16,3 +16,7 @@ IFS=:
 if /mnt/ssd/root/usr/bin/stest -dqr -n "$cache" $PATH; then
 	/mnt/ssd/root/usr/bin/stest -flx $PATH | sort -u | tee "$cache" >/dev/null
 fi
+
+echo "[ OK ] dmenu-gencache.sh: Done"
+
+exit 0
