@@ -19,6 +19,9 @@ case $AS in
     EMACSOPTS=-t
     EMACSCLIENT='/home/mh/Source/emacs-nox/usr/bin/emacsclient'
     EMACSALT='emacsnox';;
+  'emacsnca')
+    EMACSCLIENT='/home/mh/Source/emacs-nox/usr/bin/emacsclient'
+    EMACSALT='emacsnox';;
   'emacsxc')
     EMACSOPTS=-c
     EMACSALTOPTS=;;

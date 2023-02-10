@@ -21,21 +21,22 @@ do
     continue
   fi
 
-  echo "[ .. ] mh-local.sh: repo: $repo"
+  repo_path=${repo/ */}
+  repo_branch=${repo/* /}
 
-  # behind HEAD there must the `master' branch:
-  #    . (HEAD -> mh-local)
-  #    |
-  #    . (master)
-  HEAD_CM=$(git -C $repo show HEAD~1 | getcm)
-  MASTER_CM=$(git -C $repo show remotes/origin/HEAD | getcm)
+  echo "[ .. ] mh-local.sh: fetching repo: $repo"
+
+  git -C $repo_path fetch origin -- HEAD
+
+  LOCAL_MASTER_CM=$(git -C  $repo_path show $repo_branch | getcm)
+  REMOTE_MASTER_CM=$(git -C $repo_path show FETCH_HEAD   | getcm)
 
   if [[ $HEAD_CM != $MASTER_CM ]]
   then
-    echo "[ !! ] \`${repo##*/}' is out-of-date"
-    OOD+=" ${repo##*/}"
+    echo "[ !! ] \`${repo_path##*/}' is out-of-date"
+    OOD+=" ${repo_path##*/}"
   #else
-    #echo "[ OK ] \`${repo##*/}' is updated"
+    #echo "[ OK ] \`${repo_path##*/}' is updated"
   fi
 done < $GITLOCAL
 

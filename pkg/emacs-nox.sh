@@ -37,7 +37,7 @@ function update_stat {
   fi
 
   if [[ "$VER" = "$VER_FILE_VER" ]]; then
-    echo "[ OK ] Up-to-date"
+    echo "[ OK ] pkg/emacs-nox.sh: Up-to-date"
     exit 0
   else
     echo "[ WW ] Out of date; setting new version in the version file"
@@ -47,7 +47,7 @@ function update_stat {
       echo $VER > $VER_FILE
       UPDATE=true
     else
-      echo "[ !! ] Aborting"
+      echo "[ !! ] pkg/emacs-nox.sh: Aborting"
     fi
   fi
 }

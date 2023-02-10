@@ -3,13 +3,13 @@
 
 AS=${0##*/}
 
-DMENU="/home/mh/Source/bin/dmenu" 
-SCREENSHOT="/mnt/ssd/root/usr/bin/shotgun" 
-SCREENSHOT_OPTS="" 
-SCREENSHOT_DIR="/home/mh/Images/Screenshots" 
+DMENU="/home/mh/Source/bin/dmenu"
+SCREENSHOT="/mnt/ssd/root/usr/bin/shotgun"
+SCREENSHOT_OPTS=""
+SCREENSHOT_DIR="/home/mh/Images/Screenshots"
 NOTIFY=herbe
 
-OPT_X11_GEOM="/mnt/ssd/root/usr/bin/hacksaw -r" 
+OPT_X11_GEOM="/mnt/ssd/root/usr/bin/hacksaw -r"
 
 OPT="\
 window root
@@ -46,11 +46,11 @@ else
 	  OPT=`feeddmenu "$OPT" "option"`
     SCREENSHOT_OPTS=$(feedopt "$OPT")
   fi
-  FILENAME=$FILENAME.png
+  # FILENAME=$FILENAME.png
 fi
 
 if [[ $AS = 'screenshot-dir' ]]; then
-    FILENAME=$SCREENSHOT_DIR/$FILENAME
+    FILENAME=$SCREENSHOT_DIR/$FILENAME.png
 fi
 
 $SCREENSHOT $SCREENSHOT_OPTS $FILENAME

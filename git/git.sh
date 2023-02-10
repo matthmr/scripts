@@ -7,20 +7,16 @@ case $1 in
     exit 1
 esac
 
-GITINCLUDE=/home/mh/Scripts/git/gitinclude.txt
+GITLIST=/home/mh/Scripts/git/git.txt
 
-while read repo
-do
-
-  if [[ $repo =~ ^#.*$ || $repo =~ ^( \t)*$ ]]
-  then
+while read repo; do
+  if [[ $repo =~ ^#.*$ || $repo =~ ^( \t)*$ ]]; then
     continue
   fi
 
   echo "[ .. ] pulling repository: $repo"
   git -C $repo pull origin -- HEAD
-  # git pull origin
-done < $GITINCLUDE
+done < $GITLIST
 
 echo "[ OK ] git.sh: Done"
 

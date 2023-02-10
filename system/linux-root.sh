@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 
-PARU_TRIGGER='nvidia'
+PARU_TRIGGER='nvidia\|openrc'
 PACMAN_TRIGGER='linux'
 
 if [[ $USER != 'root' ]]
@@ -8,6 +8,13 @@ then
 	echo "[ !! ] Need to be root"
 	exit 1
 fi
+
+[[ -z $1 ]] && {
+  echo "[ !! ] Missing temporary directory"
+  exit 1
+} || {
+  TMP=$1
+}
 
 #################### ROOT SCRIPTS ####################
 echo "[ .. ] Running root scripts"
@@ -24,9 +31,6 @@ echo "[ .. ] Synchronizing clock"
 #/home/mh/Scripts/sync-cron.sh
 
 #################### GLOBAL PACKAGES ####################
-echo "[ .. ] Setting up \`tmp'"
-TMP=$(mktemp -d "/tmp/pacman.XXX")
-
 echo "[ .. ] Updating pacman's database"
 pacman -Syy # this also updates paru's
 
@@ -43,7 +47,7 @@ sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/pacman-raw |\
 # /bin/sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/pacman-artix-raw | awk '{print $1}' > $TMP/pacman-artix
 
 echo "[ .. ] Generating update file for paru"
-paru -Qu > $TMP/paru-raw
+/mnt/ssd/root/usr/bin/paru -Qu > $TMP/paru-raw
 sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/paru-raw |\
   awk '{print $1}' > $TMP/paru
 

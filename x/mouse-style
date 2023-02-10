@@ -7,7 +7,7 @@ LOW_ACC='1'
 
 case $1 in
   '-h'|'--help')
-    echo "Usage:       left-toggle.sh [left|right]"
+    echo "Usage:       mouse-style.sh [left|right]"
     echo "Description: Toggles between [left] or [right] mouse, with matching acceleration"
     exit 1;;
 esac

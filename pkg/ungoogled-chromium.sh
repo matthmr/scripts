@@ -42,7 +42,7 @@ function check_update {
 	if [[ "$LAST_REMOTE_VERSION" =~ "$LAST_LOCAL_VERSION" ]]
 	then
 		$FORCE || {
-			echo "[ !! ] ungoogled-chromium is up-to-date! (last remote: $LAST_REMOTE_VERSION, last local: $LAST_LOCAL_VERSION) Exiting..."
+			echo "[ !! ] ungoogled-chromium.sh: ungoogled-chromium is up-to-date! (last remote: $LAST_REMOTE_VERSION, last local: $LAST_LOCAL_VERSION) Exiting..."
 			exit 1
 		}
 	else

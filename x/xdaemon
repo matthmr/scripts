@@ -1,11 +1,11 @@
 #!/usr/bin/sh
 
-# start `xinit`-time daemons
+# start X daemons
 
 wm=$1
 
-# [ -z `pidof dunst` ] && dunst & # started on `wminit'
-# [ -z `pidof xcompmgr` ] && xcompmgr & # I have no need for a compositor
+# [ -z `pidof dunst` ] && dunst &
+# [ -z `pidof xcompmgr` ] && xcompmgr &
 
 if [[ -z `pidof clipmenud` ]]; then
   CM_LAUNCHER=dmenu \
@@ -15,12 +15,12 @@ if [[ -z `pidof clipmenud` ]]; then
   clipmenud &
 fi
 
+if [[ -z `pidof sxhkd` ]]; then
+  sxhkd < /dev/null >& /dev/null &
+fi
+
 #if [[ -z `pidof fbxkb` ]]; then
 #  if [[ ! $wm =~ dwm ]]; then
 #    fbxkb &
 #  fi
 #fi
-
-if [[ -z `pidof sxhkd` ]]; then
-  sxhkd < /dev/null >& /dev/null &
-fi

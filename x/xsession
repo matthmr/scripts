@@ -19,43 +19,11 @@ case $WM in
     xsetroot -xcf /home/mh/.icons/McMojave-cursors/cursors/default 32 &;;
 esac
 
-# ignore everything if the user did not decide to start
-# an xsession
 if [[ $2 = "" ]]; then
-  # compatibility for `sxhkd'
-  cat > /tmp/dbus-launch <<EOF
-#!/usr/bin/sh
-
-exec \$@
-EOF
-  chmod +x /tmp/dbus-launch
   exit 0
 fi
 
-WM_PID=$(pidof "$WM")
-
-# create `/tmp/dbus-launch'
-if [[ ! -f /tmp/dbus-launch ]]; then
-  touch /tmp/dbus-launch
-  chmod +x /tmp/dbus-launch
-fi
-
-PREAMBLE=$(cat /proc/$WM_PID/environ |\
-             tr '\0' '\n' |\
-             grep "DBUS_SESSION_BUS_ADDRESS=")
-
-if [[ ! -z $PREAMBLE ]]; then
-  PREAMBLE="export $PREAMBLE"
-fi
-
-# write a new launch script
-cat > /tmp/dbus-launch <<EOF
-#!/usr/bin/sh
-$PREAMBLE
-exec \$@
-EOF
-
-# execute a session script
+# execute the session script
 if [[ -f /tmp/xsession.lock ]]; then
   exit 0
 else

@@ -35,7 +35,8 @@ else
 	echo "[ .. ] Removing lock"
 	rm -v $PMAN_DIR/lock-efistub
 	echo "[ .. ] Removing local lock"
-	cat "$PKG_FILE" | cut -d' ' -f2 > $PKG_FILE
+	cp $PKG_FILE /tmp/efistub-pkgfile
+	cat /tmp/efistub-pkgfile | cut -d' ' -f2 > $PKG_FILE
 	# mv -v /tmp/efistub-pkgfile $PKG_FILE
 
   # chown -v mh:mh $PKG_FILE

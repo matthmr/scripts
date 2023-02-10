@@ -4,7 +4,8 @@
 EMACS_NOX=/home/mh/Source/emacs-nox/usr/bin/emacs
 EMACS_PDMP=/home/mh/Source/emacs-nox/usr/lib/emacs/
 #EMACS_PDMP+=$(pacwrap version emacs-nox)
-EMACS_PDMP+="28.2"
+EMACS_VERSION="$(cat /home/mh/Scripts/pkg/emacs-nox.txt)"
+EMACS_PDMP+="${EMACS_VERSION%%-*}"
 EMACS_PDMP+=/x86_64-pc-linux-gnu/emacs.pdmp
 
-exec $EMACS_NOX --dump-file=$EMACS_PDMP $@
+eval $EMACS_NOX --dump-file=$EMACS_PDMP $@

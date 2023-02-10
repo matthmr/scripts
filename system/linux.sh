@@ -49,7 +49,11 @@ fi
 
 [[ -z $SUDO ]] && SUDO=doas
 
-#################### UPDATE LOCAL PACKAGES ####################
+echo "[ .. ] Setting up \`tmp'"
+TMP=$(mktemp -d "/tmp/pacman.XXX")
+
+#################### UPDATE LOCAL PACKAGES ####################e
+
 echo "[ .. ] Running user scripts"
 
 echo "[ .. ] Updating Git-controlled packages"
@@ -75,13 +79,13 @@ echo "[ .. ] Syncing cron-like hooks"
 /home/mh/Scripts/sync-cron-like.sh
 
 echo "[ .. ] Running user-defined daemons"
-/home/mh/Scripts/bin/emacsserver -t start 1>/dev/null 2>/dev/null &
+/home/mh/Scripts/bin/emacsserver -nox start 1>/dev/null 2>/dev/null &
 
 #################### ROOT / GLOBAL PACKAGES ####################
 echo "[ .. ] Preparing to run root scripts"
 
 # always try to get the root password
-while ! $SUDO /home/mh/Scripts/system/linux-root.sh; do continue; done
+while ! $SUDO /home/mh/Scripts/system/linux-root.sh $TMP; do continue; done
 
 # wait for the user to close the window
 echo "[ .. ] Listing out-of-date packages"
