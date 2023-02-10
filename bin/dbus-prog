@@ -1,0 +1,91 @@
+#!/usr/bin/bash
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       dbus-prog [options] <prog>"
+    echo "Description: Starts or kills a program with dbus"
+    echo "Options:
+  --start: start (default)
+  --sys: also operate on the system bus
+  --list: lists dbus-like processes
+  --stop: stop
+  --no-prog: ignore the program
+  --no-bus: ignore the killing dbus"
+    exit 1;;
+esac
+
+DBUS_SYS_START="doas rc-service dbus start"
+DBUS_SYS_STOP="doas rc-service dbus stop"
+
+DBUS_SES_START="dbus-launch"
+DBUS_SES_STOP=""
+
+on_sys=false
+no_prog=false
+no_bus=false
+op=start
+prog=""
+for arg in ${@:1}; do
+  case $arg in
+    '--start')
+      op=start;;
+    '--stop')
+      op=stop;;
+    '--list')
+      no_prog=true
+      op=list;;
+    '--sys')
+      on_sys=true;;
+    '--no-prog')
+      no_prog=true;;
+    '--no-bus')
+      no_bus=true;;
+    *)
+      prog+=" $arg"
+  esac
+done
+
+if [[ -z $prog && $no_prog == 'false' ]]; then
+  echo "[ !! ] No program was specified"
+  exit 1
+fi
+
+case $op in
+  'list')
+    echo "[ == ] pgrep -af dbus"
+    pgrep -af dbus
+    ;;
+  'start')
+    if $on_sys; then
+      echo "[ == ] $DBUS_SYS_START"
+      eval $DBUS_SYS_START
+      if $no_prog; then
+        exit 0
+      fi
+    elif $no_prog; then
+      echo "[ !! ] \`--no-prog' cannot be used with empty \`--start'"
+      exit 1
+    fi
+    echo "[ == ] dbus-launch $prog"
+    eval dbus-launch $prog
+    ;;
+  'stop')
+    if ! $no_prog; then
+      echo "[ == ] pkill -f -TERM $prog"
+      eval pkill -f -TERM $prog
+      echo "[ == ] sleep 5"
+      sleep 5
+    fi
+    if ! $no_bus; then
+      echo "[ == ] pkill -f -TERM 'dbus-daemon.*--session$'"
+      eval pkill -f -TERM 'dbus-daemon.*--session$'
+    fi
+    if $on_sys; then
+      echo "[ == ] $DBUS_SYS_STOP"
+      eval $DBUS_SYS_STOP
+      if $no_prog; then
+        exit 0
+      fi
+    fi
+    ;;
+esac
