@@ -1,0 +1,34 @@
+#!/usr/bin/bash
+
+MIXER=amixer
+
+case $1 in
+  '-h'|'--help')
+    echo "Usage:       headset [on|off]"
+    echo "Description: Toggles between [on] or [off] states for auto-muting"
+    exit 1;;
+esac
+
+COMMAND=$1
+
+case $COMMAND in
+  'on')
+    echo "[ .. ] Enabling headset"
+    echo "[ == ] $MIXER sset \"Auto-Mute Mode\" Enabled"
+    $MIXER sset "Auto-Mute Mode" Enabled
+    sleep 0.5
+    echo "[ == ] $MIXER set Headphone unmute"
+    $MIXER set Headphone unmute
+    exit $?;;
+  'off')
+    echo "[ .. ] Disabling headset"
+    echo "[ == ] $MIXER sset \"Auto-Mute Mode\" Disabled"
+    $MIXER sset "Auto-Mute Mode" Disabled
+    sleep 0.5
+    echo "[ == ] $MIXER set Headphone mute"
+    $MIXER set Headphone mute
+    exit $?;;
+  *)
+    echo "Usage: headset [on|off]"
+    exit 1;;
+esac
