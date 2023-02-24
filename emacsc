@@ -1,0 +1,23 @@
+#!/usr/bin/sh
+
+AS=${0##*/}
+
+EMACSCLIENT=emacsclient
+EMACSALT=emacs
+
+case $1 in
+  '--help'|'-h')
+  echo "Usage:       emacsc"
+  echo "Description: Connects to an emacs client"
+  exit 1
+esac
+
+if [[ -z $XDG_RUNTIME_DIR ]]; then
+  BASE="/tmp/emacs-$UID"
+else
+  BASE="$XDG_RUNTIME_DIR/emacs"
+fi
+
+exec $EMACSCLIENT -t -s \
+     "$BASE/server" ${@:1} \
+     -a "$EMACSALT -t ${@:1}"

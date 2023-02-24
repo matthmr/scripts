@@ -1,11 +1,8 @@
 #!/usr/bin/bash
 
 function help {
-  echo "Usage:       emacsserver [-t|-nox] [start|stop|status|restart|toggle|purge]"
+  echo "Usage:       emacss [start|stop|status|restart|toggle|purge]"
   echo "Description: Starts an emacs server"
-  echo "Options:
-  -t: start as tui
-  -nox: start as \`nox'"
 }
 
 case $1 in
@@ -153,18 +150,6 @@ function purge {
   rm -rf $BASE/server
   echo "[ OK ] Purged emacs server"
 }
-
-case $1 in
-  '-t')
-    MODE=$2
-    EMACSSERVER_OPTS="-nw ${EMACSSERVER_OPTS}";;
-  '-nox')
-    EMACSSERVER='emacsnox'
-    EMACSCLIENT='/home/mh/Source/emacs-nox/usr/bin/emacsclient'
-    MODE=$2;;
-  *)
-    MODE=$1;;
-esac
 
 case $MODE in
   'start')   start   || exit $?;;
