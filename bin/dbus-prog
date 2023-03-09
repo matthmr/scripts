@@ -67,7 +67,7 @@ case $op in
       exit 1
     fi
     echo "[ == ] dbus-launch $prog"
-    eval dbus-launch $prog
+    exec dbus-launch $prog
     ;;
   'stop')
     if ! $no_prog; then

@@ -15,7 +15,6 @@ alias espeak='espeak --path=/mnt/ssd/root/usr/share/espeak-ng-data'
 #alias flite='flite -voice slt'
 alias roma2kana='romaji'
 alias vim='nvim'
-#alias emacs='emacstui' # using `emacsnox' for that now
 
 # shortenings
 alias xa='xargs'

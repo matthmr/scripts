@@ -8,8 +8,8 @@ SSH_TERMUX="u0_a455"
 # General
 export LESS="-S -R -I -Q -x2 --use-color --mouse --incsearch"
 export EDITOR="nvim"
-export CSCOPE_EDITOR="emacsnc"
-export GIT_EDITOR="emacsnc"
+export CSCOPE_EDITOR="emacs"
+export GIT_EDITOR="emacs"
 export PAGER="less"
 
 # Program specific

@@ -30,6 +30,6 @@ case $COMMAND in
     xinput set-prop $MOUSE "$PROP" $LOW_ACC
     exit $?;;
   *)
-    echo "Usage: left-toggle.sh [enable|disable]"
+    echo "Usage: mouse-style [left|right]"
     exit 1;;
 esac

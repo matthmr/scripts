@@ -60,7 +60,7 @@ echo "[ .. ] Updating Git-controlled packages"
 /home/mh/Scripts/git/git.sh
 
 echo "[ .. ] Updating locally Git-controlled packages"
-/home/mh/Scripts/git/mh-local.sh
+/home/mh/Scripts/git/mh-local.sh update
 
 # TODO: make this a source list to something like `pacwrap' or `pkgm'
 echo "[ .. ] Updating source-controlled packages"
@@ -78,7 +78,7 @@ echo "[ .. ] Syncing cron-like hooks"
 /home/mh/Scripts/sync-cron-like.sh
 
 echo "[ .. ] Running user-defined daemons"
-/home/mh/Scripts/bin/emacsserver -nox start 1>/dev/null 2>/dev/null &
+/home/mh/Scripts/bin/emacss start 1>/dev/null 2>/dev/null &
 
 #################### ROOT / GLOBAL PACKAGES ####################
 echo "[ .. ] Preparing to run root scripts"

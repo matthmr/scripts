@@ -19,7 +19,7 @@ fi
 
 SHELL=/usr/bin/sh
 
-EMACSERVER='/usr/bin/emacs'
+EMACSSERVER='/usr/bin/emacs'
 EMACSCLIENT='/usr/bin/emacsclient'
 
 EMACSSERVER_OPTS="--daemon"
@@ -151,7 +151,7 @@ function purge {
   echo "[ OK ] Purged emacs server"
 }
 
-case $MODE in
+case $1 in
   'start')   start   || exit $?;;
   'stop')    stop    || exit $?;;
   'status')  status  || exit $?;;

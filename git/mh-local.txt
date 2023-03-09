@@ -1,9 +1,10 @@
 ## See 20230108
 
-/home/mh/Git/EMACS/simpc-mode/ master
-/home/mh/Git/EMACS/base16-themes/ main
-/home/mh/Git/EMACS/eglot/ master
-/home/mh/Git/pfetch/ master
-/home/mh/Git/shcolor/ master
-/home/mh/Git/clipmenu/ master
-/home/mh/Git/sx/ master
+## TODO: this could be done with PKGM (please do it with PKGM)
+
+/home/mh/Git/EMACS/simpc-mode master
+/home/mh/Git/EMACS/eglot master
+/home/mh/Git/pfetch master
+/home/mh/Git/shcolor master
+/home/mh/Git/clipmenu master
+/home/mh/Git/sx master
