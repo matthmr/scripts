@@ -31,6 +31,4 @@ case ${0##*/} in
     exit 1;;
 esac
 
-source /home/mh/Scripts/root/suspend/pre
 echo "$STATE" > "$SYSFS"
-source /home/mh/Scripts/root/suspend/post

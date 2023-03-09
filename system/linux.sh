@@ -65,7 +65,6 @@ echo "[ .. ] Updating locally Git-controlled packages"
 # TODO: make this a source list to something like `pacwrap' or `pkgm'
 echo "[ .. ] Updating source-controlled packages"
 /home/mh/Scripts/pkg/ungoogled-chromium.sh
-/home/mh/Scripts/pkg/emacs-nox.sh
 /home/mh/Scripts/pkg/efistub.sh $TMP
 
 # echo "[ .. ] Updating pacwrap packages"

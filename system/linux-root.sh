@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 
-PARU_TRIGGER='nvidia\|openrc'
+PARU_TRIGGER='openrc'
 PACMAN_TRIGGER='linux'
 
 if [[ $USER != 'root' ]]

@@ -1,1 +1,0 @@
-nvidia-sleep-suspend-or-hibernate.sh
