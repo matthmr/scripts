@@ -4,7 +4,7 @@ HISTSIZE=500
 SAVEHIST=500
 ZSH_MODE='vi'
 setopt autocd autopushd
-setopt PROMPT_SUBST
+setopt PROMPT_SUBST HIST_IGNORE_SPACE
 set -k
 
 case $ZSH_MODE in
