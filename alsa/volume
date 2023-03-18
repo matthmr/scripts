@@ -1,0 +1,35 @@
+#!/usr/bin/bash
+
+MIXER=amixer
+
+case $1 in
+  '-h'|'--help')
+    echo "Usage:       volume [m|quan]"
+    echo "Description: Sets the volume for the \`Master' PCM to <quan>. \
+No options outputs the current audio state"
+    echo "Commands:
+  - m: mutes/unmutes"
+    exit 1;;
+esac
+
+COMMAND=$1
+
+case $COMMAND in
+  'm')
+    echo "[ .. ] Toggling mute"
+    echo "[ == ] $MIXER set Master toggle"
+    $MIXER set Master toggle
+    exit $?;;
+  [0-9]*)
+    if [[ $1 -gt 100 ]]; then
+      echo "[ !! ] Volume must be at most 100%"
+      exit 1
+    fi
+    echo "[ .. ] Setting volume to $1"
+    echo "[ == ] $MIXER set Master $1%"
+    $MIXER set Master $1%
+    exit $?;;
+  *)
+    $MIXER get Master | sed -n '5s/.*\[\([0-9]\{1,3\}%\)\].*\[\(on\|off\)\]/level: \1\nactive: \2/p'
+    exit 1;;
+esac

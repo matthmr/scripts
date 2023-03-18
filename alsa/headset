@@ -5,7 +5,8 @@ MIXER=amixer
 case $1 in
   '-h'|'--help')
     echo "Usage:       headset [on|off]"
-    echo "Description: Toggles between [on] or [off] states for auto-muting"
+    echo "Description: Toggles between [on] or [off] states for auto-muting. \
+No options outputs the current audio state"
     exit 1;;
 esac
 
@@ -29,6 +30,14 @@ case $COMMAND in
     $MIXER set Headphone mute
     exit $?;;
   *)
-    echo "Usage: headset [on|off]"
+    echo "Headphone(s) active: "
+    $MIXER get Headphone | sed -n \
+                               -e '6s/.*\[\(on\|off\)\].*/  left: \1/p' \
+                               -e '7s/.*\[\(on\|off\)\].*/  right: \1/p'
+    echo "Headphone Auto-Mute: "
+    $MIXER sget 'Auto-Mute Mode' | awk -F"'" "
+/Item0/ {
+  printf(\"  state: %s\n\", \$2);
+}"
     exit 1;;
 esac
