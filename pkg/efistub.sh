@@ -27,6 +27,16 @@ VER_FILE=$PKG_DIR/efistub.txt
 LCK_FILE=$PMAN_DIR/lock-efistub
 PKG_FILE=$PMAN_DIR/efistub.tar.zstd
 
+function do_update {
+  echo "[ .. ] Downloading package"
+  $SUDO $PACMAN -Sddww $TARGET
+
+  if [[ $? != 0 ]]; then
+    echo "[ !! ] Aborting"
+    exit 1
+  fi
+}
+
 function touch_lock {
   if [[ ! -d $PMAN_DIR ]]; then
     echo "[ !! ] No pacman directory. Did you run system/linux.sh?"
@@ -39,6 +49,11 @@ function touch_lock {
 function pkg_copy {
   echo "[ .. ] Copying package cache"
   cp -v $CACHE/$TARGET-$VER-$ARCH.pkg.tar.zst $PKG_FILE
+
+  if [[ $? -ne 0 ]]; then
+    echo "[ WW ] Package cache was not found. Redownloading..."
+    do_update
+  fi
 }
 
 function query_ver {
@@ -81,14 +96,7 @@ query_ver
 update_stat
 
 if $UPDATE; then
-  echo "[ .. ] Downloading package"
-  $SUDO $PACMAN -Sddww $TARGET
-
-  if [[ $? != 0 ]]; then
-    echo "[ !! ] Aborting"
-    exit 1
-  fi
-
+  do_update
   touch_lock
   mk_update
   pkg_copy

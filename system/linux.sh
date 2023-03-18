@@ -78,7 +78,7 @@ echo "[ .. ] Syncing cron-like hooks"
 /home/mh/Scripts/sync-cron-like.sh
 
 echo "[ .. ] Running user-defined daemons"
-/home/mh/Scripts/bin/emacss start 1>/dev/null 2>/dev/null &
+/home/mh/Scripts/emacss start 1>/dev/null 2>/dev/null &
 
 #################### ROOT / GLOBAL PACKAGES ####################
 echo "[ .. ] Preparing to run root scripts"

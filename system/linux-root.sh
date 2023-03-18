@@ -20,8 +20,8 @@ fi
 echo "[ .. ] Running root scripts"
 
 # See (20221105)
-echo "[ .. ] Running temporary scripts"
-#/home/mh/Scripts/tmp/copylog
+# echo "[ .. ] Running temporary scripts"
+# /home/mh/Scripts/tmp/copylog
 
 echo "[ .. ] Synchronizing clock"
 # update 20220910: increase the time in `sync-clock' to 10 seconds and therefore send it to the background
@@ -30,12 +30,13 @@ echo "[ .. ] Synchronizing clock"
 #echo "[ .. ] Synchronizing crontabs"
 #/home/mh/Scripts/sync-cron.sh
 
+# See (20230318)
+echo "[ .. ] Starting services"
+/home/mh/Scripts/system/srv.sh
+
 #################### GLOBAL PACKAGES ####################
 echo "[ .. ] Updating pacman's database"
 pacman -Syy # this also updates paru's
-
-# echo "[ .. ] Updating artix's pacman's database"
-# /home/mh/.local/bin/pacmanrc -Syy
 
 echo "[ .. ] Generating update file for pacman"
 pacman -Qu > $TMP/pacman-raw

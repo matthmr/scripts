@@ -184,7 +184,7 @@ esac
 EDITOR=${@:off}
 
 # default to emacs
-[[ -z $EDITOR ]] && EDITOR=emacs
+[[ -z $EDITOR ]] && EDITOR=emacsc
 
 function feed {
  ans=$(echo "$@" | $INT)

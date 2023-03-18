@@ -20,4 +20,4 @@ fi
 
 exec $EMACSCLIENT -t -s \
      "$BASE/server" ${@:1} \
-     -a "$EMACSALT -t ${@:1}"
+     -a "$EMACSALT ${@:1}"
