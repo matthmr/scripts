@@ -2,11 +2,12 @@
 
 SUSPEND=/home/mh/Scripts/root/suspend.sh
 
-read -p "[Y/n] Suspend? " ans
+read -p "[y/N] Suspend? " ans
 
-if [[ $ans = 'n' ]]; then
+if [[ $ans = 'y' ]]; then
+  $SUSPEND
+  exit $?
+else
   echo "[ !! ] Cancelled"
   exit 1
 fi
-
-$SUSPEND
