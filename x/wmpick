@@ -1,168 +1,254 @@
-#!/usr/bin/env bash
-# Made by mH (https://github.com/matthmr)
+#!/usr/bin/bash
+
+set -o noglob
 
 # hide the cursor (tty only)
 #printf '\x1b[?16;c'
 
-STARTX=sx
+### BEGIN: DEFINITIONS ###
 SHELL=bash
+GARR=()
+GIDX=0
 
 READINPUT="read -r -n 1 -s key"
 
+### HIGHLIGHTING
 HIGHLIGHT_ENTRY="\x1b[7;49;37m"
 BULLET=" * "
 BULLET_INFO="\x1b[1;92m$BULLET\x1b[0m"
 BULLET_ERR="\x1b[1;91m$BULLET\x1b[0m"
 
+### SESSION
 SESSIONS=('dwm' 'i3' 'awesome' 'dwm-git' 'tty')
+SESSIONS_ENTRY=()
 SESSION=
+SESSION_TYPE=
 
-I=0
-HIGH=0
-LEN=
+### XINIT
+XINITS=('sx' 'startxwm')
+XINITS_ENTRY=()
+XINIT=
 
-# format session entry
-fmt() {
-  if (( $2 < $HIGH ))
-  then
-    local DIFF=$(($HIGH - $2 - 1))
-    local PADDING=$(eval "printf ' %.0s' {0..$DIFF}")
+### END: DEFINITIONS ###
+
+### BEGIN: HIGHLIGHTING ###
+# header <msg>
+header() {
+  local msg=$1
+  printf "\n$BULLET_INFO ${msg}\n\n"
+}
+### END: HIGHLIGHTING ###
+
+### BEGIN: MOVEMENT ###
+# header_yesno <msg> <default> -> [ 1 if yes, 0 if no ]
+header_yesno() {
+  local msg=$1
+  local default=$2
+
+  if [[ $default == 'yes' ]]; then
+    default=" [Y/n]"
+  else
+    default=" [y/N]"
   fi
 
-  echo "$1$PADDING"
-}
+  printf "\n$BULLET_INFO ${msg} ${default} "
+  read ans
 
-# get longest session name; populate the session entry length manifest
-getlen() {
-  while read i
-  do
-    SESSIONLEN+=("${#SESSIONS[i]}")
-    if (( $HIGH < ${SESSIONLEN[i]} ))
-    then
-      HIGH=${SESSIONLEN[i]}
+  if [[ $default == " [Y/n]" ]]; then
+    if [[ ans == 'y' || -z $ans ]]; then
+      return 1
+    else
+      return 0
     fi
-  done < <(seq 0 $1)
+  else
+    if [[ ans == 'n' || -z $ans ]]; then
+      return 0
+    else
+      return 1
+    fi
+  fi
 }
 
-# populate session entry
-pop_entry() {
-  LEN=${#SESSIONS[@]}
-  LEN=$((LEN-1))
-
-  getlen $LEN
-
-  while read i
-  do
-    SESSIONENTRY+=("$BULLET\x1b[1m $(fmt ${SESSIONS[i]} ${SESSIONLEN[i]}) \x1b[0m")
-  done < <(seq 0 $LEN)
-}
-
-# print entry without highlight
+# clear_current
 clear_current() {
-  printf "${SESSIONENTRY[I]}"
+  printf "${GARR[GIDX]}"
 }
 
 # move the cursor down:
 #  - if on last; return to the saved position
+# cursor_down <max-index>
 cursor_down() {
-  I=$((I+1))
+  local max_idx=$1
 
-  if [[ $I > $LEN ]]
+  GIDX=$((GIDX+1))
+
+  if (( $GIDX > $max_idx ))
   then
-    I=0
-    printf "\x1b[${LEN}F$HIGHLIGHT_ENTRY${SESSIONENTRY[I]}\x1b[0G"
+    GIDX=0
+    printf "\x1b[${max_idx}F$HIGHLIGHT_ENTRY${GARR[GIDX]}\x1b[0G"
   else
-    printf "\x1b[1E$HIGHLIGHT_ENTRY${SESSIONENTRY[I]}\x1b[0G"
+    printf "\x1b[1E$HIGHLIGHT_ENTRY${GARR[GIDX]}\x1b[0G"
   fi
 }
 
 # move the cursor up:
 #  - if on first; return to the saved position
+# cursor_up <max-index>
 cursor_up() {
-  I=$((I-1))
+  local max_idx=$1
 
-  if [[ $I = '-1' ]]
+  GIDX=$((GIDX-1))
+
+  if [[ $GIDX = '-1' ]]
   then
-    I=$LEN
-    printf "\x1b[${LEN}E$HIGHLIGHT_ENTRY${SESSIONENTRY[I]}\x1b[0G"
+    GIDX=$max_idx
+    printf "\x1b[${max_idx}E$HIGHLIGHT_ENTRY${GARR[GIDX]}\x1b[0G"
   else
-    printf "\x1b[1F$HIGHLIGHT_ENTRY${SESSIONENTRY[I]}\x1b[0G"
+    printf "\x1b[1F$HIGHLIGHT_ENTRY${GARR[GIDX]}\x1b[0G"
   fi
 }
 
-choose_session_type() {
-  read ans
+# handle_key <key> <max-index>
+handle_key() {
+  local key=$1
+  local high=$2
 
-  if [[ $ans = 'n' ]]; then
-    return 1
-  else
-    echo "yes"
+  if [[ "$key" = "j" ]]
+  then
+    clear_current
+    cursor_down $high
+  elif [[ "$key" = "k" ]]
+  then
+    clear_current
+    cursor_up $high
   fi
 }
+### END: MOVEMENT ###
 
-# start the session
-#  - if chosen the last one, quit the program
+### BEGIN: LIST ###
+
+# fmt_entry <item> <high> -> <entry>
+fmt_entry() {
+  local item=$1
+  local high=$2
+
+  local len=${#item}
+
+  if (( $len < $high )); then
+    local diff=$(($high - $len - 1))
+    # compute how many spaces we need on this entry
+    local padding=$(eval "printf ' %.0s' {0..$diff}")
+  fi
+
+  echo "$1$padding"
+}
+
+# get_high <len> <entry-list> -> <high>
+get_high() {
+  local len=$1
+  local entls=${@:2}
+  local high=0
+
+  for ent in $entls; do
+    if (( $high < ${#ent} )); then
+      high=${#ent}
+    fi
+  done
+
+  echo $high
+}
+
+# list_pop <entry-list> -> [ <entry-array> @GLOBAL ]
+list_pop() {
+  local entls=$@
+  local len=$(($(echo $entls | wc -w) - 1))
+
+  local high=$(get_high $len $entls)
+  GARR=()
+
+  for ent in $entls; do
+    GARR+=("$BULLET\x1b[1m $(fmt_entry $ent $high) \x1b[0m")
+  done
+}
+
+# list_display
+list_display() {
+  printf "$HIGHLIGHT_ENTRY"
+
+  local entls=$@
+  local len=${#GARR[@]}
+
+  for ent in "${GARR[@]}"; do
+    printf "${ent}\n"
+  done
+
+  printf "\x1b[$((len+1))F\x1b[0G\n"
+}
+
+# list_next <max-index>
+list_next() {
+  local diff=$(($1 - GIDX))
+
+  printf "\x1b[$((diff + 1))E\n-------------------------------------- \x1b[0G\n"
+}
+
+# list_choose <entry-list> -> <session>
+list_choose() {
+  local entls=$@
+
+  list_pop $entls
+  local entries=${GARR[@]}
+  local entlen=$((${#GARR[@]} - 1))
+
+  list_display $entries
+
+  while [[ "$key" != "l" ]]; do
+    $READINPUT
+    handle_key "$key" "$entlen"
+  done
+
+  local idx=$GIDX
+  key=''
+
+  list_next $entlen
+
+  GIDX=0
+  GARR=()
+
+  return $idx
+}
+### END: LIST ###
+
+### BEGIN: MAIN ###
+# run_session <session> <session-type> <xinit>
 run_session() {
-  export wm
-  export session_type
+  local xinit=$1
+  local session=$2
+  local session_type=$3
 
   #printf '\x1b[?6;c'
-
   case $SESSION in
     tty)
       printf "\n$BULLET_INFO Logging in with tty\n\n"
-      unset session_type
-      unset wm
       exec $SHELL;;
     *)
-      session_type=$(choose_session_type)
-      printf "\n$BULLET_INFO Logging in with $SESSION\n\n"
-      session_type="$session_type" wm="$SESSION"
-      exec $STARTX;;
+      header "Logging in with $xinit > $session > $session_type"
+      exec $xinit $session $session_type ;;
   esac
 }
 
-# handle keypress
-handle() {
-  if [[ "$1" = "j" ]]
-  then
-    clear_current
-    cursor_down
-  elif [[ "$1" = "k" ]]
-  then
-    clear_current
-    cursor_up
-  fi
-}
+header "Choose a window manager to log in with"
+list_choose "${SESSIONS[@]}"
+SESSION=${SESSIONS[$?]}
 
-list_sessions() {
-  printf "$HIGHLIGHT_ENTRY"
+if [[ $SESSION != 'tty' ]]; then
+  header "Choose a Xinit implementation to log in with"
+  list_choose "${XINITS[@]}"
+  XINIT=${XINITS[$?]}
 
-  while read i
-  do
-    printf "${SESSIONENTRY[i]}\n"
-  done < <(seq 0 $LEN)
+  header_yesno "Run with Xsession?" "yes"
+  SESSION_TYPE=$?
+fi
 
-  printf "\x1b[$((LEN+2))F\x1b[0G\n"
-}
-
-choose_session() {
-  pop_entry
-  printf "\n$BULLET_INFO Choose a window manager to log in with\n\n"
-  list_sessions
-
-  while [[ "$key" != "l" ]]
-  do
-    $READINPUT
-    handle $key
-  done
-
-  SESSION=${SESSIONS[I]}
-  printf "\033[?25h\033[?6;c\n\033[999;999H "
-  printf "$BULLET_INFO Run with xsession? [Y/n] "
-}
-
-### BEGIN: MAIN ###
-choose_session
-run_session
+run_session $XINIT $SESSION $SESSION_TYPE
 ### END: MAIN ###
