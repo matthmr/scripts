@@ -2,25 +2,26 @@
 
 # start X daemons
 
-wm=$1
-
 # [ -z `pidof dunst` ] && dunst &
-# [ -z `pidof xcompmgr` ] && xcompmgr &
-
-if [[ -z `pidof clipmenud` ]]; then
-  CM_LAUNCHER=dmenu \
-  CM_HISTLENGTH=20 \
-  CM_MAX_CLIPS=20 \
-  CM_SELECTIONS=clipboard \
-  clipmenud &
-fi
 
 if [[ -z `pidof sxhkd` ]]; then
   sxhkd < /dev/null >& /dev/null &
 fi
 
-#if [[ -z `pidof fbxkb` ]]; then
-#  if [[ ! $wm =~ dwm ]]; then
-#    fbxkb &
-#  fi
-#fi
+# Unused
+#xmodmap /home/mh/.Xmodmap &
+#xcape -e 'Control_L=Escape' &
+
+# Mice are for pussies
+# `xkbset ma` syntax:
+#    [mk-delay> <mk_interval> <mk_time_to_max mk-max_speed> <mk_curve]
+xkbset ma 30 10 25 15 2 &
+
+# No fucking bell
+# xset b off &
+
+# Load Xresources
+xrdb /home/mh/.Xresources &
+
+# Nice wp anon
+nitrogen --restore &

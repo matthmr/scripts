@@ -1,0 +1,28 @@
+#!/usr/bin/bash
+
+W=1920
+H=1080
+
+case $1 in
+  '-h'|'--help')
+    echo "Usage:       resize"
+    echo "Description: Resize a X window to the given dimensions"
+    exit 1;;
+esac
+
+id=$(xwininfo | awk '/Window id:/ {print $4}')
+
+if [[ -z $id ]]; then
+  exit 1
+fi
+
+size=$(printf '' | dmenu -p "Window size (WxH)")
+
+if [[ -z $size || $size =~ /[0-9]+x[0-9]+/ ]]; then
+  exit 1
+fi
+
+w=$(echo $size | cut -f1 -dx)
+h=$(echo $size | cut -f2 -dx)
+
+xdotool windowsize $id $w $h
