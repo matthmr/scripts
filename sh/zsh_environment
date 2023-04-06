@@ -1,15 +1,7 @@
 # Development flags
-PREFIX="/mnt/ssd/root"
-LOCAL=("--root" "$PREFIX")
-RC="-dd"
+LOCAL=("--root" "/mnt/ssd/root")
 SSH_TERMUX="u0_a455"
 #GIT_TERMUX="data/data/com.termux/files/home"
-
-# General
-export LESS="-S -R -I -Q -x2 --use-color --mouse --incsearch"
-export EDITOR="emacsc"
-export CSCOPE_EDITOR="emacsc"
-export PAGER="less"
 
 # Program specific
 #export DICPATH="/home/mh/.local/share/hunspell"
@@ -18,4 +10,5 @@ export PAGER="less"
 #export FZF_DEFAULT_OPTS="--no-height --no-reverse"
 #export FZF_TMUX="1"
 export KEYTIMEOUT="1"
-unset PREFIX
+
+source ~p/scripts/sh/bash_environment

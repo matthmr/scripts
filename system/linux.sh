@@ -62,6 +62,9 @@ echo "[ .. ] Updating Git-controlled packages"
 echo "[ .. ] Updating locally Git-controlled packages"
 /home/mh/Scripts/git/mh-local.sh update
 
+echo "[ .. ] Updating big Git-controlled repositories"
+/home/mh/Scripts/git/update-big-repo.sh
+
 # TODO: make this a source list to something like `pacwrap' or `pkgm'
 echo "[ .. ] Updating source-controlled packages"
 /home/mh/Scripts/pkg/ungoogled-chromium.sh
@@ -78,7 +81,10 @@ echo "[ .. ] Syncing cron-like hooks"
 /home/mh/Scripts/sync-cron-like.sh
 
 echo "[ .. ] Running user-defined daemons"
-/home/mh/Scripts/emacss start 1>/dev/null 2>/dev/null &
+
+# NOTE: We have to unset `XINITSLEEP' so that shells launched under emacs don't
+# try to launch `xinit' again. See 20230325
+# XINITSLEEP='' /home/mh/Scripts/emacss start 1>/dev/null 2>/dev/null &
 
 #################### ROOT / GLOBAL PACKAGES ####################
 echo "[ .. ] Preparing to run root scripts"
@@ -119,5 +125,3 @@ else
 fi
 
 echo "[ OK ] linux.sh: Done"
-
-exit 1

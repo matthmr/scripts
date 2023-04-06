@@ -21,6 +21,11 @@ function icd {
   dirs -c
 }
 
+function tcd {
+  icd ~
+  cd  $1
+}
+
 function mkscript {
   case $1 in
     '-h'|'--help')

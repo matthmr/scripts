@@ -15,9 +15,10 @@ alias espeak='espeak --path=/mnt/ssd/root/usr/share/espeak-ng-data'
 #alias flite='flite -voice slt'
 alias roma2kana='romaji'
 alias vim='nvim'
+alias rp='realpath'
 
 # shortenings
-alias xa='xargs'
+alias xa='xargs -r'
 alias mk='make'
 #alias ll='exa --color=always -l -g --sort type --icons'
 alias sl='exa --color=always -l -g --sort type'

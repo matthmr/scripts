@@ -85,5 +85,3 @@ echo "[ .. ] Setting update locks for paru"
 }
 
 echo "[ OK ] linux-root.sh: Done"
-
-exit 0
