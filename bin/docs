@@ -2,21 +2,25 @@
 
 case $1 in
   '-h'|'--help'|'')
-    echo "Usage:       docs [-iI] [wiki|journal|project]:[command...] [editor...]"
+    echo "Usage:       docs [options] [major-mode]:[minor-mode] [editor...]"
     echo "Description: Writes documentation on local document repositories"
     echo "Options:
-  Pre-mode:
-    -i: launch interactive (fzf-like command)
-    -I: launch interactive (dmenu-like command)
+  -i: launch interactive (fzf-like command)
+  -I: launch interactive (dmenu-like command)
+  -x: launch as an xsession
 
-  Post-mode:
-    <mode>: choose the mode to run \`docs' with
-    <command>: run command of <mode>
-      command syntax for mode:
-        on \`wiki': <file-path--org>
-        on \`journal': <yy><mm>
-        on \`project': <project>:<file-path--org>
-    <editor>: editor command to use"
+Major Modes:
+  - wiki
+  - journal
+  - project
+
+Minor Modes:
+  Wiki:
+    :file-path
+  Journal:
+    :YYMM
+  Project
+    :project:file-path"
     echo "Environment:
   EDITOR: editor command
   DMENU: dmenu-like command for \`-i'
@@ -34,10 +38,11 @@ PROJECT="/home/mh/Git/MH"
 REPO=''
 EDITOR=''
 INT='' # i->fzf,I->dmenu
+TERM='urxvt'
 ### END: VARS ###
 
 
-### BEGIN: COMMANDS ###
+### BEGIN: MODES ###
 function wikicmd {
   if [[ -z $1 ]]; then
     # let interactive-mode figure it out
@@ -138,10 +143,11 @@ function journalcmd {
   echo "[ !! ] Command doesn't evaluate"
   exit 1
 }
-### END: COMMANDS ###
+### END: MODES ###
 
 off=
 
+### BEGIN: OPTIONS ###
 case $1 in
   '-i')
     off=3
@@ -153,10 +159,15 @@ case $1 in
     mode_arg=$2
     [[ -z $DMENU ]] && DMENU='dmenu -p choose'
     INT=$DMENU;;
+  '-x')
+    off=3
+    mode_arg=$2
+    X="$TERM -e";;
   *)
     off=2
     mode_arg=$1;;
 esac
+### END: OPTIONS ###
 
 mode=${mode_arg%%:*}
 cmd=${mode_arg#*:}
@@ -209,5 +220,5 @@ if [[ ! -z $INT ]]; then
 fi
 
 # DEBUG
-echo "[ == ] Running as: $EDITOR $REPO"
-exec $EDITOR $REPO
+echo "[ == ] Running as: $X $EDITOR $REPO"
+exec $X $EDITOR $REPO

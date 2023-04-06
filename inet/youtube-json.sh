@@ -56,7 +56,7 @@ fi
 [[ -z $FZF ]]  && FZF=fzf
 [[ -z $JQ ]]   && JQ=jq
 
-OP='download'
+OP='watch'
 JQUERY=".contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents[] | \
 .videoRenderer | \
 select(. != null) | \
@@ -98,7 +98,8 @@ function ytres_search {
       $AWK -F"\x00" \
            "NR == $ln {
 printf \" -- %s -- \nlink: ${YOUTUBE_WATCH}%s\nuploaded: %s\nduration: %s\n\
-views: %s\nby: %s\nid: https://www.youtube.com/channel/%s\nhandle: https://www.youtube.com%s\n\", \
+views: %s\nby: %s\nid: https://www.youtube.com/channel/%s\n\
+handle: https://www.youtube.com%s\n\", \
  \$1, \$2, \$3, \$4, \$5, \$6, \$7, \$8}" $1;;
   esac
 }

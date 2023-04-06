@@ -20,6 +20,8 @@ case $1 in
 		echo "Description: Generates a list of 30 videos for a given channel"
     echo "Options:
   -l : list queries
+  -w : operation: watch (default)
+  -s : operation: show
   -c : clear query
   -C : clear all"
 		echo "Variables:
@@ -33,7 +35,7 @@ case $1 in
   MPV_OPTS : extra mpv options"
 		exit 1;;
   '-v'|'--version')
-    echo "ytch v1.0.0"
+    echo "ytch v1.1.0"
     exit 1;;
 esac
 
@@ -54,6 +56,7 @@ fi
 [[ -z $FZF ]]  && FZF=fzf
 [[ -z $JQ ]]   && JQ=jq
 
+OP='watch'
 JQUERY=".contents.twoColumnBrowseResultsRenderer.tabs[1].tabRenderer.content.richGridRenderer.contents[] | \
 .richItemRenderer.content.videoRenderer | \
 select(. != null) | \
@@ -79,12 +82,26 @@ function ytch_search {
   fi
 
   local ln=$(echo "$res" | awk '{print $1}')
-  local link=$(cat $1 | sed -n "${ln}p;${ln}q" | awk -F"\x00" '{print $2}')
-  ytch_load_video "${YOUTUBE_WATCH}${link}"
+
+  case $OP in
+    'watch')
+      local link=$(cat $1 | sed -n "${ln}p;${ln}q" | awk -F"\x00" '{print $2}')
+      ytch_load_video "${YOUTUBE_WATCH}${link}";;
+    'show')
+      $AWK -F"\x00" \
+           "NR == $ln {
+printf \" -- %s -- \nlink: ${YOUTUBE_WATCH}%s\nuploaded: %s\nduration: %s\n\
+views: %s\n\",
+\$1, \$2, \$3, \$4, \$5}" $1;;
+  esac
 }
 
 for arg in "$@"; do
   case $arg in
+    '-w')
+      OP=watch;;
+    '-s')
+      OP=show;;
     '-l')
       if [[ -d $BASE ]]
       then

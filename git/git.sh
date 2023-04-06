@@ -15,6 +15,8 @@ while read repo; do
   fi
 
   echo "[ .. ] pulling repository: $repo"
+  echo "[ == ] Running as: git -C $repo pull origin -- HEAD"
+
   git -C $repo pull origin -- HEAD
 done < $GITLIST
 

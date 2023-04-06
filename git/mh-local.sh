@@ -26,8 +26,10 @@ function update_repo {
     repo_branch=${repo/* /}
 
     echo "[ .. ] mh-local.sh: fetching repo: ${repo_path} @${repo_branch}"
+    echo "[ == ] Running as: git -C $repo_path fetch origin -- \
+$repo_branch:$repo_branch"
 
-    git -C $repo_path fetch origin -- $repo_branch
+    git -C $repo_path fetch origin -- $repo_branch:$repo_branch
   done < $GITLOCAL
 }
 
