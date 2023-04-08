@@ -24,7 +24,7 @@ case $WM in
 esac
 
 # no session: ignore the rest of the script
-if [[ $2 = "0" ]]; then
+if [[ $2 == "0" ]]; then
   exit 0
 fi
 

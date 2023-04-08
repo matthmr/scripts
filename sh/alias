@@ -28,6 +28,7 @@ alias b='busybox'
 alias js='jobs -ld'
 alias high='highlight -O ansi'
 alias bap='bat -p'
+alias gip='git -P'
 
 # coreutils overrides
 alias grep='grep --color=always'

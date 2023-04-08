@@ -55,13 +55,13 @@ header_yesno() {
   read ans
 
   if [[ $default == " [Y/n]" ]]; then
-    if [[ ans == 'y' || -z $ans ]]; then
+    if [[ $ans == 'y' || -z $ans ]]; then
       return 1
     else
       return 0
     fi
   else
-    if [[ ans == 'n' || -z $ans ]]; then
+    if [[ $ans == 'n' || -z $ans ]]; then
       return 0
     else
       return 1
