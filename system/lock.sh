@@ -1,10 +1,12 @@
 #!/usr/bin/bash
 
 USER_SHELL=zsh
-NOTIFY=herbe
 COMMAND=$1
 AS=${COMMAND##*:}
 COMMAND=${COMMAND%%:*}
+
+# set `NOTIFY' through the enviroment
+[[ -z NOTIFY ]] && NOTIFY=herbe
 
 case $1 in
 	'-h'|'--help')

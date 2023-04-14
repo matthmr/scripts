@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/bash
 
 TERM=xterm
 TERMCMD=-e
@@ -14,13 +14,19 @@ case $1 in
 		;;
 esac
 
-function kill_term {
-	local shell_pid=$1
-	local _ppid="$(ps -p $SHELL_PID -O ppid)"
-	ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
-	kill -KILL $ppid
-	exit 1
-}
+if [[ $1 == '-x' ]]; then
+  function kill_term {
+    local shell_pid=$1
+    local _ppid="$(ps -p $SHELL_PID -O ppid)"
+    ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
+    kill -KILL $ppid
+    exit 1
+  }
+else
+  function kill_term {
+    exit 1 # stub
+  }
+fi
 
 #################### GUARD ####################
 read -p "[ ?? ] Start scheduled system run-up? [Y/n] " ans
@@ -92,9 +98,11 @@ echo "[ .. ] Preparing to run root scripts"
 # always try to get the root password
 while ! $SUDO /home/mh/Scripts/system/linux-root.sh $TMP; do continue; done
 
-# wait for the user to close the window
-echo "[ .. ] Listing out-of-date packages"
-$TERM $TERMCMD less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw # /tmp/pacman/pacman-artix-raw
+if [[ $1 == '-x' ]]; then
+  # wait for the user to close the window
+  echo "[ .. ] Listing out-of-date packages"
+  $TERM $TERMCMD less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw # /tmp/pacman/pacman-artix-raw
+fi
 
 #################### CRON / HOOKS ####################
 echo "[ .. ] Finding hooks"

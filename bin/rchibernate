@@ -1,15 +1,1 @@
-#!/usr/bin/sh
-
-case $1 in
-  '-h'|'--help')
-    echo "Usage:       rchibernate"
-    echo "Description: Hibernates the system"
-    exit 1;;
-esac
-
-TERM=st
-
-export XINITSLEEP="doas"
-export XINITSLEEPARGS="/home/mh/.local/bin/s2disk"
-
-exec $TERM -e zsh
+rcsuspend

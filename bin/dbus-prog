@@ -77,7 +77,6 @@ case $op in
       sleep 5
     fi
     if ! $no_bus; then
-      sleep 5
       echo "[ == ] pkill -f -TERM 'dbus-daemon.*--session$'"
       eval pkill -f -TERM 'dbus-daemon.*--session$'
     fi

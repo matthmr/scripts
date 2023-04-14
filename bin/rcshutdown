@@ -1,14 +1,23 @@
-#!/bin/sh
+#!/usr/bin/bash
 
-TERM=st
 SUDO=doas
-SHUTDOWN='poweroff now'
-REBOOT='reboot now'
 NOTIFY=herbe
 
 AS=${0##*/}
 AS=${AS/rc/}
 ARG=
+
+# called by sxhkd
+if [[ $1 == '-x' ]]; then
+  $NOTIFY "Prompting user for checkout on the journal" &
+  docs -x journal
+
+  TERM=st
+else
+  NOTIFY='echo' # stub
+  $NOTIFY "Prompting user for checkout on the journal" &
+  docs journal
+fi
 
 if [[ -d /tmp/pacman ]]
 then
@@ -45,23 +54,22 @@ then
 	fi
 fi
 
-# kill `emacsserver'
-emacsserver stop
+emacss stop
 
-if [[ ! -z $ARG ]]
-then
+$NOTIFY "Preparing to send ACPI event..."
+if [[ $1 == '-x' ]]; then
   printf '\a' > /dev/tty${DISPLAY:1:1}
-	sleep 5
-	export XINITSLEEP="/home/mh/Scripts/system/lock.sh"
-	export XINITSLEEPARGS="${ARG}:${AS}"
-	exec $TERM -e zsh # ACPI event is handled in the `XINITSLEEP' script
 else
-	case $AS in
-		'shutdown')
-			$SUDO $SHUTDOWN;;
-		'reboot')
-			$SUDO $REBOOT;;
-		*) # fallback
-			$SUDO $SHUTDOWN;;
-	esac
+  printf '\a' > /dev/tty1 # imagine...
+fi
+
+sleep 1
+
+export XINITSLEEP="/home/mh/Scripts/system/lock.sh"
+export XINITSLEEPARGS="${ARG}:${AS}"
+if [[ $1 == '-x' ]]; then
+  exec $TERM -e zsh # ACPI event is handled in the `XINITSLEEP' script
+else
+  export NOTIFY
+  NOTIFY=echo $XINITSLEEP $XINITSLEEPARGS
 fi

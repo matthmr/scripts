@@ -20,7 +20,7 @@ case $WM in
     mkdir -pv /tmp/emacs
     touch /tmp/emacs/daemon.log
     emacss start >> /tmp/emacs/daemon.log 2>&1 &&  \
-      sleep 3 && docs -x journal > /dev/null 2>&1 &;;
+      sleep 1 && docs -x journal > /dev/null 2>&1 &;;
 esac
 
 # no session: ignore the rest of the script
@@ -34,10 +34,7 @@ if [[ -f /tmp/xsession.lock ]]; then
 else
   touch /tmp/xsession.lock
 
-  sleep 3
-
-  if [[ ! -z $2 ]]; then
-    export XINITSLEEP=/home/mh/Scripts/system/linux.sh
-    $TERM -e zsh
-  fi
+  export XINITSLEEP=/home/mh/Scripts/system/linux.sh
+  export XINITSLEEPARGS=-x
+  $TERM -e zsh
 fi

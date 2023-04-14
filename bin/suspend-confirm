@@ -1,0 +1,16 @@
+#!/bin/sh
+
+AS=${0##*/}
+AS=${AS/-confirm/}
+
+COMMAND=/home/mh/.local/bin/${AS}.sh
+
+read -p "[y/N] ${AS}? " ans
+
+if [[ $ans = 'y' ]]; then
+  doas $COMMAND
+  exit $?
+else
+  echo "[ !! ] Cancelled"
+  exit 1
+fi

@@ -14,7 +14,10 @@ fi
 
 PMAN_DIR=/tmp/pacman
 PKG_FILE=/home/mh/Scripts/pkg/efistub.txt
-STUB=usr/lib/systemd/boot/efi/linuxx64.efi.stub
+
+EFISTUB=usr/lib/systemd/boot/efi/linuxx64.efi.stub
+SYSUSERS=usr/bin/systemd-sysusers
+TMPFILES=usr/bin/systemd-tmpfiles
 
 # Header
 echo "[ HOOK ] Updating the EFI stub using systemd : $0"
@@ -25,11 +28,18 @@ if [[ ! -f $PMAN_DIR/lock-efistub ]]; then
 else
 	# Backing up
 	echo "[ .. ] Copying old stub"
-	cp -v /$STUB /$STUB-old
+	cp -v /$EFISTUB /$EFISTUB-old
 
 	# Extract the stub
 	echo "[ .. ] Extracting stub: $PMAN_DIR/efistub.tar.zstd "
-	tar xf $PMAN_DIR/efistub.tar.zstd $STUB --zstd -O > /$STUB
+
+  tar xf $PMAN_DIR/efistub.tar.zstd --zstd -C $PMAN_DIR
+
+  cp -v $PMAN_DIR/$STUB     /$STUB
+  cp -v $PMAN_DIR/$SYSUSERS /usr/bin/sysusers
+  cp -v $PMAN_DIR/$TMPFILES /usr/bin/tmpfiles
+
+	# tar xf $PMAN_DIR/efistub.tar.zstd $STUB --zstd -O > /$STUB
 
 	# Remove lock
 	echo "[ .. ] Removing lock"

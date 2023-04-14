@@ -1,15 +1,14 @@
-#!/usr/bin/sh
-
-case $1 in
-  '-h'|'--help')
-    echo "Usage:       rcsuspend"
-    echo "Description: Suspends the system"
-    exit 1;;
-esac
+#!/usr/bin/bash
 
 TERM=st
 
-export XINITSLEEP="doas"
-export XINITSLEEPARGS="/home/mh/.local/bin/s2ram"
+AS=${0##*/}
+AS=${AS/rc/}
 
-exec $TERM -e zsh
+export XINITSLEEP="/home/mh/Scripts/bin/${AS}-confirm"
+
+if [[ $1 == '-x' ]]; then
+  exec $TERM -e zsh
+else
+  $XINITSLEEP
+fi

@@ -5,6 +5,7 @@ SAVEHIST=500
 ZSH_MODE='vi'
 setopt autocd autopushd
 setopt PROMPT_SUBST HIST_IGNORE_SPACE
+setopt nobeep
 set -k
 
 case $ZSH_MODE in
@@ -22,11 +23,11 @@ precmd() { vcs_info }
 zstyle ':vcs_info:git:*' formats '%F{red}[%F{reset}%B%b%F{red}]'
 
 # Prompt
-# ┌[mh@linux] [pts/0] [2236] [master]
+# ┌[zsh -- mh@linux] [pts/0] [2236] [master]
 # └[~]>
 
 PROMPT="\
-%F{red}┌[%F{reset}%B%n%b%F{red}@%F{reset}%B%m%b%F{red}] \
+%F{red}┌[%F{reset}%Bzsh -- %n%b%F{red}@%F{reset}%B%m%b%F{red}] \
 %F{red}[%F{reset}%B%l%b%F{red}] \
 %F{red}[%F{reset}%B%D{%H%M}%b%F{red}] \
 \$vcs_info_msg_0_ \

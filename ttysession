@@ -1,0 +1,26 @@
+#!/usr/bin/bash
+
+# $1 is ignored for backwards-compatibility
+
+SHELL=zsh
+
+mkdir -pv /tmp/emacs
+touch /tmp/emacs/daemon.log
+
+# this will fail if emacs has an existing session
+emacss start >> /tmp/emacs/daemon.log 2>&1 &&  \
+  sleep 1 && docs journal > /dev/null 2>&1 &
+
+# no session: ignore the rest of the script
+if [[ $2 == "1" ]]; then
+  # locked: ignore launching `linux.sh'
+  if [[ -f /tmp/ttysession.lock ]]; then
+    exit 0
+  else
+    touch /tmp/ttysession.lock
+
+    /home/mh/Scripts/system/linux.sh
+  fi
+fi
+
+exec $SHELL

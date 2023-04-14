@@ -25,7 +25,7 @@ SESSION=
 SESSION_TYPE=
 
 ### XINIT
-XINITS=('sx' 'startxwm')
+XINITS=('sx' 'sx-mouse' 'sx-mouse-new')
 XINITS_ENTRY=()
 XINIT=
 
@@ -220,35 +220,34 @@ list_choose() {
 ### END: LIST ###
 
 ### BEGIN: MAIN ###
-# run_session <session> <session-type> <xinit>
-run_session() {
-  local xinit=$1
-  local session=$2
-  local session_type=$3
+# continously prompt the user for a new session. Shutting down the computer
+# through `rcshutdown' breaks this cycle
+while :; do
+  header "Choose a window manager to log in with"
+  list_choose "${SESSIONS[@]}"
+  SESSION=${SESSIONS[$?]}
+
+  if [[ $SESSION != 'tty' ]]; then
+    header "Choose a Xinit implementation to log in with"
+    list_choose "${XINITS[@]}"
+    XINIT=${XINITS[$?]}
+
+    header_yesno "Run with Xsession?" "yes"
+    SESSION_TYPE=$?
+  else
+    header_yesno "Run with TTYsession?" "yes"
+    SESSION_TYPE=$?
+    XINIT='/home/mh/Scripts/ttysession' # stub
+  fi
 
   #printf '\x1b[?6;c'
   case $SESSION in
     tty)
-      printf "\n$BULLET_INFO Logging in with tty\n\n"
-      exec $SHELL;;
+      printf "\n$BULLET_INFO Logging in with TTY > $SESSION_TYPE\n\n";;
     *)
-      header "Logging in with $xinit > $session > $session_type"
-      exec $xinit $session $session_type ;;
+      header "Logging in with $XINIT > $SESSION > $SESSION_TYPE";;
   esac
-}
 
-header "Choose a window manager to log in with"
-list_choose "${SESSIONS[@]}"
-SESSION=${SESSIONS[$?]}
-
-if [[ $SESSION != 'tty' ]]; then
-  header "Choose a Xinit implementation to log in with"
-  list_choose "${XINITS[@]}"
-  XINIT=${XINITS[$?]}
-
-  header_yesno "Run with Xsession?" "yes"
-  SESSION_TYPE=$?
-fi
-
-run_session $XINIT $SESSION $SESSION_TYPE
+  $XINIT $SESSION $SESSION_TYPE
+done
 ### END: MAIN ###
