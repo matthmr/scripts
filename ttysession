@@ -4,12 +4,15 @@
 
 SHELL=zsh
 
+# used for the emacs server to set itself up for a TTYsession
+export TTYSESSION=yes
+
 mkdir -pv /tmp/emacs
 touch /tmp/emacs/daemon.log
 
 # this will fail if emacs has an existing session
 emacss start >> /tmp/emacs/daemon.log 2>&1 &&  \
-  sleep 1 && docs journal > /dev/null 2>&1 &
+  sleep 1 && docs journal >> /tmp/emacs/daemon.log 2>&1
 
 # no session: ignore the rest of the script
 if [[ $2 == "1" ]]; then
@@ -19,7 +22,9 @@ if [[ $2 == "1" ]]; then
   else
     touch /tmp/ttysession.lock
 
-    /home/mh/Scripts/system/linux.sh
+    # BASH is only for a TTYsession script
+    export TTYSESSIONSLEEP='/home/mh/Scripts/system/linux.sh'
+    tmux new bash
   fi
 fi
 

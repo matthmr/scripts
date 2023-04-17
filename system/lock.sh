@@ -5,8 +5,7 @@ COMMAND=$1
 AS=${COMMAND##*:}
 COMMAND=${COMMAND%%:*}
 
-# set `NOTIFY' through the enviroment
-[[ -z NOTIFY ]] && NOTIFY=herbe
+NOTIFY=herbe
 
 case $1 in
 	'-h'|'--help')
@@ -16,6 +15,11 @@ case $1 in
 	SUDO: sudo-like command"
 		exit 1;;
 esac
+
+# running for TTYsession
+if [[ $2 == '-t' ]]; then
+  NOTIFY='echo'
+fi
 
 # carve out the command
 PACMAN= PARU= CRON= EFISTUB=

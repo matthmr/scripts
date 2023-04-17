@@ -72,5 +72,7 @@ export SHELL=/bin/zsh
 	[[ ! -z "$XINITSLEEP" ]]
 } && {
 	"$XINITSLEEP" $XINITSLEEPARGS
+  unset XINITSLEEP XINITSLEEPARGS
 }
+
 :

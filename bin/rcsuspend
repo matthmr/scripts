@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-TERM=st
+XTERM=st
 
 AS=${0##*/}
 AS=${AS/rc/}
@@ -8,7 +8,7 @@ AS=${AS/rc/}
 export XINITSLEEP="/home/mh/Scripts/bin/${AS}-confirm"
 
 if [[ $1 == '-x' ]]; then
-  exec $TERM -e zsh
+  exec $XTERM -e zsh
 else
   $XINITSLEEP
 fi

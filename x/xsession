@@ -1,27 +1,31 @@
 #!/usr/bin/bash
 
 WM=$1
-TERM=st
+XTERM=st
 TIMEOUT=5
+TRIES=10
 
 # wait for X to start, if it hasn't yet, keep waiting...
 sleep $TIMEOUT
 while :
 do
   pidof $WM > /dev/null && break || sleep $TIMEOUT
+  if [[ $TRIES == '0' ]]; then
+     exit 1
+  fi
+
+  TRIES=$((TRIES-1))
 done
 
 # start WM-specific programs
 case $WM in
-  # See (20221106)
-  #/tmp/dbus-launch /mnt/ssd/root/usr/bin/dunst < /dev/null >& /dev/null &
-  # xsetroot -xcf /home/mh/.icons/McMojave-cursors/cursors/default 32 &;;
-  'dwm'|'dwm-git')
-    mkdir -pv /tmp/emacs
-    touch /tmp/emacs/daemon.log
-    emacss start >> /tmp/emacs/daemon.log 2>&1 &&  \
-      sleep 1 && docs -x journal > /dev/null 2>&1 &;;
+  *) ;; # stub
 esac
+
+mkdir -pv /tmp/emacs
+touch /tmp/emacs/daemon.log
+emacss start >> /tmp/emacs/daemon.log 2>&1 &&  \
+  sleep 1 && docs -x journal >> /tmp/emacs/daemon.log 2>&1 &
 
 # no session: ignore the rest of the script
 if [[ $2 == "0" ]]; then
@@ -36,5 +40,5 @@ else
 
   export XINITSLEEP=/home/mh/Scripts/system/linux.sh
   export XINITSLEEPARGS=-x
-  $TERM -e zsh
+  $XTERM -e zsh
 fi

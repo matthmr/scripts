@@ -18,6 +18,6 @@ else
   BASE="$XDG_RUNTIME_DIR/emacs"
 fi
 
-exec $EMACSCLIENT -t -s \
+exec $EMACSCLIENT -t -s    \
      "$BASE/server" ${@:1} \
      -a "$EMACSALT"

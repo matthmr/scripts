@@ -1,7 +1,5 @@
 #!/usr/bin/sh
 
-TERM=xterm
-TERMCMD=-e
 TIMEOUT=5
 
 case $1 in

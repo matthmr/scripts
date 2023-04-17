@@ -12,7 +12,7 @@ if [[ $1 == '-x' ]]; then
   $NOTIFY "Prompting user for checkout on the journal" &
   docs -x journal
 
-  TERM=st
+  XTERM=st
 else
   NOTIFY='echo' # stub
   $NOTIFY "Prompting user for checkout on the journal" &
@@ -68,8 +68,7 @@ sleep 1
 export XINITSLEEP="/home/mh/Scripts/system/lock.sh"
 export XINITSLEEPARGS="${ARG}:${AS}"
 if [[ $1 == '-x' ]]; then
-  exec $TERM -e zsh # ACPI event is handled in the `XINITSLEEP' script
+  exec $XTERM -e zsh
 else
-  export NOTIFY
-  NOTIFY=echo $XINITSLEEP $XINITSLEEPARGS
+  tmux new $XINITSLEEP $XINITSLEEPARGS -t
 fi

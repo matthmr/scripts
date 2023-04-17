@@ -18,3 +18,11 @@ source /home/mh/Scripts/sh/functions
 cat /home/mh/Documents/Ascii/linux.txt
 
 export SHELL=/bin/bash
+
+
+if [[ ! -z "$TTYSESSIONSLEEP" ]]; then
+  "$TTYSESSIONSLEEP"
+  unset TTYSESSIONSLEEP
+fi
+
+:

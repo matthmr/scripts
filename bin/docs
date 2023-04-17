@@ -2,7 +2,7 @@
 
 case $1 in
   '-h'|'--help'|'')
-    echo "Usage:       docs [options] [major-mode]:[minor-mode] [editor...]"
+    echo "Usage:       docs [options] [major-mode]:[minor-mode]"
     echo "Description: Writes documentation on local document repositories"
     echo "Options:
   -i: launch interactive (fzf-like command)
@@ -36,9 +36,9 @@ PROJECT="/home/mh/Git/MH"
 
 ### BEGIN: VARS ###
 REPO=''
-EDITOR=''
+EDITOR='emacsclient -t'
 INT='' # i->fzf,I->dmenu
-TERM='urxvt'
+XTERM='urxvt'
 ### END: VARS ###
 
 ### BEGIN: MODES ###
@@ -143,26 +143,20 @@ function journalcmd {
 }
 ### END: MODES ###
 
-off=
-
 ### BEGIN: OPTIONS ###
 case $1 in
   '-i')
-    off=3
     mode_arg=$2
     [[ -z $FZF ]] && FZF=fzf
     INT=$FZF;;
   '-I')
-    off=3
     mode_arg=$2
     [[ -z $DMENU ]] && DMENU='dmenu -p choose'
     INT=$DMENU;;
   '-x')
-    off=3
     mode_arg=$2
-    X="$TERM -e";;
+    X="$XTERM -e";;
   *)
-    off=2
     mode_arg=$1;;
 esac
 ### END: OPTIONS ###
@@ -190,11 +184,6 @@ case $mode in
     exit 1;;
 esac
 
-EDITOR=${@:off}
-
-# default to emacs
-[[ -z $EDITOR ]] && EDITOR=emacsc
-
 function feed {
  ans=$(echo "$@" | $INT)
 
@@ -219,7 +208,8 @@ fi
 
 if [[ -z $X ]]; then
   echo "[ == ] Running as: $EDITOR $REPO"
-  TERM=xterm-256color $EDITOR $REPO
+  # backwards compatibility with TTY
+  $EDITOR $REPO > $(tty)
 else
   echo "[ == ] Running as: $X $EDITOR $REPO"
   exec $X $EDITOR $REPO

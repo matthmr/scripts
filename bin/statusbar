@@ -44,7 +44,7 @@ UPTIME="$_HOUR$_MIN"
 #KERNEL="${_KERNEL%-arch*}"
 
 # Time
-_DATE=$(date +'%a %Y%m%d %H%M')
+_DATE=$(date +'%a %Y%m%d%H%M')
 DATE="$_DATE"
 
 # Keyboard Layout

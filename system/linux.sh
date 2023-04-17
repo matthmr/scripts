@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-TERM=xterm
+XTERM=xterm
 TERMCMD=-e
 TIMEOUT=5
 
@@ -101,7 +101,7 @@ while ! $SUDO /home/mh/Scripts/system/linux-root.sh $TMP; do continue; done
 if [[ $1 == '-x' ]]; then
   # wait for the user to close the window
   echo "[ .. ] Listing out-of-date packages"
-  $TERM $TERMCMD less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw # /tmp/pacman/pacman-artix-raw
+  $XTERM $TERMCMD less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw # /tmp/pacman/pacman-artix-raw
 fi
 
 #################### CRON / HOOKS ####################

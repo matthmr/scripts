@@ -5,5 +5,11 @@ function start_srv {
   /home/mh/Run/$1 start
 }
 
+function start_prog {
+  echo "[ .. ] Starting $1"
+  $1 &
+}
+
 start_srv mpd
-start_srv clipmenud
+
+[[ ! -z $(pidof Xorg) ]] && clipmenud &
