@@ -23,6 +23,8 @@ SESSIONS=('dwm' 'i3' 'awesome' 'dwm-git' 'shell' 'tty')
 SESSIONS_ENTRY=()
 SESSION=
 SESSION_TYPE=
+LIST_YES=('yes' 'no')
+LIST_NO=('no' 'yes')
 
 ### XINIT
 XINITS=('sx' 'sx-mouse' 'sx-mouse-new')
@@ -238,33 +240,54 @@ while :; do
   SESSION=${SESSIONS[$?]}
 
   if [[ $SESSION != 'shell' ]]; then
-    header_yesno "Run once?" "yes"
-    ONCE=$?
+    # header_yesno "Run once?" "yes"
+    # ONCE=$?
+    header "Run once?"
+    list_choose "${LIST_YES[@]}"
+    ONCE=${LIST_YES[$?]}
   fi
 
   case $SESSION in
     'shell')
       exec $SHELL;;
     'tty')
-      header_yesno "Run with TTYsession?" "no"
-      SESSION_TYPE=$?
+      # header_yesno "Run with TTYsession?" "no"
+      # SESSION_TYPE=$?
+      header "Run with TTYsession?"
+      list_choose "${LIST_NO[@]}"
+      SESSION_TYPE=${LIST_NO[$?]}
       XINIT='/home/mh/Scripts/ttysession';; # stub
     *)
       header "Choose a Xinit implementation to log in with"
       list_choose "${XINITS[@]}"
       XINIT=${XINITS[$?]}
 
-      header_yesno "Run with Xsession?" "no"
-      SESSION_TYPE=$?;;
+      # header_yesno "Run with Xsession?" "no"
+      # SESSION_TYPE=$?;;
+      header "Run with Xsession?"
+      list_choose "${LIST_NO[@]}"
+      SESSION_TYPE=${LIST_NO[$?]}
   esac
 
   #printf '\x1b[?6;c'
   case $SESSION in
     'tty')
-      header "Logging in with TTY > $(tty) > $SESSION_TYPE";;
+      header "Logging in with TTY > $(tty) > $SESSION_TYPE for TTYsession";;
     *)
-      header "Logging in with $XINIT > $SESSION > $SESSION_TYPE";;
+      header "Logging in with $XINIT > $SESSION > $SESSION_TYPE for Xsession";;
   esac
+
+  if [[ $ONCE == 'no' ]]; then
+    ONCE='0'
+  else
+    ONCE='1'
+  fi
+
+  if [[ $SESSION_TYPE == 'no' ]]; then
+    SESSION_TYPE='0'
+  else
+    SESSION_TYPE='1'
+  fi
 
   if [[ $ONCE == '0' ]]; then
     $XINIT $SESSION $SESSION_TYPE
