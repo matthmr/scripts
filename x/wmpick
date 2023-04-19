@@ -57,12 +57,16 @@ header_yesno() {
   if [[ $default == " [Y/n]" ]]; then
     if [[ $ans == 'y' || -z $ans ]]; then
       return 1
+    elif [[ $ans == 'q' ]]; then
+      exit 1
     else
       return 0
     fi
   else
     if [[ $ans == 'n' || -z $ans ]]; then
       return 0
+    elif [[ $ans == 'q' ]]; then
+      exit 1
     else
       return 1
     fi
@@ -113,15 +117,16 @@ handle_key() {
   local key=$1
   local high=$2
 
-  if [[ "$key" = "j" ]]
-  then
-    clear_current
-    cursor_down $high
-  elif [[ "$key" = "k" ]]
-  then
-    clear_current
-    cursor_up $high
-  fi
+  case $key in
+    'j')
+      clear_current
+      cursor_down $high ;;
+    'k')
+      clear_current
+      cursor_up $high ;;
+    'q')
+      exit 1;;
+  esac
 }
 ### END: MOVEMENT ###
 
@@ -202,9 +207,13 @@ list_choose() {
 
   list_display $entries
 
-  while [[ "$key" != "l" ]]; do
+  while :; do
     $READINPUT
     handle_key "$key" "$entlen"
+
+    if [[ "$key" == "l" || -z "$key" ]]; then
+      break
+    fi
   done
 
   local idx=$GIDX
@@ -228,8 +237,10 @@ while :; do
   list_choose "${SESSIONS[@]}"
   SESSION=${SESSIONS[$?]}
 
-  header_yesno "Run once?" "yes"
-  ONCE=$?
+  if [[ $SESSION != 'shell' ]]; then
+    header_yesno "Run once?" "yes"
+    ONCE=$?
+  fi
 
   case $SESSION in
     'shell')
