@@ -1,0 +1,3 @@
+#!/bin/bash
+mount devpts
+chmod 1777 /dev/shm

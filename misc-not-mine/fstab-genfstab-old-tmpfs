@@ -1,0 +1,108 @@
+# /dev/sdc2
+UUID=d8c055fa-339b-4a9e-ba86-4c0d8409676a	/         	ext4      	rw,relatime	0 1
+
+# proc
+proc                	/proc     	proc      	rw,nosuid,nodev,noexec	0 0
+
+# binfmt_misc
+binfmt_misc         	/proc/sys/fs/binfmt_misc	binfmt_misc	rw,nosuid,nodev,noexec	0 0
+
+# sys
+sys                 	/sys      	sysfs     	rw,nosuid,nodev,noexec	0 0
+
+# securityfs
+securityfs          	/sys/kernel/security	securityfs	rw,nosuid,nodev,noexec	0 0
+
+# debugfs
+debugfs             	/sys/kernel/debug	debugfs   	rw,nosuid,nodev,noexec	0 0
+
+# configfs
+configfs            	/sys/kernel/config	configfs  	rw,nosuid,nodev,noexec	0 0
+
+# pstore
+pstore              	/sys/fs/pstore	pstore    	rw,nosuid,nodev,noexec	0 0
+
+# cgroup_root
+cgroup_root         	/sys/fs/cgroup	tmpfs     	rw,nosuid,nodev,noexec,size=10240k,mode=755,inode64	0 0
+
+# openrc
+openrc              	/sys/fs/cgroup/openrc	cgroup    	rw,nosuid,nodev,noexec,release_agent=/usr/lib/openrc/sh/cgroup-release-agent.sh,name=openrc	0 0
+
+# none
+none                	/sys/fs/cgroup/unified	cgroup2   	rw,nosuid,nodev,noexec,nsdelegate	0 0
+
+# cpuset
+cpuset              	/sys/fs/cgroup/cpuset	cgroup    	rw,nosuid,nodev,noexec,cpuset	0 0
+
+# cpu
+cpu                 	/sys/fs/cgroup/cpu	cgroup    	rw,nosuid,nodev,noexec,cpu	0 0
+
+# cpuacct
+cpuacct             	/sys/fs/cgroup/cpuacct	cgroup    	rw,nosuid,nodev,noexec,cpuacct	0 0
+
+# blkio
+blkio               	/sys/fs/cgroup/blkio	cgroup    	rw,nosuid,nodev,noexec,blkio	0 0
+
+# memory
+memory              	/sys/fs/cgroup/memory	cgroup    	rw,nosuid,nodev,noexec,memory	0 0
+
+# devices
+devices             	/sys/fs/cgroup/devices	cgroup    	rw,nosuid,nodev,noexec,devices	0 0
+
+# freezer
+freezer             	/sys/fs/cgroup/freezer	cgroup    	rw,nosuid,nodev,noexec,freezer	0 0
+
+# net_cls
+net_cls             	/sys/fs/cgroup/net_cls	cgroup    	rw,nosuid,nodev,noexec,net_cls	0 0
+
+# perf_event
+perf_event          	/sys/fs/cgroup/perf_event	cgroup    	rw,nosuid,nodev,noexec,perf_event	0 0
+
+# net_prio
+net_prio            	/sys/fs/cgroup/net_prio	cgroup    	rw,nosuid,nodev,noexec,net_prio	0 0
+
+# hugetlb
+hugetlb             	/sys/fs/cgroup/hugetlb	cgroup    	rw,nosuid,nodev,noexec,hugetlb	0 0
+
+# pids
+pids                	/sys/fs/cgroup/pids	cgroup    	rw,nosuid,nodev,noexec,pids	0 0
+
+# rdma
+rdma                	/sys/fs/cgroup/rdma	cgroup    	rw,nosuid,nodev,noexec,rdma	0 0
+
+# misc
+misc                	/sys/fs/cgroup/misc	cgroup    	rw,nosuid,nodev,noexec,misc	0 0
+
+# dev
+dev                 	/dev      	devtmpfs  	rw,nosuid,size=10240k,nr_inodes=2038562,mode=755,inode64	0 0
+
+# mqueue
+mqueue              	/dev/mqueue	mqueue    	rw,nosuid,nodev,noexec	0 0
+
+# devpts
+devpts              	/dev/pts  	devpts    	rw,nosuid,noexec,gid=5,mode=620,ptmxmode=000	0 0
+
+# shm
+shm                 	/dev/shm  	tmpfs     	rw,nosuid,nodev,noexec,inode64	0 0
+
+# run
+run                 	/run      	tmpfs     	rw,nosuid,nodev,mode=755,inode64	0 0
+
+# tmpfs
+tmpfs               	/run/user/1000	tmpfs     	rw,nosuid,nodev,size=1638796k,nr_inodes=409699,mode=700,uid=1000,gid=1000,inode64	0 0
+
+# /dev/sda1
+UUID=106dfe89-0c4a-4d92-b43d-0bbff4580115	/mnt/hdd  	ext4      	rw,relatime	0 2
+
+# /dev/sdb1
+UUID=f23d2595-f666-4a5e-8cea-1eb8308c5913	/home     	ext4      	rw,relatime	0 2
+
+# /dev/sdb2
+UUID=a804608f-7487-4a29-9879-e5747befe0cb	/mnt/ssd  	ext4      	rw,relatime	0 2
+
+# /dev/sdc1
+UUID=dcf08802-a46e-4049-a0fd-b907fb6e33b6	/boot     	ext4      	rw,relatime	0 2
+
+# tmpfs
+tmpfs               	/tmp      	tmpfs     	rw,nosuid,nodev,noatime,inode64	0 0
+
