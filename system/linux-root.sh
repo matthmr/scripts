@@ -27,9 +27,6 @@ echo "[ .. ] Synchronizing clock"
 # update 20220910: increase the time in `sync-clock' to 10 seconds and therefore send it to the background
 /home/mh/Scripts/sync-clock.sh &
 
-#echo "[ .. ] Synchronizing crontabs"
-#/home/mh/Scripts/sync-cron.sh
-
 # See (20230318)
 echo "[ .. ] Starting services"
 /home/mh/Scripts/system/srv.sh

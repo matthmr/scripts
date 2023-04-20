@@ -193,7 +193,7 @@ function _cron {
 function _cronmsg {
 	local JOBS="$(/bin/find /tmp/cron/ -type f -not -name '*.sh' 2>/dev/null)"
 	echo "[ .. ] Cron-like message job found"
-	/home/mh/Scripts/cron-like-jobs.sh
+
 	# open a shell do to the jobs, when closing, prompt for openrc hand-over
 	unset XINITSLEEP
 	unset XINITSLEEPARGS

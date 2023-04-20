@@ -42,12 +42,13 @@ fi
 
 if [[ -d /tmp/cron ]]
 then
-	if [[ ! -z $(/bin/find /tmp/cron -name '*.sh') ]]
+	if [[ ! -z $(/bin/find /tmp/cron -type f -name '*.sh') ]]
 	then
 		$NOTIFY "Cron-like job found (script)" "Cron-like lock set by \`linux.sh'. Wait to shutdown" &
 		ARG="${ARG}c"
+  fi
 
-	elif [[ ! -z $(/bin/find /tmp/cron -type f) ]]
+	if [[ ! -z $(/bin/find /tmp/cron -type f -not -name '*.sh') ]]
 	then
 		$NOTIFY "Cron-like job found" "Cron-like lock set by \`linux.sh'. Wait to shutdown" &
 		ARG="${ARG}d"

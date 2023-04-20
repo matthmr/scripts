@@ -14,7 +14,6 @@ alias chess='gnuchess -g'
 alias espeak='espeak --path=/mnt/ssd/root/usr/share/espeak-ng-data'
 #alias flite='flite -voice slt'
 alias roma2kana='romaji'
-alias vim='nvim'
 alias rp='realpath'
 
 # shortenings

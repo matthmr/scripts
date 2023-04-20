@@ -87,10 +87,7 @@ echo "[ .. ] Syncing cron-like hooks"
 /home/mh/Scripts/sync-cron-like.sh
 
 echo "[ .. ] Running user-defined daemons"
-
-# NOTE: We have to unset `XINITSLEEP' so that shells launched under emacs don't
-# try to launch `xinit' again. See 20230325
-# XINITSLEEP='' /home/mh/Scripts/emacss start 1>/dev/null 2>/dev/null &
+/home/mh/Scripts/usr-srv.sh
 
 #################### ROOT / GLOBAL PACKAGES ####################
 echo "[ .. ] Preparing to run root scripts"
@@ -106,29 +103,11 @@ fi
 
 #################### CRON / HOOKS ####################
 echo "[ .. ] Finding hooks"
-if [[ -d /home/mh/Hooks/linux.sh && -d /home/mh/Hooks/IRL/ ]]
-then
-	echo "[ OK ] Hooks found:
------------------" 1>&2
-	cat /home/mh/Hooks/linux.sh/*.hook /home/mh/Hooks/IRL/TODO
-	echo "
-----------------" 1>&2
-else
-	echo "[ !! ] No hooks found!" 1>&2
-fi
+/home/mh/Scripts/hooks.sh
 
-if [[ -d /tmp/cron ]]
-then
-	echo "[ .. ] Found cron jobs. Handling their messages"
-	files=$(find /tmp/cron/* -not -name '*.sh' | sed 's./tmp/cron/..g')
-	while read file
-	do
-		cat "/tmp/cron/$file"
-	done <<< "$files"
-	sleep $TIMEOUT
-else
+if [[ ! -d /tmp/cron ]]; then
 	echo "[ .. ] No cron job was found; echoing their message just in case one got skipped"
-	/home/mh/Scripts/list-all-cron-like-jobs.sh
+	cat /home/mh/Scripts/job/jobs
 	sleep $TIMEOUT
 fi
 
