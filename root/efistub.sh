@@ -1,5 +1,7 @@
 #!/usr/bin/sh
 
+set -o noglob
+
 case $1 in
   '--help'|'-h')
 	  echo "Usage:       efistub.sh"
@@ -18,6 +20,7 @@ PKG_FILE=/home/mh/Scripts/pkg/efistub.txt
 EFISTUB=usr/lib/systemd/boot/efi/linuxx64.efi.stub
 SYSUSERS=usr/bin/systemd-sysusers
 TMPFILES=usr/bin/systemd-tmpfiles
+LIBS=('libsystemd-core' 'libsystemd-shared')
 
 # Header
 echo "[ HOOK ] Updating the EFI stub using systemd : $0"
@@ -30,20 +33,24 @@ else
 	echo "[ .. ] Copying old stub"
 	cp -v /$EFISTUB /$EFISTUB-old
 
-	# Extract the stub
+	# Extract the stub plus any other bits of systemd
 	echo "[ .. ] Extracting stub: $PMAN_DIR/efistub.tar.zstd "
 
   tar xf $PMAN_DIR/efistub.tar.zstd --zstd -C $PMAN_DIR
 
-  cp -v $PMAN_DIR/$STUB     /$STUB
+  cp -v $PMAN_DIR/$EFISTUB  /usr/lib/systemd/boot/efi/linuxx64.efi.stub
   cp -v $PMAN_DIR/$SYSUSERS /usr/bin/sysusers
   cp -v $PMAN_DIR/$TMPFILES /usr/bin/tmpfiles
 
-	# tar xf $PMAN_DIR/efistub.tar.zstd $STUB --zstd -O > /$STUB
+  for lib in ${LIBS[@]}; do
+    lib=$(find $PMAN_DIR -type f -name "*${lib}*")
+    cp -v $PMAN_DIR/$lib /usr/lib/${lib##*/}
+  done
 
 	# Remove lock
 	echo "[ .. ] Removing lock"
 	rm -v $PMAN_DIR/lock-efistub
+
 	echo "[ .. ] Removing local lock"
 	cp $PKG_FILE /tmp/efistub-pkgfile
 	cat /tmp/efistub-pkgfile | cut -d' ' -f2 > $PKG_FILE

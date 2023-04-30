@@ -87,7 +87,7 @@ echo "[ .. ] Syncing cron-like hooks"
 /home/mh/Scripts/sync-cron-like.sh
 
 echo "[ .. ] Running user-defined daemons"
-/home/mh/Scripts/usr-srv.sh
+/home/mh/Scripts/system/usr-srv.sh
 
 #################### ROOT / GLOBAL PACKAGES ####################
 echo "[ .. ] Preparing to run root scripts"

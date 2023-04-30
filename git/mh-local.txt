@@ -1,10 +1,13 @@
 ## See 20230108
 
-## TODO: this could be done with PKGM (please do it with PKGM)
-
 /home/mh/Git/EMACS/simpc-mode master
 /home/mh/Git/EMACS/eglot master
+
 /home/mh/Git/pfetch master
 /home/mh/Git/shcolor master
 /home/mh/Git/clipmenu master
-/home/mh/Git/sx master
+
+### FORKS
+
+/home/mh/Git/MH/base16-themes main https://github.com/tinted-theming/base16-emacs
+/home/mh/Git/MH/sx master https://github.com/Earnestly/sx
