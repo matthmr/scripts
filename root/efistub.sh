@@ -44,7 +44,12 @@ else
 
   for lib in ${LIBS[@]}; do
     lib=$(find $PMAN_DIR -type f -name "*${lib}*")
-    cp -v $PMAN_DIR/$lib /usr/lib/${lib##*/}
+    root_lib=$(find /usr/lib -type f -name "*${lib##*/}*")
+
+    if [[ ! -z $root_lib ]]; then
+      rm -v $root_lib
+    fi
+    cp -v $lib /usr/lib/${lib##*/}
   done
 
 	# Remove lock

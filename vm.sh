@@ -141,6 +141,7 @@ parse_args $@
 [[ ! -z $RAW_OPTS_OFF ]] && parse_raw_args "${@:$RAW_OPTS_OFF}"
 
 VM_CMDLINE=$(echo $VM_CMDLINE | sed "s:~:$HOME:g")
+VM_CMDLINE+=" -display gtk,show-tabs=on"
 
 echo "[ == ] Running as: $VM $VM_CMDLINE"
 $VM $VM_CMDLINE

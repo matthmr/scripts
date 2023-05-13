@@ -12,8 +12,8 @@ case "$1" in
 	;;
 esac
 
-DEST_PKG="/mnt/ssd/source/pkg/ungoogled-chromium"
-DEST_BIN="/mnt/ssd/source/bin/ungoogled-chromium"
+DEST_PKG="/home/mh/Source/pkg/ungoogled-chromium"
+DEST_BIN="/home/mh/Source/bin/ungoogled-chromium"
 PKG="/tmp/ungoogled-chromium.appimage"
 PKG_ROOT="/tmp/squashfs-root"
 CHROMIUM_HOME="/home/mh/.config/chromium"
