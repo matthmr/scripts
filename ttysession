@@ -24,7 +24,7 @@ if [[ $2 == "1" ]]; then
 
     # BASH is only for a TTYsession script
     export TTYSESSIONSLEEP='/home/mh/Scripts/system/linux.sh'
-    tmux new bash
+    tmux new $SHELL
   fi
 fi
 

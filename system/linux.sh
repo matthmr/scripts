@@ -95,12 +95,6 @@ echo "[ .. ] Preparing to run root scripts"
 # always try to get the root password
 while ! $SUDO /home/mh/Scripts/system/linux-root.sh $TMP; do continue; done
 
-if [[ $1 == '-x' ]]; then
-  # wait for the user to close the window
-  echo "[ .. ] Listing out-of-date packages"
-  $XTERM $TERMCMD less /tmp/pacman/pacman-raw /tmp/pacman/paru-raw # /tmp/pacman/pacman-artix-raw
-fi
-
 #################### CRON / HOOKS ####################
 echo "[ .. ] Finding hooks"
 /home/mh/Scripts/hooks.sh

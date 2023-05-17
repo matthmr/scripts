@@ -23,8 +23,8 @@ fi
 
 SHELL=/usr/bin/sh
 
-EMACSSERVER='/usr/bin/emacs'
-EMACSCLIENT='/usr/bin/emacsclient'
+[[ -z $EMACSSERVER ]] && EMACSSERVER='/usr/bin/emacs'
+[[ -z $EMACSCLIENT ]] && EMACSCLIENT='/usr/bin/emacsclient'
 
 EMACSSERVER_OPTS="--daemon"
 EMACSCLIENT_OPTS="-s $BASE/server"

@@ -34,6 +34,7 @@ echo "[ .. ] Starting services"
 #################### GLOBAL PACKAGES ####################
 echo "[ .. ] Updating pacman's database"
 pacman -Syy # this also updates paru's
+pacman -Fyy # this also updates paru's
 
 echo "[ .. ] Generating update file for pacman"
 pacman -Qu > $TMP/pacman-raw

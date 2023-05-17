@@ -19,7 +19,7 @@ BULLET_INFO="\x1b[1;92m$BULLET\x1b[0m"
 BULLET_ERR="\x1b[1;91m$BULLET\x1b[0m"
 
 ### SESSION
-SESSIONS=('dwm' 'i3' 'shell' 'tty' 'emacs-xsession' 'emacs-xwm')
+SESSIONS=('dwm' 'i3' 'tty' 'shell' 'emacs-xsession' 'emacs-xwm')
 SESSIONS_ENTRY=()
 SESSION=
 SESSION_TYPE=
