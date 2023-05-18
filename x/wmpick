@@ -19,7 +19,7 @@ BULLET_INFO="\x1b[1;92m$BULLET\x1b[0m"
 BULLET_ERR="\x1b[1;91m$BULLET\x1b[0m"
 
 ### SESSION
-SESSIONS=('dwm' 'i3' 'tty' 'shell' 'emacs-xsession' 'emacs-xwm')
+SESSIONS=('dwm' 'i3' 'tty' 'shell' 'emacs-tty' 'emacs-xsession' 'emacs-xwm')
 SESSIONS_ENTRY=()
 SESSION=
 SESSION_TYPE=
@@ -250,13 +250,13 @@ while :; do
   case $SESSION in
     'shell')
       exec $SHELL;;
-    'tty')
+    'tty'|'emacs-tty')
       # header_yesno "Run with TTYsession?" "no"
       # SESSION_TYPE=$?
       header "Run with TTYsession?"
       list_choose "${LIST_NO[@]}"
       SESSION_TYPE=${LIST_NO[$?]}
-      XINIT='/home/mh/Scripts/ttysession';; # stub
+      XINIT='/home/mh/Scripts/ttysession';;
     *)
       header "Choose a Xinit implementation to log in with"
       list_choose "${XINITS[@]}"
@@ -266,13 +266,13 @@ while :; do
       # SESSION_TYPE=$?;;
       header "Run with Xsession?"
       list_choose "${LIST_NO[@]}"
-      SESSION_TYPE=${LIST_NO[$?]}
+      SESSION_TYPE=${LIST_NO[$?]};;
   esac
 
   #printf '\x1b[?6;c'
   case $SESSION in
     'tty')
-      header "Logging in with TTY > $(tty) > $SESSION_TYPE for TTYsession";;
+      header "Logging in with $SESSION > $(tty) > $SESSION_TYPE for TTYsession";;
     *)
       header "Logging in with $XINIT > $SESSION > $SESSION_TYPE for Xsession";;
   esac

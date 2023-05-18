@@ -19,10 +19,9 @@ cat /home/mh/Documents/Ascii/linux.txt
 
 export SHELL=/bin/bash
 
-
-if [[ ! -z "$TTYSESSIONSLEEP" ]]; then
-  "$TTYSESSIONSLEEP"
-  unset TTYSESSIONSLEEP
+if [[ ! -z "$XINITSLEEP" ]]; then
+	"$XINITSLEEP" $XINITSLEEPARGS
+  unset XINITSLEEP XINITSLEEPARGS
 fi
 
 :

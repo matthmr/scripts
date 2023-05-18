@@ -12,12 +12,6 @@ case $1 in
   exit 1
 esac
 
-if [[ -z $XDG_RUNTIME_DIR ]]; then
-  BASE="/tmp/emacs-$UID"
-else
-  BASE="$XDG_RUNTIME_DIR/emacs"
-fi
-
 exec $EMACSCLIENT -t -s    \
-     "$BASE/server" ${@:1} \
+     "/tmp/emacs/server" ${@:1} \
      -a "$EMACSALT"

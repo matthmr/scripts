@@ -1,22 +1,27 @@
 #!/usr/bin/bash
 
 SUDO=doas
-NOTIFY=herbe
+if [[ $1 == '-x' ]]; then
+  NOTIFY=herbe
+else
+  NOTIFY=echo
+fi
 
 AS=${0##*/}
 AS=${AS/rc/}
 ARG=
 
-# called by sxhkd
-if [[ $1 == '-x' ]]; then
-  $NOTIFY "Prompting user for checkout on the journal" &
-  docs -x journal
+# called by sxhkd; only call for non-emacs
+if [[ -z $XSESSION ]]; then
+  if [[ $1 == '-x' ]]; then
+    $NOTIFY "Prompting user for checkout on the journal" &
+    docs -x journal
 
-  XTERM=st
-else
-  NOTIFY='echo' # stub
-  $NOTIFY "Prompting user for checkout on the journal" &
-  docs journal
+    XTERM=st
+  else
+    $NOTIFY "Prompting user for checkout on the journal" &
+    docs journal
+  fi
 fi
 
 if [[ -d /tmp/pacman ]]
@@ -55,7 +60,10 @@ then
 	fi
 fi
 
-emacss stop
+# don't stop emacs-like xsessions
+if [[ -z $XSESSION ]]; then
+  emacss stop
+fi
 
 $NOTIFY "Preparing to send ACPI event..."
 if [[ $1 == '-x' ]]; then
@@ -66,8 +74,13 @@ fi
 
 sleep 1
 
+# clear them first
+unset XINITSLEEP
+unset XINITSLEEPARGS
+
 export XINITSLEEP="/home/mh/Scripts/system/lock.sh"
 export XINITSLEEPARGS="${ARG}:${AS}"
+
 if [[ $1 == '-x' ]]; then
   exec $XTERM -e zsh
 else
