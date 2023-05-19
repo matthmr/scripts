@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 
 SUDO=doas
+
 if [[ $1 == '-x' ]]; then
   NOTIFY=herbe
 else
@@ -84,5 +85,5 @@ export XINITSLEEPARGS="${ARG}:${AS}"
 if [[ $1 == '-x' ]]; then
   exec $XTERM -e zsh
 else
-  tmux new $XINITSLEEP $XINITSLEEPARGS -t
+  $XINITSLEEP $XINITSLEEPARGS -t
 fi

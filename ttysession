@@ -13,7 +13,7 @@ touch /tmp/emacs/daemon.log
 
 # this will fail if emacs has an existing session
 case $WM in
-  'tty')
+  'tty'|'tmux')
     emacss start >> /tmp/emacs/daemon.log 2>&1 &&  \
       sleep 1 && docs journal >> /tmp/emacs/daemon.log 2>&1
 
@@ -25,17 +25,32 @@ case $WM in
         touch /tmp/xsession.lock
 
         echo "[ == ] Starting XSESSION (TTYSESSION)"
-        sleep 3
+        sleep 1
 
         export XINITSLEEP='/home/mh/Scripts/system/linux.sh'
         tmux new $SHELL
+
+        if [[ $WM == 'tmux' ]]; then
+          unset XINITSLEEP
+          SHELL=tmux
+          echo "[ .. ] Setting environment for tmux TTYsession"
+          sleep 1
+        fi
       fi
+    elif [[ $WM == 'tmux' ]]; then
+      unset XINITSLEEP
+      SHELL=tmux
+      echo "[ .. ] Setting environment for tmux TTYsession"
+      sleep 1
     fi ;;
+
   # we don't start the server when running `emacs-tty'
   'emacs-tty')
     SHELL=emacs
     if [[ $XSESSION == "1" ]]; then
       export XINITSLEEP='/home/mh/Scripts/system/linux.sh'
+    else
+      unset XINITSLEEP
     fi;;
 esac
 

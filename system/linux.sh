@@ -34,7 +34,7 @@ read -p "[ ?? ] Start scheduled system run-up? [Y/n] " ans
 if [[ $ans = "n" ]]
 then
 	echo "[ !! ] Ignoring ... "
-	sleep $TIMEOUT
+	sleep 1
   kill_term $$
 else
   # wait for a local ip address to be bound to this machine, otherwise we can't
