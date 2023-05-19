@@ -1,9 +1,0 @@
-#!/usr/bin/sh
-
-# kill `emacsserver' to prevent it from SIGSEGVing
-emacsserver stop >& /dev/null
-
-# hook for `i3'
-if [[ ! -z `pidof i3` ]]; then
-		exec i3-msg exit
-fi
