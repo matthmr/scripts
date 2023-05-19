@@ -84,6 +84,8 @@ export XINITSLEEPARGS="${ARG}:${AS}"
 
 if [[ $1 == '-x' ]]; then
   exec $XTERM -e zsh
+elif [[ $WM == 'tmux' ]]; then
+  tmux neww $XINITSLEEP $XINITSLEEPARGS -t
 else
-  $XINITSLEEP $XINITSLEEPARGS -t
+  tmux new $XINITSLEEP $XINITSLEEPARGS -t
 fi
