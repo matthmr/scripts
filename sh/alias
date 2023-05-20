@@ -29,6 +29,7 @@ alias bap='bat -p'
 alias gip='git -P'
 alias mpch='mpc -h /tmp/mpd-socket'
 alias mpdh='mpd /home/mh/.config/mpd/mpd-user.conf'
+alias transmissiond='transmission-daemon -e /tmp/transmission.log --log-level=info'
 
 # coreutils overrides
 alias grep='grep --color=always'

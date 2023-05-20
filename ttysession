@@ -19,9 +19,7 @@ case $WM in
 
     if [[ $XSESSION == "1" ]]; then
       # locked: ignore launching `linux.sh'
-      if [[ -f /tmp/xsession.lock ]]; then
-        exit 0
-      else
+      if [[ ! -f /tmp/xsession.lock ]]; then
         touch /tmp/xsession.lock
 
         echo "[ == ] Starting XSESSION (TTYSESSION)"
@@ -36,6 +34,11 @@ case $WM in
           echo "[ .. ] Setting environment for tmux TTYsession"
           sleep 1
         fi
+      elif [[ $WM == 'tmux' ]]; then
+        unset XINITSLEEP
+        SHELL=tmux
+        echo "[ .. ] Setting environment for tmux TTYsession"
+        sleep 1
       fi
     elif [[ $WM == 'tmux' ]]; then
       unset XINITSLEEP
