@@ -2,11 +2,12 @@
 
 ## Xsession counterpart for the TTY
 
-SHELL=zsh
+SESSION=zsh
 
 # used for the emacs server to set itself up for a TTYsession
 export WM="$1"
 export XSESSION="$2"
+export TERM=linux
 
 mkdir -pv /tmp/emacs
 touch /tmp/emacs/daemon.log
@@ -30,26 +31,26 @@ case $WM in
 
         if [[ $WM == 'tmux' ]]; then
           unset XINITSLEEP
-          SHELL=tmux
+          SESSION=tmux
           echo "[ .. ] Setting environment for tmux TTYsession"
           sleep 1
         fi
       elif [[ $WM == 'tmux' ]]; then
         unset XINITSLEEP
-        SHELL=tmux
+        SESSION=tmux
         echo "[ .. ] Setting environment for tmux TTYsession"
         sleep 1
       fi
     elif [[ $WM == 'tmux' ]]; then
       unset XINITSLEEP
-      SHELL=tmux
+      SESSION=tmux
       echo "[ .. ] Setting environment for tmux TTYsession"
       sleep 1
     fi ;;
 
   # we don't start the server when running `emacs-tty'
   'emacs-tty')
-    SHELL=emacs
+    SESSION=emacs
     if [[ $XSESSION == "1" ]]; then
       export XINITSLEEP='/home/mh/Scripts/system/linux.sh'
     else
@@ -57,4 +58,4 @@ case $WM in
     fi;;
 esac
 
-exec $SHELL
+exec $SESSION

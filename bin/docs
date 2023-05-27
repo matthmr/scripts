@@ -36,7 +36,7 @@ PROJECT="/home/mh/Git/MH"
 
 ### BEGIN: VARS ###
 REPO=''
-EDITOR='emacsclient -t'
+EDITOR='emacsclient -s /tmp/emacs/server -t'
 EDITOR_ALT='-a emacs'
 INT='' # i->fzf,I->dmenu
 XTERM='urxvt'
@@ -208,9 +208,10 @@ if [[ ! -z $INT ]]; then
 fi
 
 if [[ -z $X ]]; then
-  echo "[ == ] Running as: $EDITOR $REPO $EDITOR_ALT"
+  TTY=$(tty)
+  echo "[ == ] Running as: $EDITOR $REPO $EDITOR_ALT > $TTY"
   # backwards compatibility with TTY
-  $EDITOR $REPO $EDITOR_ALT > $(tty)
+  $EDITOR $REPO $EDITOR_ALT > $TTY
 else
   echo "[ == ] Running as: $X $EDITOR $REPO $EDITOR_ALT"
   exec $X $EDITOR $REPO $EDITOR_ALT

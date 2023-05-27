@@ -1,0 +1,18 @@
+#!/usr/bin/sh
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       killpid PIDFILE [KILL OPTIONS]"
+    echo "Description: Kills the process with PID defined in PIDFILE"
+    exit 0;;
+esac
+
+PIDFILE=$1
+KILL_OPTIONS=${@:2}
+
+PID=$(cat $PIDFILE)
+
+echo "[ == ] kill ${KILL_OPTIONS:--TERM} $PID"
+
+kill ${KILL_OPTIONS:--TERM} $PID &&
+  rm $PIDFILE

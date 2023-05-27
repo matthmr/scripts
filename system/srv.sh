@@ -5,4 +5,4 @@ function start_srv {
   /home/mh/Run/$1 start
 }
 
-start_srv mpd
+# start_srv mpd
