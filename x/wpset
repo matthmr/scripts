@@ -1,0 +1,31 @@
+#!/usr/bin/sh
+
+test=false
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       wmset [-tr] FILE"
+    echo "Description: Sets or tests FILE as the current wallpaper"
+    exit 0;;
+  '-t')
+    test=true
+    file=$2;;
+  '-r')
+    $HOME/.fehbg
+    exit $?;;
+  *)
+    file=$1;;
+esac
+
+if [[ -z $file ]]; then
+  echo "[ !! ] Missing file. See \`--help'"
+  exit 1
+fi
+
+opt='--bg-scale'
+
+if $test; then
+  opt+=' --no-fehbg'
+fi
+
+feh $opt $file

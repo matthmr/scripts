@@ -23,5 +23,5 @@ xkbset ma 30 10 25 15 2 &
 # Load Xresources
 xrdb /home/mh/.Xresources &
 
-# Nice wp anon
-nitrogen --restore &
+# > nice pape anon
+/home/mh/.fehbg &
