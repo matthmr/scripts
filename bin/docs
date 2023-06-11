@@ -156,7 +156,7 @@ case $1 in
     INT=$DMENU;;
   '-x')
     mode_arg=$2
-    X="$XTERM -e";;
+    X="$XTERM -e tmux new -s emacs -A";;
   *)
     mode_arg=$1;;
 esac
