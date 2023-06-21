@@ -1,9 +1,5 @@
 #!/usr/bin/sh
 
-### NOTE ###
-# This script is meant to be run *ONLY* at login-time,
-# hence the `wmpick'
-
 source ~p/scripts/sh/bash_environment
 
-exec wmpick
+exec session

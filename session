@@ -235,7 +235,7 @@ list_choose() {
 # through `rcshutdown' breaks this cycle
 ONCE=0
 while :; do
-  header "Choose a window manager to log in with"
+  header "Choose a session to log in with"
   list_choose "${SESSIONS[@]}"
   SESSION=${SESSIONS[$?]}
 
