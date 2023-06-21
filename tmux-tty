@@ -1,0 +1,6 @@
+#!/usr/bin/sh
+
+export WM=tmux-tty
+export TERM=linux
+
+exec tmux -f /home/p/config/tmux-tty.conf $@
