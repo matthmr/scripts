@@ -9,6 +9,8 @@ export XINITSLEEP="/home/mh/Scripts/bin/${AS}-confirm"
 
 if [[ $1 == '-x' ]]; then
   exec $XTERM -e zsh
+elif [[ $WM == 'tmux-tty' ]]; then
+  tmux -f "/home/p/config/tmux-tty.conf" neww -n "$AS" $XINITSLEEP
 else
   $XINITSLEEP
 fi

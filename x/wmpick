@@ -19,7 +19,7 @@ BULLET_INFO="\x1b[1;92m$BULLET\x1b[0m"
 BULLET_ERR="\x1b[1;91m$BULLET\x1b[0m"
 
 ### SESSION
-SESSIONS=('dwm' 'i3' 'emacs-xsession' 'emacs-xwm' 'tty' 'tmux' 'emacs-tty' 'shell')
+SESSIONS=('dwm' 'i3' 'emacs-xsession' 'emacs-xwm' 'tty' 'tmux-tty' 'emacs-tty' 'shell')
 SESSIONS_ENTRY=()
 SESSION=
 SESSION_TYPE=
@@ -240,8 +240,6 @@ while :; do
   SESSION=${SESSIONS[$?]}
 
   if [[ $SESSION != 'shell' ]]; then
-    # header_yesno "Run once?" "yes"
-    # ONCE=$?
     header "Run once?"
     list_choose "${LIST_YES[@]}"
     ONCE=${LIST_YES[$?]}
@@ -250,11 +248,15 @@ while :; do
   case $SESSION in
     'shell')
       exec $SHELL;;
-    'tty'|'tmux'|'emacs-tty')
+    'tty'|'tmux-tty'|'emacs-tty')
       header "Run with TTYsession?"
       list_choose "${LIST_NO[@]}"
       SESSION_TYPE=${LIST_NO[$?]}
-      XINIT='/home/mh/Scripts/ttysession';;
+      if [[ $SESSION == 'tmux-tty' ]]; then
+        XINIT='tmux-tty new -s tmux /home/mh/Scripts/ttysession'
+      else
+        XINIT='/home/mh/Scripts/ttysession'
+      fi ;;
     *)
       header "Choose a Xinit implementation to log in with"
       list_choose "${XINITS[@]}"
@@ -266,7 +268,7 @@ while :; do
   esac
 
   case $SESSION in
-    'tty'|'tmux'|'emacs-tty')
+    'tty'|'tmux-tty'|'emacs-tty')
       header "Logging in with $SESSION > $(tty) > $SESSION_TYPE for TTYsession";;
     *)
       header "Logging in with $XINIT > $SESSION > $SESSION_TYPE for Xsession";;

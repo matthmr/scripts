@@ -2,8 +2,6 @@
 
 ## Xsession counterpart for the TTY
 
-SESSION=zsh
-
 # used for the emacs server to set itself up for a TTYsession
 export WM="$1"
 export XSESSION="$2"
@@ -14,38 +12,28 @@ touch /tmp/emacs/daemon.log
 
 # this will fail if emacs has an existing session
 case $WM in
-  'tty'|'tmux')
-    emacss start >> /tmp/emacs/daemon.log 2>&1 &&  \
-      sleep 1 && docs journal >> /tmp/emacs/daemon.log 2>&1
+  'tty'|'tmux-tty')
+    SESSION=zsh
+    emacss start >> /tmp/emacs/daemon.log 2>&1 && \
+      echo "[ == ] Launching journal" && sleep 0.5 && \
+      docs journal >> /tmp/emacs/daemon.log 2>&1
 
-    if [[ $XSESSION == "1" ]]; then
+    if [[ $XSESSION == "1" && ! -f /tmp/xsession.lock ]]; then
       # locked: ignore launching `linux.sh'
-      if [[ ! -f /tmp/xsession.lock ]]; then
-        touch /tmp/xsession.lock
+      touch /tmp/xsession.lock
 
-        echo "[ == ] Starting XSESSION (TTYSESSION)"
-        sleep 1
+      echo "[ == ] Starting XSESSION (TTYSESSION)"
+      sleep 0.5
 
-        export XINITSLEEP='/home/mh/Scripts/system/linux.sh'
-        tmux new $SHELL
-
-        if [[ $WM == 'tmux' ]]; then
-          unset XINITSLEEP
-          SESSION=tmux
-          echo "[ .. ] Setting environment for tmux TTYsession"
-          sleep 1
-        fi
-      elif [[ $WM == 'tmux' ]]; then
-        unset XINITSLEEP
-        SESSION=tmux
-        echo "[ .. ] Setting environment for tmux TTYsession"
-        sleep 1
+      if [[ $WM == 'tmux-tty' ]]; then
+        tmux -f "/home/p/config/tmux-tty.conf" neww \
+             -e XINITSLEEP='/home/mh/Scripts/system/linux.sh' \
+             -n ttysession zsh
+      else
+        tmux-tty new \
+                 -e XINITSLEEP='/home/mh/Scripts/system/linux.sh'
+                 -s ttysession zsh
       fi
-    elif [[ $WM == 'tmux' ]]; then
-      unset XINITSLEEP
-      SESSION=tmux
-      echo "[ .. ] Setting environment for tmux TTYsession"
-      sleep 1
     fi ;;
 
   # we don't start the server when running `emacs-tty'

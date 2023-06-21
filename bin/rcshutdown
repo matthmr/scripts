@@ -84,8 +84,12 @@ export XINITSLEEPARGS="${ARG}:${AS}"
 
 if [[ $1 == '-x' ]]; then
   exec $XTERM -e zsh
-elif [[ $WM == 'tmux' ]]; then
-  tmux neww $XINITSLEEP $XINITSLEEPARGS -t
+elif [[ $WM == 'tmux-tty' ]]; then
+  tmux -f "/home/p/config/tmux-tty.conf" neww \
+       -n "$AS" \
+       $XINITSLEEP $XINITSLEEPARGS -t
 else
-  tmux new $XINITSLEEP $XINITSLEEPARGS -t
+  tmux new \
+       -s "$AS" \
+       $XINITSLEEP $XINITSLEEPARGS -t
 fi
