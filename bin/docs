@@ -7,7 +7,7 @@ case $1 in
     echo "Options:
   -i: launch interactive (fzf-like command)
   -I: launch interactive (dmenu-like command)
-  -x: launch as an xsession
+  -t: use tmux-tty
 
 Major Modes:
   - wiki
@@ -40,6 +40,7 @@ EDITOR='emacsclient -s /tmp/emacs/server -t'
 EDITOR_ALT='-a emacs'
 INT='' # i->fzf,I->dmenu
 XTERM='urxvt'
+TMUX_NAME=tmux
 ### END: VARS ###
 
 ### BEGIN: MODES ###
@@ -145,6 +146,7 @@ function journalcmd {
 ### END: MODES ###
 
 ### BEGIN: OPTIONS ###
+
 case $1 in
   '-i')
     mode_arg=$2
@@ -154,9 +156,9 @@ case $1 in
     mode_arg=$2
     [[ -z $DMENU ]] && DMENU='dmenu -p choose'
     INT=$DMENU;;
-  '-x')
+  '-t')
     mode_arg=$2
-    X="$XTERM -e tmux new -s emacs -A";;
+    TMUX_NAME="$TMUX_NAME -f '/home/p/config/tmux-tty.conf'";;
   *)
     mode_arg=$1;;
 esac
@@ -207,12 +209,21 @@ if [[ ! -z $INT ]]; then
   esac
 fi
 
-if [[ -z $X ]]; then
-  TTY=$(tty)
-  echo "[ == ] Running as: $EDITOR $REPO $EDITOR_ALT > $TTY"
-  # backwards compatibility with TTY
-  $EDITOR $REPO $EDITOR_ALT > $TTY
+echo "[ == ] Running as: $EDITOR $REPO $EDITOR_ALT"
+$TMUX_NAME new-session -d \
+           -s "docs" \
+           $EDITOR $REPO $EDITOR_ALT
+
+CC=$(tmux list-clients | cut -f1 -d:)
+CCS=$(echo $CC | wc -l)
+
+if [[ $CCS -gt 1 ]]; then
+  echo "[ !! ] Multiple tmux clients. Please have just one"
+  exit 1
+elif [[ -z $CC ]]; then
+  exit 0 # tmux is not yet attached
 else
-  echo "[ == ] Running as: $X $EDITOR $REPO $EDITOR_ALT"
-  exec $X $EDITOR $REPO $EDITOR_ALT
+  echo switch
+  $TMUX_NAME switch-client -c $CC -t 'docs'
+  exit 2
 fi

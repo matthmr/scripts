@@ -1,7 +1,6 @@
 #!/usr/bin/bash
 
 XTERM=xterm
-TERMCMD=-e
 TIMEOUT=5
 
 case $1 in
@@ -14,20 +13,6 @@ case $1 in
 		;;
 esac
 
-if [[ $1 == '-x' ]]; then
-  function kill_term {
-    local shell_pid=$1
-    local _ppid="$(ps -p $SHELL_PID -O ppid)"
-    ppid=$(printf "$_ppid" | awk '{n = $2} END {print n}')
-    kill -KILL $ppid
-    exit 1
-  }
-else
-  function kill_term {
-    exit 1 # stub
-  }
-fi
-
 #################### GUARD ####################
 read -p "[ ?? ] Start scheduled system run-up? [Y/n] " ans
 
@@ -35,7 +20,10 @@ if [[ $ans = "n" ]]
 then
 	echo "[ !! ] Ignoring ... "
 	sleep 1
-  kill_term $$
+
+  unset XINITSLEEP
+  unset XINITSLEEPARGS
+  exit 0
 else
   # wait for a local ip address to be bound to this machine, otherwise we can't
   # run inet-like scripts
@@ -106,3 +94,4 @@ if [[ ! -d /tmp/cron ]]; then
 fi
 
 echo "[ OK ] linux.sh: Done"
+exit 0

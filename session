@@ -253,7 +253,7 @@ while :; do
       list_choose "${LIST_NO[@]}"
       SESSION_TYPE=${LIST_NO[$?]}
       if [[ $SESSION == 'tmux-tty' ]]; then
-        XINIT='tmux-tty new -s tmux /home/mh/Scripts/ttysession'
+        XINIT='tmux-tty new-session -A -s tmux /home/mh/Scripts/ttysession'
       else
         XINIT='/home/mh/Scripts/ttysession'
       fi ;;

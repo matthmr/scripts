@@ -4,7 +4,6 @@
 
 # used for the emacs server to set itself up for a TTYsession
 export WM="$1"
-export XSESSION="$2"
 export TERM=linux
 
 mkdir -pv /tmp/emacs
@@ -14,36 +13,33 @@ touch /tmp/emacs/daemon.log
 case $WM in
   'tty'|'tmux-tty')
     SESSION=zsh
+
     emacss start >> /tmp/emacs/daemon.log 2>&1 && \
-      echo "[ == ] Launching journal" && sleep 0.5 && \
-      docs journal >> /tmp/emacs/daemon.log 2>&1
+      docs -t journal >> /tmp/emacs/daemon.log 2>&1
 
     if [[ $XSESSION == "1" && ! -f /tmp/xsession.lock ]]; then
       # locked: ignore launching `linux.sh'
       touch /tmp/xsession.lock
 
-      echo "[ == ] Starting XSESSION (TTYSESSION)"
-      sleep 0.5
-
-      if [[ $WM == 'tmux-tty' ]]; then
-        tmux -f "/home/p/config/tmux-tty.conf" neww \
-             -e XINITSLEEP='/home/mh/Scripts/system/linux.sh' \
-             -n ttysession zsh
-      else
-        tmux-tty new \
-                 -e XINITSLEEP='/home/mh/Scripts/system/linux.sh'
-                 -s ttysession zsh
-      fi
+      tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
+           -e XINITSLEEP='/home/mh/Scripts/system/linux.sh' \
+           -s ttysession zsh
     fi ;;
 
   # we don't start the server when running `emacs-tty'
   'emacs-tty')
+    export XSESSION="$2"
     SESSION=emacs
+
     if [[ $XSESSION == "1" ]]; then
       export XINITSLEEP='/home/mh/Scripts/system/linux.sh'
     else
       unset XINITSLEEP
     fi;;
 esac
+
+if [[ $WM == 'tty' ]]; then
+  tmux -f "/home/p/config/tmux-tty.conf" attach-session -t 'docs'
+fi
 
 exec $SESSION

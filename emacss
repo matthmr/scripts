@@ -48,7 +48,7 @@ function start {
   pid=$!
 
   log "[ .. ] Sleeping"
-  sleep ${TIMEOUT:-5}
+  sleep 1
 
   log "[ == ] Got parent PID of \`$pid'"
   local emacs_daemon_pid=$(emacseval "(emacs-pid)")
@@ -98,7 +98,7 @@ function toggle {
 }
 
 function restart {
-  local timeout=5s
+  local timeout=1
 
   stop && \
     log "[ .. ] Sleeping $timeout" && \

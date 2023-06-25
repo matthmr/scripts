@@ -3,7 +3,7 @@
 # used by emacs for emacs-xwm
 export WM=$1
 
-XTERM=st
+XTERM=urxvt
 TIMEOUT=5
 TRIES=5
 
@@ -26,7 +26,7 @@ touch /tmp/emacs/daemon.log
 case $WM in
   'dwm'|'i3')
     emacss start >> /tmp/emacs/daemon.log 2>&1 && \
-      sleep 1 && docs -x journal >> /tmp/emacs/daemon.log 2>&1 &
+      docs journal >> /tmp/emacs/daemon.log 2>&1
     if [[ $2 == "0" ]]; then
       exit 0
     fi
@@ -39,18 +39,15 @@ case $WM in
 esac
 
 # locked: ignore launching `linux.sh'
-if [[ -f /tmp/xsession.lock ]]; then
-  exit 0
-else
+if [[ $2 == "1" && ! -f /tmp/xsession.lock ]]; then
   touch /tmp/xsession.lock
 
-  export XINITSLEEP=/home/mh/Scripts/system/linux.sh
-  export XINITSLEEPARGS=-x
-
-  $XTERM -e zsh
-
-  unset XINITSLEEP
-  unset XINITSLEEPARGS
+  tmux new-session -d \
+       -s 'xsession' \
+       -e XINITSLEEP='/home/mh/Scripts/system/linux.sh' \
+       zsh &
 fi
+
+$XTERM -e tmux attach-session -t 'docs' &
 
 unset WM

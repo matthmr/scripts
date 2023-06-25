@@ -1,16 +1,67 @@
 #!/usr/bin/bash
 
-XTERM=st
+XTERM=urxvt
 
 AS=${0##*/}
 AS=${AS/rc/}
 
-export XINITSLEEP="/home/mh/Scripts/bin/${AS}-confirm"
+unset XINITSLEEPARGS
+
+XINITSLEEP="/home/mh/Scripts/bin/${AS}-confirm"
+TMUX_NAME=tmux
+
+CC=$($TMUX_NAME list-clients | cut -f1 -d:)
+CCS=$(echo $CC | wc -l)
+
+if [[ $CCS -gt 1 ]]; then
+  echo "[ !! ] Multiple tmux clients. Please have just one"
+  exit 1
+fi
 
 if [[ $1 == '-x' ]]; then
-  exec $XTERM -e zsh
-elif [[ $WM == 'tmux-tty' ]]; then
-  tmux -f "/home/p/config/tmux-tty.conf" neww -n "$AS" $XINITSLEEP
+  $TMUX_NAME new-session -d \
+             -s "$AS" \
+             -e XINITSLEEP=$XINITSLEEP \
+             zsh
+  did=$?
+
+  if [[ -z $CC ]]; then
+    if [[ $did == 1 ]]; then
+      $TMUX_NAME kill-session -t "$AS"
+
+      $TMUX_NAME new-session -d \
+           -s "$AS" \
+           -e XINITSLEEP=$XINITSLEEP \
+           zsh
+    fi
+
+    exec $XTERM -e $TMUX_NAME attach-session -t "$AS"
+  else
+    exec $TMUX_NAME switch-client -c $CC -t "$AS"
+  fi
+
 else
-  $XINITSLEEP
+  case $WM in
+    'tty'|'tmux-tty')
+      TMUX_NAME="$TMUX_NAME -f '/home/p/config/tmux-tty.conf'" ;;
+  esac
+
+  $TMUX_NAME new-session -d \
+             -s "$AS" \
+             -e XINITSLEEP=$XINITSLEEP \
+             zsh
+
+  if [[ $? == 1 ]]; then
+    $TMUX_NAME kill-session -t "$AS"
+
+    $TMUX_NAME new-session -d \
+               -s "$AS" \
+               -e XINITSLEEP=$XINITSLEEP \
+               zsh
+  fi
+
+  case $WM in
+    'tty') $TMUX_NAME attach-session -t "$AS" ;;
+    'tmux-tty') $TMUX_NAME switch-client -c $CC -t "$AS" ;;
+  esac
 fi
