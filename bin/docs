@@ -223,7 +223,6 @@ if [[ $CCS -gt 1 ]]; then
 elif [[ -z $CC ]]; then
   exit 0 # tmux is not yet attached
 else
-  echo switch
   $TMUX_NAME switch-client -c $CC -t 'docs'
   exit 2
 fi

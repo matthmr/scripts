@@ -27,9 +27,6 @@ case $WM in
   'dwm'|'i3')
     emacss start >> /tmp/emacs/daemon.log 2>&1 && \
       docs journal >> /tmp/emacs/daemon.log 2>&1
-    if [[ $2 == "0" ]]; then
-      exit 0
-    fi
     ;;
   'emacs-xsession'|'emacs-xwm')
     # xsession started inside of Emacs by the exported `XSESSION' variable (only
