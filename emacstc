@@ -1,0 +1,53 @@
+#!/usr/bin/sh
+
+AS=${0##*/}
+
+XTERM=urxvt
+EMACSCLIENT=emacsclient
+EMACSALT=emacs
+
+case $1 in
+  '--help'|'-h')
+  echo "Usage:       emacstc [emacs options]"
+  echo "Description: Connects to an emacs client, within tmux"
+  exit 1
+esac
+
+[[ -z $TMUX_NAME ]] && TMUX_NAME=tmux
+
+CC=$(tmux list-clients | cut -f1 -d:)
+CCS=$(echo $CC | wc -l)
+
+ATTACHED=false
+
+if [[ $CCS -gt 1 ]]; then
+  echo "[ !! ] Multiple tmux clients. Please have just one"
+  exit 1
+elif [[ -z $CC ]]; then
+  ATTACHED=false
+else
+  ATTACHED=true
+fi
+
+$TMUX_NAME new-session -d \
+      -s 'emacs' \
+      -n 'emacsclient' \
+      $EMACSCLIENT -t -s "/tmp/emacs/server" ${@:1} -a "$EMACSALT"
+DUPLICATE=$?
+
+if [[ $DUPLICATE == '1' ]]; then
+  if ! $TMUX_NAME list-windows -t emacs | \
+      cut -d' ' -f2 | \
+      grep -q "emacsclient\(-\*\)\?"; then
+    $TMUX_NAME new-window -d \
+               -t emacs: \
+               -n emacsclient \
+               $EMACSCLIENT -t -s "/tmp/emacs/server" ${@:1} -a "$EMACSALT"
+  fi
+fi
+
+if $ATTACHED; then
+  exec $TMUX_NAME switch-client -c $CC -t 'emacs:emacsclient'
+else
+  exec $XTERM -e $TMUX_NAME attach-session -t 'emacs:emacsclient'
+fi

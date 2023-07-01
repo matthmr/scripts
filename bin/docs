@@ -212,6 +212,7 @@ fi
 echo "[ == ] Running as: $EDITOR $REPO $EDITOR_ALT"
 $TMUX_NAME new-session -d \
            -s "docs" \
+           -n "emacsclient" \
            $EDITOR $REPO $EDITOR_ALT
 
 CC=$(tmux list-clients | cut -f1 -d:)
