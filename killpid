@@ -19,7 +19,7 @@ sleep 3
 
 if [[ -z $(ps -p $PID | sed -n 2p) ]]; then
   echo "[ .. ] Done: killed process, removing PIDFILE"
-  rm $PIDFILE
+  rm $PIDFILE 2>/dev/null
 else
   echo "[ !! ] Error: process was not killed"
   exit 1

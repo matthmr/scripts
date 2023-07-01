@@ -22,6 +22,8 @@ done
 mkdir -pv /tmp/emacs
 touch /tmp/emacs/daemon.log
 
+mpd &
+
 # start WM-specific programs
 case $WM in
   'dwm'|'i3')
@@ -42,9 +44,7 @@ if [[ $2 == "1" && ! -f /tmp/xsession.lock ]]; then
   tmux new-session -d \
        -s 'xsession' \
        -e XINITSLEEP='/home/mh/Scripts/system/linux.sh' \
-       zsh &
+       zsh
 fi
 
-$XTERM -e tmux attach-session -t 'docs' &
-
-unset WM
+exec $XTERM -e tmux attach-session -t 'docs'

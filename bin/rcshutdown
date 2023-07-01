@@ -33,19 +33,19 @@ if [[ -d /tmp/pacman ]]
 then
 	if [[ -f /tmp/pacman/lock-pacman ]]
 	then
-		$NOTIFY "Package lock found" "found package lock set by \`linux.sh'. Wait to shutdown" &
+		$NOTIFY "Package lock found:" "found package lock set by \`linux.sh'. Wait to shutdown" &
 		ARG=p
 	fi
 
 	if [[ -f /tmp/pacman/lock-paru ]]
 	then
-		$NOTIFY "Package lock found (subsystem)" "also found lock for \`paru'" &
+		$NOTIFY "Package lock found (subsystem):" "also found lock for \`paru'" &
 		ARG="${ARG}n"
 	fi
 
 	if [[ -f /tmp/pacman/lock-efistub ]]
 	then
-		$NOTIFY "Efistub lock found" "found efistub lock set by \`linux.sh'. Wait to shutdown" &
+		$NOTIFY "Efistub lock found:" "found efistub lock set by \`linux.sh'. Wait to shutdown" &
 		ARG="${ARG}e"
 	fi
 fi
@@ -54,13 +54,13 @@ if [[ -d /tmp/cron ]]
 then
 	if [[ ! -z $(/bin/find /tmp/cron -type f -name '*.sh') ]]
 	then
-		$NOTIFY "Cron-like job found (script)" "Cron-like lock set by \`linux.sh'. Wait to shutdown" &
+		$NOTIFY "Cron-like job found (script):" "Cron-like lock set by \`linux.sh'. Wait to shutdown" &
 		ARG="${ARG}c"
   fi
 
 	if [[ ! -z $(/bin/find /tmp/cron -type f -not -name '*.sh') ]]
 	then
-		$NOTIFY "Cron-like job found" "Cron-like lock set by \`linux.sh'. Wait to shutdown" &
+		$NOTIFY "Cron-like job found:" "Cron-like lock set by \`linux.sh'. Wait to shutdown" &
 		ARG="${ARG}d"
 	fi
 fi
@@ -106,10 +106,10 @@ fi
 
 if [[ $TMUX_ATTACH_STATUS == 0 ]]; then
   if [[ $1 == '-x' ]]; then
-    $XTERM -e tmux attach-session -t 'docs' &
+    exec $XTERM -e tmux attach-session -t 'docs'
   else
     case $WM in
-      'tty') $TMUX_NAME attach-session -t 'docs' ;;
+      'tty') exec $TMUX_NAME attach-session -t 'docs' ;;
     esac
   fi
 fi

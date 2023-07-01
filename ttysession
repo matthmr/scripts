@@ -9,6 +9,8 @@ export TERM=linux
 mkdir -pv /tmp/emacs
 touch /tmp/emacs/daemon.log
 
+mpd &
+
 # this will fail if emacs has an existing session
 case $WM in
   'tty'|'tmux-tty')

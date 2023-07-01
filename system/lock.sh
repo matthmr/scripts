@@ -47,7 +47,7 @@ function _pacman {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		echo "Ignore lock" "lock was ignored for pacman"
+		echo "Ignore lock:" "lock was ignored for pacman"
 		return 0
 	fi
 
@@ -108,7 +108,7 @@ function _paru {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		echo "Ignore lock" "lock was ignored for paru"
+		echo "Ignore lock:" "lock was ignored for paru"
 		return 0
 	fi
 
@@ -169,7 +169,7 @@ function _cron {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		echo "Ignore lock" "lock was ignored for cron"
+		echo "Ignore lock:" "lock was ignored for cron"
 		for file in $(echo $SCRIPTS|tr '\n' ' '); do rm -v $file ${file%%.sh}; done #remove the files
 		return 0
 	else
@@ -200,7 +200,7 @@ function _efistub {
 	if [[ $ans = 'n' ]]
 	then
 		echo "[ !! ] Ignoring ... "
-		echo "Ignore lock" "lock was ignored for efistub"
+		echo "Ignore lock:" "lock was ignored for efistub"
 		return 0
 	fi
 
@@ -220,7 +220,7 @@ then
   exit 1
 else
 	echo "[ OK ] Handing over to openrc"
-	echo "ACPI event sent" "waiting to send ACPI event; press C-c to ignore it"
+	echo "ACPI event sent:" "waiting to send ACPI event; press C-c to ignore it"
 	sleep 5
 	exec $SUDO $COMMAND
 fi
