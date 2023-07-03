@@ -1,0 +1,82 @@
+#!/usr/bin/bash
+
+SUDO=doas
+XTERM=urxvt
+
+AS=${0##*/}
+AS=${AS/-lock/}
+ARG=
+
+DOCS_SWITCH=""
+
+# clear them first
+unset XINITSLEEP
+unset XINITSLEEPARGS
+
+TMUX_NAME=tmux
+
+case $WM in
+  'tmux-tty'|'tty')
+    TMUX_NAME="$TMUX_NAME -f '/home/p/config/tmux-tty.conf'"
+    DOCS_SWITCH="-t" ;;
+esac
+
+# called by sxhkd; only call for non-emacs
+if [[ -z $XSESSION ]]; then
+  echo "[ .. ] Prompting user for checkout on the journal"
+  sleep 3
+
+  docs $DOCS_SWITCH journal
+fi
+
+# set locks
+if [[ -d /tmp/pacman ]]
+then
+	if [[ -f /tmp/pacman/lock-pacman ]]
+	then
+		echo "[ .. ] Package lock found:" "found package lock set by \`linux.sh'. Wait to shutdown"
+    sleep 1
+		ARG=p
+	fi
+
+	if [[ -f /tmp/pacman/lock-paru ]]
+	then
+		echo "[ .. ] Package lock found (subsystem):" "also found lock for \`paru'"
+    sleep 1
+		ARG="${ARG}n"
+	fi
+
+	if [[ -f /tmp/pacman/lock-efistub ]]
+	then
+		echo "[ .. ] Efistub lock found:" "found efistub lock set by \`linux.sh'. Wait to shutdown"
+    sleep 1
+		ARG="${ARG}e"
+	fi
+fi
+if [[ -d /tmp/cron ]]
+then
+	if [[ ! -z $(/bin/find /tmp/cron -type f -name '*.sh') ]]
+	then
+		echo "[ .. ] Cron-like job found (script):" "Cron-like lock set by \`linux.sh'. Wait to shutdown"
+    sleep 1
+		ARG="${ARG}c"
+  fi
+
+	if [[ ! -z $(/bin/find /tmp/cron -type f -not -name '*.sh') ]]
+	then
+		echo "[ .. ] Cron-like job found:" "Cron-like lock set by \`linux.sh'. Wait to shutdown"
+    sleep 1
+		ARG="${ARG}d"
+	fi
+fi
+
+echo "[ .. ] Preparing to send ACPI event..."
+if [[ $1 == '-x' ]]; then
+  printf '\a' > /dev/tty${DISPLAY:1:1}
+else
+  printf '\a' > /dev/tty1 # imagine...
+fi
+
+sleep 1
+
+"/home/mh/Scripts/system/lock.sh" "${ARG}:${AS}"

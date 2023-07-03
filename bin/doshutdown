@@ -1,0 +1,51 @@
+#!/usr/bin/bash
+
+if [[ $1 == '-x' ]]; then
+  TMUX_NAME=tmux
+else
+  TMUX_NAME="tmux -f '/home/p/config/tmux-tty.conf'"
+fi
+
+AS=${0##*/}
+AS=${AS/x/}
+AS_SESSION=${AS/do/}
+
+XTERM=urxvt
+
+unset XINITSLEEP
+unset XINITSLEEPARGS
+
+XINITSLEEP="/home/mh/Scripts/bin/${AS_SESSION}-lock"
+XINITSLEEPARGS="$1"
+
+$TMUX_NAME new-session -d \
+           -s "$AS_SESSION" \
+           -e XINITSLEEP=$XINITSLEEP \
+           -e XINITSLEEPARGS=$XINITSLEEPARGS \
+           zsh
+
+if [[ $? == 1 ]]; then
+  $TMUX_NAME kill-session -t "$AS_SESSION"
+
+  $TMUX_NAME new-session -d \
+           -s "$AS_SESSION" \
+           -e XINITSLEEP=$XINITSLEEP \
+           -e XINITSLEEPARGS=$XINITSLEEPARGS \
+           zsh
+fi
+
+CC=$(tmux list-clients | cut -f1 -d:)
+CCS=$(echo $CC | wc -l)
+
+if [[ $CCS -gt 1 ]]; then
+  echo "[ !! ] Multiple tmux clients. Please have just one"
+  exit 1
+elif [[ -z $CC ]]; then
+  if [[ $1 == '-x' ]]; then
+    exec $XTERM -e tmux attach-session -t "$AS_SESSION"
+  else
+    exec $TMUX_NAME attach-session -t "$AS_SESSION"
+  fi
+else
+  exec $TMUX_NAME switch-client -c $CC -t "$AS_SESSION"
+fi

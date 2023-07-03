@@ -232,7 +232,7 @@ list_choose() {
 
 ### BEGIN: MAIN ###
 # continously prompt the user for a new session. Shutting down the computer
-# through `rcshutdown' breaks this cycle
+# through `doshutdown' breaks this cycle
 ONCE=0
 while :; do
   header "Choose a session to log in with"

@@ -31,4 +31,8 @@ case ${0##*/} in
     exit 1;;
 esac
 
+echo "[ OK ] Handing over to openrc"
+echo "ACPI event sent:" "waiting to send ACPI event; press C-c to ignore it"
+sleep 5
+
 echo "$STATE" > "$SYSFS"

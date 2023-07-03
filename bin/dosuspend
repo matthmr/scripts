@@ -3,7 +3,7 @@
 XTERM=urxvt
 
 AS=${0##*/}
-AS=${AS/rc/}
+AS=${AS/do/}
 
 unset XINITSLEEPARGS
 
