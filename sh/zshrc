@@ -23,16 +23,16 @@ precmd() { vcs_info }
 zstyle ':vcs_info:git:*' formats '%F{red}[%F{reset}%B%b%F{red}]'
 
 # Prompt
-# ┌[zsh -- mh@linux] [pts/0] [2236] [master]
+# ┌[zsh:mh@linux] [pts/0] [2236] [master]
 # └[~]>
 
 PROMPT="\
-%F{red}┌[%F{reset}%Bzsh -- %n%b%F{red}@%F{reset}%B%m%b%F{red}] \
+%F{red}[%F{reset}%B%n%b%F{red}@%F{reset}%B%m:zsh%b%F{red}] \
 %F{red}[%F{reset}%B%l%b%F{red}] \
 %F{red}[%F{reset}%B%D{%H%M}%b%F{red}] \
 \$vcs_info_msg_0_ \
 %(?..[%F{reset}%B%?%b%F{red}])
-└[%F{reset}%B%2~%b%F{red}]>%F{reset} "
+[%F{reset}%B%2~%b%F{red}]>%F{reset} "
 PS2='%F{red}>%F{reset} '
 
 # Completion
@@ -62,7 +62,16 @@ ZSH_HIGHLIGHT_STYLES[arg0]=fg=blue
 # Common source
 source /home/mh/Scripts/sh/alias
 source /home/mh/Scripts/sh/functions
-cat /home/mh/Documents/Ascii/linux.txt
+
+echo "    ___
+   (.. |
+   (<> |
+  / __  \\
+ ( /  \\ /|
+_/\\ __)/_)
+\\/-____\\/
+"
+
 unset ZSH_MODE
 
 export SHELL=/bin/zsh

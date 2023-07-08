@@ -25,6 +25,9 @@ alias bap='bat -p'
 alias gip='git -P'
 alias torrentd='transmission-daemon -e /tmp/transmission.log --log-level=info'
 alias torrentc='transmission-remote'
+alias rss='newsboat'
+alias getmail='mbsync -V mh'
+alias mail='neomutt'
 
 # coreutils overrides
 alias grep='grep --color=always'

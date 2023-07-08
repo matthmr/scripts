@@ -5,6 +5,7 @@ AS=${0##*/}
 XTERM=urxvt
 EMACSCLIENT=emacsclient
 EMACSALT=emacs
+NOTIFY=herbe
 
 case $1 in
   '--help'|'-h')
@@ -47,6 +48,8 @@ if [[ $DUPLICATE == '1' ]]; then
 fi
 
 if $ATTACHED; then
+  $NOTIFY "Tmux:" "switch from current tmux session" &
+
   exec $TMUX_NAME switch-client -c $CC -t 'emacs:emacsclient'
 else
   exec $XTERM -e $TMUX_NAME attach-session -t 'emacs:emacsclient'
