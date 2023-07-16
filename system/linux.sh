@@ -62,10 +62,6 @@ echo "[ .. ] Updating big Git-controlled repositories"
 # TODO: make this a source list to something like `pacwrap' or `pkgm'
 echo "[ .. ] Updating source-controlled packages"
 /home/mh/Scripts/pkg/ungoogled-chromium.sh
-/home/mh/Scripts/pkg/efistub.sh $TMP
-
-# echo "[ .. ] Updating pacwrap packages"
-# pacwrap update
 
 #################### MISC ####################
 echo "[ .. ] Generating dmenu cache"
@@ -82,6 +78,9 @@ echo "[ .. ] Preparing to run root scripts"
 
 # always try to get the root password
 while ! $SUDO /home/mh/Scripts/system/linux-root.sh $TMP; do continue; done
+
+# not a root script, but it needs to be run after those
+/home/mh/Scripts/pkg/efistub.sh $TMP
 
 #################### CRON / HOOKS ####################
 echo "[ .. ] Finding hooks"

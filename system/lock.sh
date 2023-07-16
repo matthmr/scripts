@@ -225,10 +225,10 @@ if [[ ! -z $PACMAN ]]; then
   _man
 fi
 
+[[ ! -z $EFISTUB ]] && _efistub
 [[ ! -z $PARU ]]    && _paru
 [[ ! -z $CRON ]]    && _cron
 [[ ! -z $CRONMSG ]] && _cronmsg
-[[ ! -z $EFISTUB ]] && _efistub
 
 read -p "[ ?? ] Hand over to openrc? [Y/n] " ans
 if [[ $ans = 'n' ]]
