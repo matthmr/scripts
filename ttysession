@@ -4,12 +4,29 @@
 
 # used for the emacs server to set itself up for a TTYsession
 export WM="$1"
+export XSESSION="$2"
+
 export TERM=linux
 
 mkdir -pv /tmp/emacs
 touch /tmp/emacs/daemon.log
+touch /tmp/tmux-notes.txt
 
-mpd &
+if [[ ! -f /tmp/mpd-pid ]]; then
+  mpd &
+fi
+
+gpm-tty status >/dev/null 2>/dev/null
+GPM_STAT=$?
+
+if [[ $GPM_STAT == '1' ]]; then
+  tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
+       -e XINITSLEEP='gpm-tty' \
+       -e XINITSLEEPARGS='prompt' \
+       -s gpm-tty zsh
+  echo "[ $(date +%s) ] Note: There's a GPM tmux session [gpm-tty] pending" \
+       >> /tmp/tmux-notes.txt
+fi
 
 # this will fail if emacs has an existing session
 case $WM in
@@ -22,6 +39,23 @@ case $WM in
     if [[ $XSESSION == "1" && ! -f /tmp/xsession.lock ]]; then
       # locked: ignore launching `linux.sh'
       touch /tmp/xsession.lock
+      echo "[ $(date +%s) ] Note: There's an Xsession tmux session [xsession] pending" \
+           >> /tmp/tmux-notes.txt
+
+      (sleep 5 && \
+         {
+           CC=$(tmux list-clients | cut -f1 -d:)
+           CCS=$(echo $CC | wc -l)
+
+           if [[ $CCS -gt 1 || -z $CC ]]; then
+             exit 1
+           else
+             tmux -f "/home/p/config/tmux-tty.conf" display-popup \
+                  -c $CC \
+                  -T 'note' "cat /tmp/tmux-notes.txt" >/dev/null 2>/dev/null &
+           fi
+         }
+      ) &
 
       tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
            -e XINITSLEEP='/home/mh/Scripts/system/linux.sh' \
@@ -30,14 +64,13 @@ case $WM in
 
   # we don't start the server when running `emacs-tty'
   'emacs-tty')
-    export XSESSION="$2"
     SESSION=emacs
 
     if [[ $XSESSION == "1" ]]; then
       export XINITSLEEP='/home/mh/Scripts/system/linux.sh'
     else
       unset XINITSLEEP
-    fi;;
+    fi ;;
 esac
 
 if [[ $WM == 'tty' ]]; then

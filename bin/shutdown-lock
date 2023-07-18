@@ -13,12 +13,9 @@ DOCS_SWITCH=""
 unset XINITSLEEP
 unset XINITSLEEPARGS
 
-TMUX_NAME=tmux
-
 case $WM in
   'tmux-tty'|'tty')
-    TMUX_NAME="$TMUX_NAME -f '/home/p/config/tmux-tty.conf'"
-    DOCS_SWITCH="-t" ;;
+     DOCS_SWITCH="-t" ;;
 esac
 
 # called by sxhkd; only call for non-emacs

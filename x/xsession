@@ -21,8 +21,14 @@ done
 
 mkdir -pv /tmp/emacs
 touch /tmp/emacs/daemon.log
+touch /tmp/tmux-notes.txt
 
-mpd &
+echo "[ $(date +%s) ] Note: There's an Xsession tmux session [xsession] pending" \
+     >> /tmp/tmux-notes.txt
+
+if [[ ! -f /tmp/mpd-pid ]]; then
+  mpd &
+fi
 
 # start WM-specific programs
 case $WM in
@@ -40,6 +46,24 @@ esac
 # locked: ignore launching `linux.sh'
 if [[ $2 == "1" && ! -f /tmp/xsession.lock ]]; then
   touch /tmp/xsession.lock
+
+  (sleep 5 && \
+     {
+       CC=$(tmux list-clients | cut -f1 -d:)
+       CCS=$(echo $CC | wc -l)
+
+       if [[ $CCS -gt 1 ]]; then
+         exit 1
+       elif [[ -z $CC ]]; then
+         exec $XTERM -e tmux attach-session -t 'xsession'
+       else
+         tmux display-popup \
+              -c $CC \
+              -T 'note' \
+              "cat /tmp/tmux-notes.txt" >/dev/null 2>/dev/null &
+       fi
+     }
+  ) &
 
   tmux new-session -d \
        -s 'xsession' \
