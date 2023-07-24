@@ -11,9 +11,9 @@ function google {
       return 0;;
   esac
 
-  local QUERY="${1// /+}"
+  local QUERY="${@// /+}"
 
-  lynx "https://www.google.com/search?q=${QUERY}"
+  w3m "https://www.google.com/search?q=${QUERY}"
 }
 
 function icd {

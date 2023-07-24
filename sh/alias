@@ -2,7 +2,7 @@
 # overrides
 alias lf='lf -single'
 alias tmux='tmux -u'
-alias lynx='lynx -display_charset=utf8 -vikeys -cookies=off -editor=nvim -homepage=file:// /home/mh/Source/HTML/lynx.html'
+alias lynx='lynx -lss=/home/mh/.lynx/lynx.lss -display_charset=utf8 -emacskeys -cookies=off -editor=emacsc -homepage=file:// /home/mh/Source/HTML/lynx.html'
 alias ed="ed -Ep '(ed) '"
 alias feh='feh --scale-down -B "#303030"'
 alias tree='tree -C'

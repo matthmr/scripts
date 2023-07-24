@@ -41,22 +41,6 @@ case $WM in
       touch /tmp/xsession.lock
       echo "[ $(date +%s) ] Note: There's an Xsession tmux session [xsession] pending" \
            >> /tmp/tmux-notes.txt
-
-      (sleep 5 && \
-         {
-           CC=$(tmux list-clients | cut -f1 -d:)
-           CCS=$(echo $CC | wc -l)
-
-           if [[ $CCS -gt 1 || -z $CC ]]; then
-             exit 1
-           else
-             tmux -f "/home/p/config/tmux-tty.conf" display-popup \
-                  -c $CC \
-                  -T 'note' "cat /tmp/tmux-notes.txt" >/dev/null 2>/dev/null &
-           fi
-         }
-      ) &
-
       tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
            -e XINITSLEEP='/home/mh/Scripts/system/linux.sh' \
            -s ttysession zsh
@@ -72,6 +56,23 @@ case $WM in
       unset XINITSLEEP
     fi ;;
 esac
+
+if [[ $XSESSION == "1" || $GPM_STAT == "1" ]]; then
+  (sleep 5 && \
+     {
+       CC=$(tmux list-clients | cut -f1 -d:)
+       CCS=$(echo $CC | wc -l)
+
+       if [[ $CCS -gt 1 || -z $CC ]]; then
+         exit 1
+       else
+         tmux -f "/home/p/config/tmux-tty.conf" display-popup \
+              -c $CC \
+              -T 'note' "cat /tmp/tmux-notes.txt" >/dev/null 2>/dev/null &
+       fi
+     }
+  ) &
+fi
 
 if [[ $WM == 'tty' ]]; then
   tmux -f "/home/p/config/tmux-tty.conf" attach-session -t 'docs'

@@ -27,7 +27,7 @@ LIST_YES=('yes' 'no')
 LIST_NO=('no' 'yes')
 
 ### XINIT
-XINITS=('sx-mouse' 'sx-mouse-new' 'sx')
+XINITS=('sx-mouse' 'sx')
 XINITS_ENTRY=()
 XINIT=
 

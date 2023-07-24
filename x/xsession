@@ -23,9 +23,6 @@ mkdir -pv /tmp/emacs
 touch /tmp/emacs/daemon.log
 touch /tmp/tmux-notes.txt
 
-echo "[ $(date +%s) ] Note: There's an Xsession tmux session [xsession] pending" \
-     >> /tmp/tmux-notes.txt
-
 if [[ ! -f /tmp/mpd-pid ]]; then
   mpd &
 fi
@@ -46,6 +43,8 @@ esac
 # locked: ignore launching `linux.sh'
 if [[ $2 == "1" && ! -f /tmp/xsession.lock ]]; then
   touch /tmp/xsession.lock
+  echo "[ $(date +%s) ] Note: There's an Xsession tmux session [xsession] pending" \
+       >> /tmp/tmux-notes.txt
 
   (sleep 5 && \
      {
