@@ -48,7 +48,7 @@ if [[ $DUPLICATE == '1' ]]; then
 fi
 
 if $ATTACHED; then
-  $NOTIFY "Tmux:" "switch from current tmux session" &
+  # $NOTIFY "Tmux:" "switch from current tmux session" &
 
   exec $TMUX_NAME switch-client -c $CC -t 'emacs:emacsclient'
 else

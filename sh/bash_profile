@@ -1,5 +1,6 @@
-#!/usr/bin/sh
+source /home/p/scripts/sh/bash_environment
 
-source ~p/scripts/sh/bash_environment
+# load schedl
+/home/mh/Git/MH/scripts/job/schedl.sh
 
-exec session
+exec session $([[ -f /tmp/schedl/org ]] && echo yes || echo no)

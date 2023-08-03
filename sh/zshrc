@@ -27,13 +27,14 @@ zstyle ':vcs_info:git:*' formats '%F{red}[%F{reset}%B%b%F{red}]'
 # └[~]>
 
 PROMPT="\
-%F{red}[%F{reset}%B%n%b%F{red}@%F{reset}%B%m:zsh%b%F{red}] \
+%F{red}[%F{reset}%B%n%b%F{red}@%F{reset}%B%m%b%F{red}] \
+%F{red}[%F{reset}%Bzsh%b%F{red}] \
 %F{red}[%F{reset}%B%l%b%F{red}] \
 %F{red}[%F{reset}%B%D{%H%M}%b%F{red}] \
 \$vcs_info_msg_0_ \
 %(?..[%F{reset}%B%?%b%F{red}])
 [%F{reset}%B%2~%b%F{red}]>%F{reset} "
-PS2='%F{red}>%F{reset} '
+PS2="%F{red}>%F{reset} "
 
 # Completion
 autoload -U compinit

@@ -67,9 +67,6 @@ echo "[ .. ] Updating source-controlled packages"
 echo "[ .. ] Generating dmenu cache"
 /home/mh/Scripts/dmenu-gencache.sh
 
-echo "[ .. ] Syncing cron-like hooks"
-/home/mh/Scripts/sync-cron-like.sh
-
 echo "[ .. ] Running user-defined daemons"
 /home/mh/Scripts/system/usr-srv.sh
 
@@ -82,15 +79,9 @@ while ! $SUDO /home/mh/Scripts/system/linux-root.sh $TMP; do continue; done
 # not a root script, but it needs to be run after those
 /home/mh/Scripts/pkg/efistub.sh $TMP
 
-#################### CRON / HOOKS ####################
+#################### HOOKS ####################
 echo "[ .. ] Finding hooks"
 /home/mh/Scripts/hooks.sh
-
-if [[ ! -d /tmp/cron ]]; then
-	echo "[ .. ] No cron job was found; echoing their message just in case one got skipped"
-	cat /home/mh/Scripts/job/jobs
-	sleep $TIMEOUT
-fi
 
 echo "[ OK ] linux.sh: Done"
 exit 0

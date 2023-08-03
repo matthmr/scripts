@@ -8,4 +8,4 @@ _MIN=$(($_MIN % 60))
 [[ $_MIN =~ ^[0-9]$ ]] && _MIN="0$_MIN"
 UPTIME="$_HOUR$_MIN"
 
-echo "$UPTIME"
+echo "$UPTIME "

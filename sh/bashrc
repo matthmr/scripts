@@ -6,10 +6,11 @@ bold="\033[0;1m"
 reset="\033[0m"
 
 PS1="\
-\[$red\][\[$bold\]\u\[$red\]@\[$bold\]\H:bash\[$red\]] \
+\[$red\][\[$bold\]\u\[$red\]@\[$bold\]\H\[$red\]] \
+[\[$bold\]bash\[$red\]] \
 [\[$bold\]${TTY}\[$red\]]
 \[$red\][\[$bold\]\w\[$red\]]>\[$reset\] "
-PS2=" \[$red\]|> \[$reset\]"
+PS2=" \[$red\]>\[$reset\] "
 
 # Common source
 source /home/mh/Scripts/sh/alias

@@ -8,24 +8,46 @@ export XSESSION="$2"
 
 export TERM=linux
 
+SHOULD_MSG=false
+TIMEOUT=5
+
 mkdir -pv /tmp/emacs
 touch /tmp/emacs/daemon.log
-touch /tmp/tmux-notes.txt
+touch /tmp/session-msg
+
+function session_msg {
+  local msg=$1
+
+  echo "[ $(date +%s) ] $msg" >> /tmp/session-msg
+}
 
 if [[ ! -f /tmp/mpd-pid ]]; then
   mpd &
 fi
 
+if [[ ! -f /tmp/schedl/session-lock ]]; then
+  jobs=$(find /tmp/schedl -type f -not -name '*.sh' 2>/dev/null)
+  touch /tmp/schedl/session-lock
+
+  if [[ ! -z $jobs ]]; then
+    SHOULD_MSG=true
+    for job in $(echo $jobs | tr '\n' ' '); do
+      session_msg "Schedl Job ($job): $(cat $job)"
+    done
+  fi
+fi
+
 gpm-tty status >/dev/null 2>/dev/null
-GPM_STAT=$?
+GPM_STAT=0 #$? # FIXME
 
 if [[ $GPM_STAT == '1' ]]; then
   tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
        -e XINITSLEEP='gpm-tty' \
        -e XINITSLEEPARGS='prompt' \
        -s gpm-tty zsh
-  echo "[ $(date +%s) ] Note: There's a GPM tmux session [gpm-tty] pending" \
-       >> /tmp/tmux-notes.txt
+  SHOULD_MSG=true
+
+  session_msg "Note: There's a GPM tmux session [gpm-tty] pending"
 fi
 
 # this will fail if emacs has an existing session
@@ -36,11 +58,12 @@ case $WM in
     emacss start >> /tmp/emacs/daemon.log 2>&1 && \
       docs -t journal >> /tmp/emacs/daemon.log 2>&1
 
-    if [[ $XSESSION == "1" && ! -f /tmp/xsession.lock ]]; then
+    if [[ $XSESSION == "1" && ! -f /tmp/session-lock ]]; then
       # locked: ignore launching `linux.sh'
-      touch /tmp/xsession.lock
-      echo "[ $(date +%s) ] Note: There's an Xsession tmux session [xsession] pending" \
-           >> /tmp/tmux-notes.txt
+      touch /tmp/session-lock
+      SHOULD_MSG=true
+
+      session_msg "Note: There's an Xsession tmux session [xsession] pending"
       tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
            -e XINITSLEEP='/home/mh/Scripts/system/linux.sh' \
            -s ttysession zsh
@@ -57,8 +80,8 @@ case $WM in
     fi ;;
 esac
 
-if [[ $XSESSION == "1" || $GPM_STAT == "1" ]]; then
-  (sleep 5 && \
+if $SHOULD_MSG; then
+  (sleep $TIMEOUT && \
      {
        CC=$(tmux list-clients | cut -f1 -d:)
        CCS=$(echo $CC | wc -l)
@@ -68,7 +91,8 @@ if [[ $XSESSION == "1" || $GPM_STAT == "1" ]]; then
        else
          tmux -f "/home/p/config/tmux-tty.conf" display-popup \
               -c $CC \
-              -T 'note' "cat /tmp/tmux-notes.txt" >/dev/null 2>/dev/null &
+              -T 'note' \
+              "cat /tmp/session-msg" >/dev/null 2>/dev/null &
        fi
      }
   ) &
