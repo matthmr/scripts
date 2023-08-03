@@ -3,7 +3,7 @@
 case $1 in
 	'-h'|'--help')
 		echo "Usage:       q.sh [FILE]"
-		echo "Description: cron-like job hook"
+		echo "Description: schedl job hook"
 		exit 1
 esac
 

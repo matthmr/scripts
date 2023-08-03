@@ -15,7 +15,7 @@ case $1 in
 esac
 
 # carve out the command
-PACMAN= PARU= CRON= EFISTUB=
+PACMAN= PARU= SCHEDL= EFISTUB=
 len=${#COMMAND}
 len=$((len - 1))
 for (( i = 0 ; i <= len; i++ )); do
@@ -23,8 +23,7 @@ for (( i = 0 ; i <= len; i++ )); do
     'p') PACMAN=y;;
     'n') PARU=y;;
     'e') EFISTUB=y;;
-    'c') CRON=y;;
-    'd') CRONMSG=y;;
+    's') SCHEDL=y;;
   esac
   COMMAND=${COMMAND:i}
 done
@@ -44,8 +43,7 @@ esac
 function _man {
   read -p "[ ?? ] Update ManDB? [Y/n] " ans
 
-  if [[ $ans = 'n' ]]
-  then
+  if [[ $ans = 'n' ]]; then
     echo "[ !! ] Ignoring ... "
     echo "Ignore lock:" "lock was ignored for man"
     return 0
@@ -57,8 +55,7 @@ function _man {
 function _pacman {
   read -p "[ ?? ] Update packages (pacman)? [Y/n] " ans
 
-  if [[ $ans = 'n' ]]
-  then
+  if [[ $ans = 'n' ]]; then
     echo "[ !! ] Ignoring ... "
     echo "Ignore lock:" "lock was ignored for pacman"
     return 0
@@ -67,8 +64,7 @@ function _pacman {
   read -p "[ ?? ] Manual review? [y/N] " ans
   [[ $ans = 'y' ]] && local MANUAL=y || local MANUAL=n
 
-  if [[ $MANUAL = 'y' ]]
-  then
+  if [[ $MANUAL = 'y' ]]; then
     echo "[ .. ] Updating pacman database for manual review"
     while ! $SUDO pacman -Sy; do continue; done
     echo "[ .. ] Generating new pacman updatable package file"
@@ -83,12 +79,10 @@ function _pacman {
   fi
 
   read -p "[ ?? ] Check against wiki? [Y/n] " ans
-  if [[ $ans = 'n' ]]
-  then
+  if [[ $ans = 'n' ]]; then
     echo "[ !! ] Ignoring ... "
   else
-    if [[ $MANUAL = 'y' ]]
-    then
+    if [[ $MANUAL = 'y' ]]; then
       #/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/pacman-update | /bin/less
       /home/mh/Scripts/find/wiki-find-pacman-index.sh /tmp/pacman/pacman-update | /bin/less
     else
@@ -98,8 +92,7 @@ function _pacman {
   fi
 
   read -p "[ ?? ] Handle SSD packages (pacman)? [Y/n] " ans
-  if [[ $ans = 'n' ]]
-  then
+  if [[ $ans = 'n' ]]; then
     echo "[ !! ] Ignoring ... "
   else # open a new shell, wait for it to die, then continue
     echo "[ OK ] Waiting for SSD packages to be handled"
@@ -118,8 +111,7 @@ function _pacman {
 function _paru {
   read -p "[ ?? ] Update packages (AUR)? [Y/n] " ans
 
-  if [[ $ans = 'n' ]]
-  then
+  if [[ $ans = 'n' ]]; then
     echo "[ !! ] Ignoring ... "
     echo "Ignore lock:" "lock was ignored for paru"
     return 0
@@ -128,8 +120,7 @@ function _paru {
   read -p "[ ?? ] Manual review? [y/N] " ans
   [[ $ans = 'y' ]] && local MANUAL=y || local MANUAL=n
 
-  if [[ $MANUAL = 'y' ]]
-  then
+  if [[ $MANUAL = 'y' ]]; then
     echo "[ .. ] Updating database for manual review"
     paru -Sy
     echo "[ .. ] Generating new pacman updatable package file"
@@ -144,12 +135,10 @@ function _paru {
   fi
 
   read -p "[ ?? ] Check against wiki? [Y/n] " ans
-  if [[ $ans = 'n' ]]
-  then
+  if [[ $ans = 'n' ]]; then
     echo "[ !! ] Ignoring ... "
   else
-    if [[ $MANUAL = 'y' ]]
-    then
+    if [[ $MANUAL = 'y' ]]; then
       #/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/paru-update | /bin/less
       /home/mh/Scripts/find/wiki-find-pacman-index.sh /tmp/pacman/paru-update | /bin/less
     else
@@ -159,8 +148,7 @@ function _paru {
   fi
 
   read -p "[ ?? ] Handle SSD packages? [Y/n] " ans
-  if [[ $ans = 'n' ]]
-  then
+  if [[ $ans = 'n' ]]; then
     echo "[ !! ] Ignoring ... "
   else # open a new shell, wait for it to die, then continue
     echo "[ OK ] Waiting for SSD packages to be handled"
@@ -176,42 +164,30 @@ function _paru {
   rm -v /tmp/pacman/lock-paru
 }
 
-function _cron {
-  local SCRIPTS="$(/bin/find /tmp/cron/ -type f -name '*.sh' 2>/dev/null)"
-  read -p "[ ?? ] Cron-like script job found. Run it? [Y/n] " ans
-  if [[ $ans = 'n' ]]
-  then
+function _schedl {
+  local SCRIPTS="$(find /tmp/schedl -type f -name '*.sh' 2>/dev/null)"
+  read -p "[ ?? ] Schedl script job found. Run it? [Y/n] " ans
+  if [[ $ans = 'n' ]]; then
     echo "[ !! ] Ignoring ... "
-    echo "Ignore lock:" "lock was ignored for cron"
-    for file in $(echo $SCRIPTS|tr '\n' ' '); do rm -v $file ${file%%.sh}; done #remove the files
+    echo "Ignore lock:" "lock was ignored for schedl"
+    for file in $(echo $SCRIPTS|tr '\n' ' '); do
+      rm -v $file ${file%%.sh};
+    done
     return 0
   else
-    while read file
-    do
+    while read file; do
       echo "[ .. ] Executing $file"
       sleep 1
-      sh $file
+      $file
       rm -v $file ${file%%.sh} #remove the files as we execute them
     done <<< "$SCRIPTS"
   fi
 }
 
-function _cronmsg {
-  local JOBS="$(/bin/find /tmp/cron/ -type f -not -name '*.sh' 2>/dev/null)"
-  echo "[ .. ] Cron-like message job found"
-
-  # open a shell do to the jobs, when closing, prompt for openrc hand-over
-  unset XINITSLEEP
-  unset XINITSLEEPARGS
-  $USER_SHELL
-  for file in $(echo $JOBS|tr '\n' ' '); do rm -v $file; done #remove the files
-}
-
 function _efistub {
   read -p "[ ?? ] Update packages (efistub)? [Y/n] " ans
 
-  if [[ $ans = 'n' ]]
-  then
+  if [[ $ans = 'n' ]]; then
     echo "[ !! ] Ignoring ... "
     echo "Ignore lock:" "lock was ignored for efistub"
     return 0
@@ -220,19 +196,18 @@ function _efistub {
   while ! $SUDO /home/mh/Scripts/root/efistub.sh; do continue; done
 }
 
+[[ ! -z $EFISTUB ]] && _efistub
+
 if [[ ! -z $PACMAN ]]; then
   _pacman
   _man
 fi
 
-[[ ! -z $EFISTUB ]] && _efistub
 [[ ! -z $PARU ]]    && _paru
-[[ ! -z $CRON ]]    && _cron
-[[ ! -z $CRONMSG ]] && _cronmsg
+[[ ! -z $SCHEDL ]]  && _schedl
 
 read -p "[ ?? ] Hand over to openrc? [Y/n] " ans
-if [[ $ans = 'n' ]]
-then
+if [[ $ans = 'n' ]]; then
   echo "[ !! ] Ignoring ... "
   exit 1
 else

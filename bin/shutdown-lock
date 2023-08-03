@@ -27,44 +27,30 @@ if [[ -z $XSESSION ]]; then
 fi
 
 # set locks
-if [[ -d /tmp/pacman ]]
-then
-	if [[ -f /tmp/pacman/lock-pacman ]]
-	then
+if [[ -d /tmp/pacman ]]; then
+	if [[ -f /tmp/pacman/lock-pacman ]]; then
 		echo "[ .. ] Package lock found:" "found package lock set by \`linux.sh'. Wait to shutdown"
     sleep 1
 		ARG=p
 	fi
 
-	if [[ -f /tmp/pacman/lock-paru ]]
-	then
+	if [[ -f /tmp/pacman/lock-paru ]]; then
 		echo "[ .. ] Package lock found (subsystem):" "also found lock for \`paru'"
     sleep 1
 		ARG="${ARG}n"
 	fi
 
-	if [[ -f /tmp/pacman/lock-efistub ]]
-	then
+	if [[ -f /tmp/pacman/lock-efistub ]]; then
 		echo "[ .. ] Efistub lock found:" "found efistub lock set by \`linux.sh'. Wait to shutdown"
     sleep 1
 		ARG="${ARG}e"
 	fi
 fi
-if [[ -d /tmp/cron ]]
-then
-	if [[ ! -z $(/bin/find /tmp/cron -type f -name '*.sh') ]]
-	then
-		echo "[ .. ] Cron-like job found (script):" "Cron-like lock set by \`linux.sh'. Wait to shutdown"
-    sleep 1
-		ARG="${ARG}c"
-  fi
 
-	if [[ ! -z $(/bin/find /tmp/cron -type f -not -name '*.sh') ]]
-	then
-		echo "[ .. ] Cron-like job found:" "Cron-like lock set by \`linux.sh'. Wait to shutdown"
-    sleep 1
-		ARG="${ARG}d"
-	fi
+if [[ ! -z $(find /tmp/schedl -type f -name '*.sh') ]]; then
+  echo "[ .. ] Schedl job found (script):" "Schedl lock set by \`linux.sh'. Wait to shutdown"
+  sleep 1
+  ARG="${ARG}s"
 fi
 
 echo "[ .. ] Preparing to send ACPI event..."
