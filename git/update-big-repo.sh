@@ -1,5 +1,8 @@
 #!/usr/bin/bash
 
+## NOTE: big repos have to have `master` as the checked out branch, even if
+## changes were made to them
+
 case $1 in
   '-h'|'--help')
     echo "Usage:       ./update-big-repo.sh"

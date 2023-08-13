@@ -11,6 +11,7 @@ alias rp='realpath'
 alias ip='ip -color=auto'
 alias ps='ps --forest -o pid,ppid,user,priority,nice,rss,s,%mem,%cpu,cputime,tty,command'
 alias pkill='pkill --echo'
+alias kill='kill --verbose'
 
 # shortenings
 alias xa='xargs -r'

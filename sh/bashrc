@@ -17,14 +17,19 @@ source /home/mh/Scripts/sh/alias
 source /home/mh/Scripts/sh/bash_environment
 source /home/mh/Scripts/sh/functions
 
-echo "    ___
-   (.. |
-   (<> |
-  / __  \\
- ( /  \\ /|
-_/\\ __)/_)
-\\/-____\\/
+function tux {
+  echo "\
+      ___
+     (.. |
+     (<> |
+    / __  \\
+   ( /  \\ /|
+  _/\\ __)/_)
+  \\/-____\\/
 "
+}
+
+tux
 
 export SHELL=/bin/bash
 

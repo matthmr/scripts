@@ -47,12 +47,6 @@ if [[ -d /tmp/pacman ]]; then
 	fi
 fi
 
-if [[ ! -z $(find /tmp/schedl -type f -name '*.sh') ]]; then
-  echo "[ .. ] Schedl job found (script):" "Schedl lock set by \`linux.sh'. Wait to shutdown"
-  sleep 1
-  ARG="${ARG}s"
-fi
-
 echo "[ .. ] Preparing to send ACPI event..."
 if [[ $1 == '-x' ]]; then
   printf '\a' > /dev/tty${DISPLAY:1:1}

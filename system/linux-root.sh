@@ -41,10 +41,6 @@ pacman -Qu > $TMP/pacman-raw
 sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/pacman-raw |\
   awk '{print $1}' > $TMP/pacman
 
-# echo "[ .. ] Generating update file for artix's pacman"
-# /home/mh/.local/bin/pacmanrc -Qu > $TMP/pacman-artix-raw
-# /bin/sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/pacman-artix-raw | awk '{print $1}' > $TMP/pacman-artix
-
 echo "[ .. ] Generating update file for paru"
 /mnt/ssd/root/usr/bin/paru -Qu > $TMP/paru-raw
 sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/paru-raw |\
@@ -53,9 +49,6 @@ sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' $TMP/paru-raw |\
 echo "[ .. ] Setting persmissions for pacman-related files"
 chown -Rv mh:mh $TMP
 chmod -Rv a+w $TMP
-
-echo "[ .. ] Moving tmp to a standardised location"
-mv -v $TMP /tmp/pacman
 
 #################### PACKAGE LOCKS ####################
 echo "[ .. ] Setting update locks for pacman"

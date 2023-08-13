@@ -1,6 +1,11 @@
+#!/usr/bin/bash
+
 source /home/p/scripts/sh/bash_environment
 
 # load schedl
 /home/mh/Git/MH/scripts/job/schedl.sh
 
-exec session $([[ -f /tmp/schedl/org ]] && echo yes || echo no)
+# load `session' if `system-day' is set by `schedl', 0 if doesn't exist, one if
+# it does
+exec session $([[ -f /tmp/schedl/system-day ]];
+               if (( $? == 0 )) ; then echo 1 ; else echo 0 ; fi)

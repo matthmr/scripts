@@ -2,22 +2,30 @@
 
 mkdir -p /tmp/schedl/ 2>/dev/null
 
-JOBS=$(schedl /home/mh/Scripts/job/org.scm 2>/dev/null |\
-         sed -n \
-             -e '/^JOB:/s/JOB: //p' \
-             -e '/^JOB-DO:/s/JOB-DO: /!/p')
+[[ -f /tmp/schedl/session-lock ]] && exit 1
 
 file= content= script_content= script=false
-echo -e "$JOBS" |\
-  while read job; do
+while read jobfile; do
+  if [[ $jobfile =~ ^#.*$ || $jobfile =~ ^( \t)*$ ]]; then
+    continue
+  fi
+
+  schedl $jobfile 2>/dev/null \
+  | sed -n \
+        -e '/^JOB:/s/JOB: //p' \
+        -e '/^DO:/s/DO: /!/p'\
+  | while read job; do
+    [[ $job =~ ^$ ]] && continue
+
     if [[ $job =~ ^! ]]; then
       script=true
       script_content=$(echo $job | sed 's/^!//')
       continue
     fi
 
-    file=/tmp/schedl/$(echo $job | cut -d' ' -f1)
+    filename=$(echo $job | cut -d' ' -f1)
     content=$(echo $job | cut -d' ' -f2-)
+    file=/tmp/schedl/$filename
 
     echo "$content" > $file
 
@@ -27,3 +35,4 @@ echo -e "$JOBS" |\
       script=false
     fi
   done
+done < /home/mh/Scripts/job/schedl.txt

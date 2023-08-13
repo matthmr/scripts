@@ -12,55 +12,51 @@ GITLOCAL='/home/mh/Scripts/git/mh-local.txt'
 TTY=$(tty)
 SHELL=zsh
 
+## Fetch `origin' and merge it with the default branch. If the third field
+## exists (i.e. `repo_foreign' is set), then fetch that, instead of `origin'.
+## When `repo_foreign' is set, it's assumed the repo has another remote origin
+## counter-part (on github, gitlab, or so...). The default branch of the
+## original repo has a `fork-' prefix
 function fetch_repo {
+  local repo_name=''
+
   while read repo_path repo_branch repo_foreign; do
     if [[ $repo_path =~ ^#.*$ || $repo_path =~ ^( \t)*$ ]]; then
       continue
     fi
 
-    local repo_name=${repo_path##*/}
+    repo_name=${repo_path##*/}
+
+    echo "[ .. ] mh-local.sh: fetching fork repo: $repo_name:$repo_branch"
 
     if [[ ! -z $repo_foreign ]]; then
-      echo "[ .. ] mh-local.sh: fetching fork repo: $repo_name:$repo_branch"
       echo "[ == ] Running as: git -C $repo_path fetch $repo_foreign -- \
 $repo_branch:$repo_branch"
       git -C $repo_path fetch "$repo_foreign" -- $repo_branch:fork-$repo_branch
     else
-      echo "[ .. ] mh-local.sh: fetching repo: $repo_name:$repo_branch"
       echo "[ == ] Running as: git -C $repo_path fetch origin -- \
 $repo_branch:$repo_branch"
-      # fetch and merge: the original branch is kept intact, so merging should
-      # be the same as just fast-forwarding
       git -C $repo_path fetch origin -- $repo_branch:$repo_branch
     fi
-
-    repo_foreign=
   done < $GITLOCAL
 }
 
+## Update repo given the merge branch. We assume the currently checked out
+## branch is `local_branch` as per `check_ood'
 function update_repo {
   local repo_path=$1
-  local repo_branch=$2
-  local repo_foreign=$3
-
+  local merger_branch=$2
   local repo_name=${repo_path##*/}
 
   printf "[ ?? ] Update $repo_name:$repo_branch? [Y/n] "
   read ans
 
-  local merge_repo=''
-
   if [[ $ans == 'y' || -z $ans ]]; then
     echo "[ !! ] Updating out-of-date $repo_name"
 
-    if [[ ! -z $repo_foreign ]]; then
-      merge_branch=fork-$repo_branch
-    else
-      merge_branch=$repo_branch
-    fi
-
-    echo "[ == ] Merging command: git -C $repo_path merge --no-edit $repo_branch"
-    if ! GIT_EDITOR=ed git -C $repo_path merge --no-edit $merge_branch; then
+    echo "[ == ] Merging command: git -C $repo_path merge --no-edit $merger_branch"
+    if ! GIT_EDITOR=ed \
+         git -C $repo_path merge --no-edit $merger_branch; then
       echo "[ !! ] Merge failed. Spawning recovery shell"
       pushd $repo_path
       $SHELL
@@ -71,39 +67,40 @@ function update_repo {
   fi
 }
 
+# Check to see if the default branch of origin, or repo_foreign, is in the
+# history of the local branch, if not, then prompt for update
 function check_ood {
+  local remote_branch=''
+  local local_branch=''
+  local repo_name=''
+  local repo_cm=''
+
   while read repo_path repo_branch repo_foreign; do
     if [[ $repo_path =~ ^#.*$ || $repo_path =~ ^( \t)*$ ]]; then
       continue
     fi
 
-    local repo_name=${repo_path##*/}
+    repo_name=${repo_path##*/}
 
     echo "[ .. ] Checking $repo_name:$repo_branch..."
 
-    local fork_branch=''
-    local local_branch=''
-
     if [[ ! -z $repo_foreign ]]; then
-      fork_branch=$repo_branch
-      local_branch=fork-$repo_branch
-    else
-      fork_branch=mh-local
+      remote_branch=fork-$repo_branch
       local_branch=$repo_branch
+    else
+      remote_branch=$repo_branch
+      local_branch=mh-$repo_branch
     fi
 
-    local repo_cm=$(git -C $repo_path rev-list $local_branch | head -1)
+    remote_cm=$(git -C $repo_path rev-parse $remote_branch)
 
-    # if $repo_branch's commit is not in the history of mh-local, we trigger
-    # out-of-date
-    if ! git -C $repo_path rev-list $fork_branch | grep -q -m1 "$repo_cm"; then
-      echo "  -> out-of-date (master not on mh-local's history)"
-      update_repo $repo_path $repo_branch $repo_foreign <${TTY}
+    if ! git -C $repo_path rev-list $local_branch |\
+         grep -q -m1 "$remote_cm"; then
+      echo "  -> out-of-date (remote's not on local's history)"
+      update_repo $repo_path $remote_branch <${TTY}
     else
       echo "  -> up-to-date"
     fi
-
-    repo_foreign=
   done < $GITLOCAL
 }
 

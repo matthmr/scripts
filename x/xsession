@@ -9,12 +9,9 @@ TRIES=5
 
 SHOULD_MSG=false
 
-mkdir -pv /tmp/emacs
-touch /tmp/emacs/daemon.log
-touch /tmp/session-msg
-
 function session_msg {
   local msg=$1
+  SHOULD_MSG=true
 
   echo "[ $(date +%s) ] $msg" >> /tmp/session-msg
 }
@@ -30,19 +27,25 @@ while :; do
   TRIES=$((TRIES-1))
 done
 
-if [[ ! -f /tmp/mpd-pid ]]; then
-  mpd &
-fi
-
 if [[ ! -f /tmp/schedl/session-lock ]]; then
   jobs=$(find /tmp/schedl -type f -not -name '*.sh' 2>/dev/null)
+  sh_jobs=$(find /tmp/schedl -type f -name '*.sh' 2>/dev/null)
+
   touch /tmp/schedl/session-lock
 
   if [[ ! -z $jobs ]]; then
-    SHOULD_MSG=true
     for job in $(echo $jobs | tr '\n' ' '); do
       session_msg "Schedl Job ($job): $(cat $job)"
     done
+  fi
+
+  if [[ ! -z $sh_jobs ]]; then
+    session_msg "NOTE: There are Schedl script jobs pending"
+    tmux new-session -d \
+         -s 'schedl' \
+         -e XINITSLEEP='/home/mh/Scripts/job/schedl-session.sh' \
+         -e XINITSLEEPARGS="$(echo $sh_jobs | tr '\n' ' ')" \
+         zsh
   fi
 fi
 
@@ -62,8 +65,6 @@ esac
 # locked: ignore launching `linux.sh'
 if [[ $2 == "1" && ! -f /tmp/session-lock ]]; then
   touch /tmp/session-lock
-  SHOULD_MSG=true
-
   session_msg "Note: There's an Xsession tmux session [xsession] pending"
 
   tmux new-session -d \

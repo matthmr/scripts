@@ -71,21 +71,8 @@ function psof {
               pid,ppid,user,priority,nice,rss,s,%mem,%cpu,cputime,tty,command
 }
 
-
-#### XCOPY
-function xcp {
-  echo "$@" | xclip -selection clipboard
-}
-
-function xcpin {
-  xclip -selection clipboard
-}
-
-function xcpout {
-  xclip -selection clipboard -out
-}
-
 #### JAPANESE
+
 function jspeak {
   [[ -z "$1" ]] && VOICE=neutral || VOICE="$1"
 

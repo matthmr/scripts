@@ -230,6 +230,17 @@ list_choose() {
 }
 ### END: LIST ###
 
+### BEGIN: DAEMON ###
+mkdir -m 700 -p /tmp/emacs 2> /dev/null
+
+touch /tmp/emacs/daemon.log
+touch /tmp/session-msg
+
+if [[ ! -f /tmp/mpd-pid ]]; then
+  mpd 1>/dev/null 2>/dev/null &
+fi
+### END: DAEMON ###
+
 ### BEGIN: MAIN ###
 # continously prompt the user for a new session. Shutting down the computer
 # through `doshutdown' breaks this cycle
@@ -260,11 +271,17 @@ while :; do
       XINIT=${XINITS[$?]} ;;
   esac
 
+  if [[ $SESSION_TYPE == '1' ]]; then
+    SESSION_TYPEV=with
+  else
+    SESSION_TYPEV=without
+  fi
+
   case $SESSION in
     'tty'|'tmux-tty'|'emacs-tty')
-      header "Logging in with $SESSION > $(tty) > $SESSION_TYPE for TTYsession";;
+      header "Logging in with $SESSION > $(tty) > $SESSION_TYPEV TTYsession";;
     *)
-      header "Logging in with $XINIT > $SESSION > $SESSION_TYPE for Xsession";;
+      header "Logging in with $XINIT > $SESSION > $SESSION_TYPEV Xsession";;
   esac
 
   sleep 1
@@ -273,12 +290,6 @@ while :; do
     ONCE='0'
   else
     ONCE='1'
-  fi
-
-  if [[ $SESSION_TYPE == 'no' ]]; then
-    SESSION_TYPE='0'
-  else
-    SESSION_TYPE='1'
   fi
 
   if [[ $ONCE == '0' ]]; then

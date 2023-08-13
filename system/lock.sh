@@ -15,7 +15,7 @@ case $1 in
 esac
 
 # carve out the command
-PACMAN= PARU= SCHEDL= EFISTUB=
+PACMAN= PARU= EFISTUB=
 len=${#COMMAND}
 len=$((len - 1))
 for (( i = 0 ; i <= len; i++ )); do
@@ -23,7 +23,6 @@ for (( i = 0 ; i <= len; i++ )); do
     'p') PACMAN=y;;
     'n') PARU=y;;
     'e') EFISTUB=y;;
-    's') SCHEDL=y;;
   esac
   COMMAND=${COMMAND:i}
 done
@@ -164,26 +163,6 @@ function _paru {
   rm -v /tmp/pacman/lock-paru
 }
 
-function _schedl {
-  local SCRIPTS="$(find /tmp/schedl -type f -name '*.sh' 2>/dev/null)"
-  read -p "[ ?? ] Schedl script job found. Run it? [Y/n] " ans
-  if [[ $ans = 'n' ]]; then
-    echo "[ !! ] Ignoring ... "
-    echo "Ignore lock:" "lock was ignored for schedl"
-    for file in $(echo $SCRIPTS|tr '\n' ' '); do
-      rm -v $file ${file%%.sh};
-    done
-    return 0
-  else
-    while read file; do
-      echo "[ .. ] Executing $file"
-      sleep 1
-      $file
-      rm -v $file ${file%%.sh} #remove the files as we execute them
-    done <<< "$SCRIPTS"
-  fi
-}
-
 function _efistub {
   read -p "[ ?? ] Update packages (efistub)? [Y/n] " ans
 
@@ -204,7 +183,6 @@ if [[ ! -z $PACMAN ]]; then
 fi
 
 [[ ! -z $PARU ]]    && _paru
-[[ ! -z $SCHEDL ]]  && _schedl
 
 read -p "[ ?? ] Hand over to openrc? [Y/n] " ans
 if [[ $ans = 'n' ]]; then

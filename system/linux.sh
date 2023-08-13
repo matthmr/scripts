@@ -44,7 +44,10 @@ fi
 [[ -z $SUDO ]] && SUDO=doas
 
 echo "[ .. ] Setting up \`tmp'"
+
 TMP=$(mktemp -d "/tmp/pacman.XXX")
+mv -v $TMP /tmp/pacman
+TMP=/tmp/pacman
 
 #################### UPDATE LOCAL PACKAGES ####################e
 

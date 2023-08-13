@@ -20,7 +20,7 @@ esac
 # Git
 autoload -Uz vcs_info
 precmd() { vcs_info }
-zstyle ':vcs_info:git:*' formats '%F{red}[%F{reset}%B%b%F{red}]'
+zstyle ':vcs_info:git:*' formats '%F{red}[%F{reset}%B%b[0m%F{red}]'
 
 # Prompt
 # ┌[zsh:mh@linux] [pts/0] [2236] [master]
@@ -31,7 +31,7 @@ PROMPT="\
 %F{red}[%F{reset}%Bzsh%b%F{red}] \
 %F{red}[%F{reset}%B%l%b%F{red}] \
 %F{red}[%F{reset}%B%D{%H%M}%b%F{red}] \
-\$vcs_info_msg_0_ \
+\$vcs_info_msg_0_ %b\
 %(?..[%F{reset}%B%?%b%F{red}])
 [%F{reset}%B%2~%b%F{red}]>%F{reset} "
 PS2="%F{red}>%F{reset} "
@@ -64,15 +64,19 @@ ZSH_HIGHLIGHT_STYLES[arg0]=fg=blue
 source /home/mh/Scripts/sh/alias
 source /home/mh/Scripts/sh/functions
 
-echo "    ___
-   (.. |
-   (<> |
-  / __  \\
- ( /  \\ /|
-_/\\ __)/_)
-\\/-____\\/
-"
+function tux {
+  echo "\
+      ___
+     (.. |
+     (<> |
+    / __  \\
+   ( /  \\ /|
+  _/\\ __)/_)
+  \\/-____\\/
+  "
+}
 
+tux
 unset ZSH_MODE
 
 export SHELL=/bin/zsh
