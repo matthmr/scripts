@@ -14,7 +14,7 @@ function help {
   exit 1
 }
 
-[[ -z $GREP ]] && GREP=grep
+[[ -z $GREP ]] && GREP='grep --color'
 GREP_OPTS=''
 GREP_BASE=''
 
@@ -31,22 +31,16 @@ case $AS in
       help "journal-find [regex]" \
            "Finds a [regex] on the system journal source tree"
     fi
-    GREP_OPTS=-rin
+    GREP_OPTS='-rin'
     GREP_BASE=/home/mh/Documents/Org/Journal/;;
-  'wiki-find-pacman.sh')
+  'wiki-find-index.sh')
     if [[ $1 = '-h' || $1 = '--help' ]]; then
-      help "wiki-find-pacman [update file]" \
-           "Finds an [update file] on the system wiki source tree with respect to pacman logs"
-    fi
-    GREP_OPTS='-Frwin -f'
-    GREP_BASE=/home/mh/Documents/Org/Wiki/;;
-  'wiki-find-pacman-index.sh')
-    if [[ $1 = '-h' || $1 = '--help' ]]; then
-      help "wiki-find-pacman-index [update file]" \
-           "Finds an [update file] on the system wiki tracker"
+      help "wiki-find-index [index file]" \
+           "Finds strings in the [index file] on the system wiki source tree"
     fi
     GREP_OPTS='-win -f'
-    GREP_BASE=/home/mh/Documents/Org/Wiki/sys/pman/pacman-track.org;;
+    GREP_BASE="/home/mh/Documents/Org/Wiki/sys/pman/pacman-track.org\
+ /home/mh/Documents/Org/Wiki/sys/local.org";;
   *)
     echo "[ !! ] Unimplemented usage"
     exit 1;;
