@@ -1,4 +1,0 @@
-#!/bin/sh
-
-COMMAND=$(dmenu "$@" </home/mh/.cache/dmenu_run)
-exec $COMMAND

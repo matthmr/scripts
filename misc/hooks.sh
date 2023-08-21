@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 
-HOOKS_IDX=/home/mh/Hooks/linux.sh/hooks
+HOOKS_IDX=@HOOKS_TXT@
 
 while read line; do
   if [[ "$line" =~ ^#.*$ || "$line" =~ ^( \t)*$ ]]; then

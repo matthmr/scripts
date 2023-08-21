@@ -3,4 +3,4 @@
 export WM=tmux-tty
 export TERM=linux
 
-exec tmux -f /home/p/config/tmux/tmux-tty.conf $@
+exec tmux -f @TMYX_TTY_CONF@ $@

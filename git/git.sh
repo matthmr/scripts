@@ -7,7 +7,7 @@ case $1 in
     exit 1
 esac
 
-GITLIST=/home/p/scripts/git/git.txt
+GITLIST=@GIT_TXT@
 
 while read repo; do
   if [[ $repo =~ ^#.*$ || $repo =~ ^( \t)*$ ]]; then

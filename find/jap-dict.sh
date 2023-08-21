@@ -16,7 +16,7 @@ case $1 in
 		exit 1;;
 esac
 
-[[ -z $JAPDICT ]] && JAPDICT=/home/mh/Documents/Dict/edict-utf8
+[[ -z $JAPDICT ]] && JAPDICT=@JAP_DICT_EDICT@
 [[ -z $GREP ]]    && GREP=grep
 
 case $1 in

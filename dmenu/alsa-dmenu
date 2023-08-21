@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 # Made by mH (https://github.com/matthmr)
 
-#*****************************************************
-# change anything that is followed by "#change this" #
-#*****************************************************
-
-# cmus-dmenu: cmus integration with dmenu
-
-DMENU="/home/mh/Source/bin/dmenu" # change this
-AMIXER="/usr/bin/amixer" # change this
-NOTIFY="herbe" # change this
+DMENU=@ALSA_DMENU_BIN@
+AMIXER="amixer"
+NOTIFY="herbe"
 
 PROMPT="\
 perc+

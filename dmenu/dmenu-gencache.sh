@@ -7,14 +7,14 @@ case $1 in
 		exit 1
 esac
 
-cachedir="/home/mh/.cache/"
+cachedir=@DMENU_GENCACHE_CACHEDIR@
 cache="$cachedir/dmenu_run"
 
 [ ! -e "$cachedir" ] && mkdir -p "$cachedir"
 
 IFS=:
-if /mnt/ssd/root/usr/bin/stest -dqr -n "$cache" $PATH; then
-	/mnt/ssd/root/usr/bin/stest -flx $PATH | sort -u | tee "$cache" >/dev/null
+if stest -dqr -n "$cache" $PATH; then
+	stest -flx $PATH | sort -u | tee "$cache" >/dev/null
 fi
 
 echo "[ OK ] dmenu-gencache.sh: Done"

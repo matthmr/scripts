@@ -1,15 +1,5 @@
 #!/usr/bin/bash
 
-# Integrated by mH (https://github.com/matthmr)
-
-#*****************************************************
-# change anything that is followed by "#change this" #
-#*****************************************************
-
-# youtube-json.sh [-c:clear query,-l:list queries] <query>
-
-# TODO: also display the channel id/handle
-
 YOUTUBE_BASE="https://www.youtube.com"
 YOUTUBE_QUERY="$YOUTUBE_BASE/results?search_query="
 YOUTUBE_WATCH="$YOUTUBE_BASE/watch?v="

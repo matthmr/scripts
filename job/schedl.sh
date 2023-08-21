@@ -36,4 +36,4 @@ while read jobfile; do
       script=false
     fi
   done
-done < /home/p/scripts/job/schedl.txt
+done < @SCHEDL_TXT@

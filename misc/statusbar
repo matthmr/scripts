@@ -2,9 +2,7 @@
 # Made by mH (https://github.com/matthmr)
 
 # Disk
-#"/dev/sda1"
-#        home       ssd         root
-DRIVES=("/dev/sda1" "/dev/sda2" "/dev/sdc2")
+DRIVES=(@STATUSBAR_DRIVES@)
 DRIVENO=${#DRIVES[@]}
 DRIVEIN=$(($RANDOM % $DRIVENO))
 DRIVE=${DRIVES[DRIVEIN]}
@@ -48,7 +46,7 @@ _DATE=$(date +'%a %Y%m%d%H%M')
 DATE="$_DATE"
 
 # Keyboard Layout
-LAYOUT=$(/home/mh/Git/MH/side/src/kbdlayout/kbdlayout)
+LAYOUT=$(@STATUSBAR_KBDLAYOUT@)
 
 echo " $LAYOUT > $IP > $VOL > $MEM > $DISK > $DATE > $UPTIME "
 #echo " $LAYOUT < $IP < $VOL < $MEM < $DISK < $DATE < $UPTIME "

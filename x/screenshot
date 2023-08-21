@@ -3,13 +3,13 @@
 
 AS=${0##*/}
 
-DMENU="/home/mh/Source/bin/dmenu"
-SCREENSHOT="/mnt/ssd/root/usr/bin/shotgun"
+DMENU=@SCREENSHOT_DMENU_BIN@
+SCREENSHOT=@SCREENSHOT_SHOTGUN_BIN@
 SCREENSHOT_OPTS=""
-SCREENSHOT_DIR="/home/mh/Images/Screenshots"
+SCREENSHOT_DIR=@SCREENSHOT_SHOTGUN_DIR@
 NOTIFY=herbe
 
-OPT_X11_GEOM="/mnt/ssd/root/usr/bin/hacksaw -r"
+OPT_X11_GEOM=@SCREENSHOT_X11_GEOM@
 
 OPT="\
 window root

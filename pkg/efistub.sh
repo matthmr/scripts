@@ -19,8 +19,8 @@ PACMAN=pacman
 TARGET=systemd
 ARCH=x86_64
 
-CACHE=/mnt/ssd/pacman/cache
-PKG_DIR=/home/p/scripts/pkg
+CACHE=@EFISTUB_PACMAN_CACHE@
+PKG_DIR=@EFISTUB_PKG_DIR@
 PMAN_DIR=$1
 
 VER_FILE=$PKG_DIR/efistub.txt

@@ -48,7 +48,7 @@ for arg in $@; do
     continue
   elif [[ $arg = '-s' ]]; then
     lock_repo=true
-    BASE=/home/mh/Git/MH/
+    BASE=@GIT_REMOTE_BASE@
     continue
   fi
 

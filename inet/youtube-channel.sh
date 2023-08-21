@@ -1,15 +1,5 @@
 #!/usr/bin/bash
 
-# Integrated by mH (https://github.com/matthmr)
-
-#*****************************************************
-# change anything that is followed by "#change this" #
-#*****************************************************
-
-# youtube-channel.sh [-c:clear-query, -l:list queries] <id>
-
-# TODO: fetch more data from `/videos`?
-
 YOUTUBE_BASE="https://www.youtube.com"
 YOUTUBE_WATCH="$YOUTUBE_BASE/watch?v="
 BASE=/tmp/youtube

@@ -10,9 +10,8 @@ esac
 PACMAN=pacman
 DATE=$(date +'%Y%m%d')
 
-$PACMAN -Q > /home/mh/Analysis/Pacman/Q/$DATE.color
+$PACMAN -Q > @Q_DIR@/$DATE.color
 
-sed -E 's.\x1b\[(0;1|1;32|0)m..g' /home/mh/Analysis/Pacman/Q/$DATE.color \
-	> /home/mh/Analysis/Pacman/Q/$DATE
+sed -E 's.\x1b\[(0;1|1;32|0)m..g' @Q_DIR@/$DATE.color > @Q_DIR@/$DATE
 
 echo "[ OK ] Done"

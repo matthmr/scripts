@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 # Made by mH (https://github.com/matthmr)
 
-#*****************************************************
-# change anything that is followed by "#change this" #
-#*****************************************************
-
-# maim-dmenu: maim integration with dmenu
-
-DMENU="/home/mh/Source/bin/dmenu" # change this
-MAIM="/mnt/ssd/root/usr/bin/maim --quiet -o -B -d 0.25 -u" # change this
+DMENU=@MAIN_DMENU_BIN@
+MAIM=@MAIM_DMENU_CMDLINE@
 NOTIFY=herbe
 
 OPT="\
@@ -33,8 +27,8 @@ main() {
 
 	[[ -z $OPT ]] && exit 1
 
-	$MAIM --$OPT > Images/Screenshots/$FILENAME.png
-	$NOTIFY 'Screenshot taken' "Save as Images/Screenshots/$FILENAME.png"
+	$MAIM --$OPT > @MAIM_DMENU_DIR@
+	$NOTIFY 'Screenshot taken' "Save as @MAIM_DMENU_DIR@/$FILENAME.png"
 }
 
 main

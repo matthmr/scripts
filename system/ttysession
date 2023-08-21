@@ -34,9 +34,9 @@ if [[ ! -f /tmp/schedl/session-lock ]]; then
 
   if [[ ! -z $sh_jobs ]]; then
     session_msg "Note: There are Schedl script jobs pending"
-    tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
+    tmux -f @TTYSESSION_TMUX_TTY_CONF@ new-session -d \
          -s 'schedl' \
-         -e XINITSLEEP='/home/p/scripts/job/schedl-session.sh' \
+         -e XINITSLEEP=@TTYSESSION_XINITSLEEP@ \
          -e XINITSLEEPARGS="$(echo $sh_jobs | tr '\n' ' ')" \
          zsh
   fi
@@ -46,7 +46,7 @@ gpm-tty status >/dev/null 2>/dev/null
 GPM_STAT=0 #$? # FIXME
 
 if [[ $GPM_STAT == '1' ]]; then
-  tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
+  tmux -f @TTYSESSION_TMUX_TTY_CONF@ new-session -d \
        -e XINITSLEEP='gpm-tty' \
        -e XINITSLEEPARGS='prompt' \
        -s gpm-tty zsh
@@ -65,8 +65,8 @@ case $WM in
       # locked: ignore launching `linux.sh'
       touch /tmp/session-lock
       session_msg "Note: There's an Xsession tmux session [xsession] pending"
-      tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
-           -e XINITSLEEP='/home/p/scripts/system/linux.sh' \
+      tmux -f @TTYSESSION_TMUX_TTY_CONF@ new-session -d \
+           -e XINITSLEEP=@TTYSESSION_XINITSLEEP@ \
            -s ttysession zsh
     fi ;;
 
@@ -75,7 +75,7 @@ case $WM in
     SESSION=emacs
 
     if [[ $XSESSION == "1" ]]; then
-      export XINITSLEEP='/home/p/scripts/system/linux.sh'
+      export XINITSLEEP=@TTYSESSION_XINITSLEEP@
     else
       unset XINITSLEEP
     fi ;;
@@ -90,7 +90,7 @@ if $SHOULD_MSG; then
        if [[ $CCS -gt 1 || -z $CC ]]; then
          exit 1
        else
-         tmux -f "/home/p/config/tmux-tty.conf" display-popup \
+         tmux -f @TTYSESSION_TMUX_TTY_CONF@ display-popup \
               -c $CC \
               -T 'note' \
               "cat /tmp/session-msg" >/dev/null 2>/dev/null &
@@ -100,7 +100,7 @@ if $SHOULD_MSG; then
 fi
 
 if [[ $WM == 'tty' ]]; then
-  tmux -f "/home/p/config/tmux-tty.conf" attach-session -t 'docs'
+  tmux -f @TTYSESSION_TMUX_TTY_CONF@ attach-session -t 'docs'
 fi
 
 exec $SESSION

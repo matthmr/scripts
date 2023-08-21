@@ -46,7 +46,7 @@ function mkproj {
 
   local dir=
   local off=2
-  local stdsrc=/home/mh/Git/MH
+  local stdsrc=@FUNCTIONS_STDSRC@
 
   if [[ "$1" = '-s' ]]; then
     off=3
@@ -69,46 +69,4 @@ function unicode {
 function psof {
   /usr/bin/ps --forest -C "$1" -o \
               pid,ppid,user,priority,nice,rss,s,%mem,%cpu,cputime,tty,command
-}
-
-#### JAPANESE
-
-function jspeak {
-  [[ -z "$1" ]] && VOICE=neutral || VOICE="$1"
-
-  open_jtalk \
-  -x /mnt/ssd/root/usr/share/open-jtalk/dic \
-  -m /home/mh/Git/NONGIT/tohoku/tohoku-$VOICE.htsvoice \
-  -ow /dev/stdout /dev/stdin
-}
-
-function kana2roma {
-  echo "$1" |\
-    KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
-    ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
-    kakasi -i utf8 -Ha -Ka
-}
-
-function kana2kanji {
-  [[ -z $2 ]] && LVL=1 || LVL=$2
-  echo "$1" | sed "s/\$/ $LVL/g" | kkc | kkc.awk
-}
-
-function kanji2kana {
-  echo "$1" |\
-    KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
-    ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
-    kakasi -i utf8 -JH -KH
-}
-
-function kanji2roma {
-  echo "$1" |\
-    KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
-    ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
-    kakasi -i utf8 -Ja -Ha -Ka
-}
-
-function roma2kanji {
-  [[ -z $2 ]] && LVL=1 || LVL=$2
-  ~p/romaji.c/romaji "$1" | sed -f ~p/romaji.c/scripts/norm.sed -e "s/\$/ $LVL/g" | kkc | kkc.awk
 }

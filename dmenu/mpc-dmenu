@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 # Made by mH (https://github.com/matthmr)
 
-#*****************************************************
-# change anything that is followed by "#change this" #
-#*****************************************************
-
-# mpc-dmenu: mpc integration with dmenu
-
-DMENU="/home/mh/Source/bin/dmenu" # change this
-MPC="/mnt/ssd/root/usr/bin/mpc" # change this
-NOTIFY="herbe" # change this
+DMENU=@MPC_DMENU_BIN@
+MPC=@MPC_DMENU_MPC_BIN@
+NOTIFY="herbe"
 
 PROMPT="\
 play

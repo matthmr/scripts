@@ -70,7 +70,7 @@ function _pacman {
     sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' /tmp/pacman/pacman-update-raw |\
       awk '{print $1}' > /tmp/pacman/pacman-update
     echo "[ .. ] Setting permissions"
-    chown -Rv mh:mh /tmp/pacman/pacman-update /tmp/pacman/pacman-update-raw
+    chown -Rv @LOCK_USER@:@LOCK_USER@ /tmp/pacman/pacman-update /tmp/pacman/pacman-update-raw
     chmod -Rv a+w /tmp/pacman/pacman-update /tmp/pacman/pacman-update-raw
     echo "[ .. ] Listing updatable packages"
     /bin/less -R /tmp/pacman/pacman-update-raw
@@ -81,11 +81,9 @@ function _pacman {
     echo "[ !! ] Ignoring ... "
   else
     if [[ $MANUAL = 'y' ]]; then
-      #/home/p/scripts/find/wiki-find-pacman.sh /tmp/pacman/pacman-update | /bin/less
-      /home/p/scripts/find/wiki-find-pacman-index.sh /tmp/pacman/pacman-update | /bin/less
+      @LOCK_FIND_PACMAN_WIKI_INDEX@ /tmp/pacman/pacman-update | /bin/less
     else
-      #/home/p/scripts/find/wiki-find-pacman.sh /tmp/pacman/pacman | /bin/less
-      /home/p/scripts/find/wiki-find-pacman-index.sh /tmp/pacman/pacman | /bin/less
+      @LOCK_FIND_PACMAN_WIKI_INDEX@ /tmp/pacman/pacman | /bin/less
     fi
   fi
 
@@ -126,7 +124,7 @@ function _paru {
     sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' /tmp/pacman/paru-update-raw |\
       awk '{print $1}' > /tmp/pacman/paru-update
     echo "[ .. ] Setting permissions"
-    chown -Rv mh:mh /tmp/pacman/paru-update /tmp/pacman/paru-update-raw
+    chown -Rv @LOCK_USER@:@LOCK_USER@ /tmp/pacman/paru-update /tmp/pacman/paru-update-raw
     chmod -Rv a+w /tmp/pacman/paru-update /tmp/pacman/paru-update-raw
     echo "[ .. ] Listing updatable packages"
     /bin/less -R /tmp/pacman/paru-update-raw
@@ -137,11 +135,9 @@ function _paru {
     echo "[ !! ] Ignoring ... "
   else
     if [[ $MANUAL = 'y' ]]; then
-      #/home/p/scripts/find/wiki-find-pacman.sh /tmp/pacman/paru-update | /bin/less
-      /home/p/scripts/find/wiki-find-pacman-index.sh /tmp/pacman/paru-update | /bin/less
+      @LOCK_FIND_PACMAN_WIKI_INDEX@ /tmp/pacman/paru-update | /bin/less
     else
-      #/home/p/scripts/find/wiki-find-pacman.sh /tmp/pacman/paru | /bin/less
-      /home/p/scripts/find/wiki-find-pacman-index.sh /tmp/pacman/paru | /bin/less
+      @LOCK_FIND_PACMAN_WIKI_INDEX@ /tmp/pacman/paru | /bin/less
     fi
   fi
 
@@ -171,7 +167,7 @@ function _efistub {
     return 0
   fi
 
-  while ! $SUDO /home/p/scripts/root/update-efistub.sh; do continue; done
+  while ! $SUDO @LOCK_UPDATE_EFISTUB@; do continue; done
 }
 
 [[ ! -z $EFISTUB ]] && _efistub

@@ -15,7 +15,7 @@ if [[ $USER != root ]]; then
 fi
 
 PMAN_DIR=/tmp/pacman
-PKG_FILE=/home/p/scripts/pkg/efistub.txt
+PKG_FILE=@UPDATE_EFISTUB_TXT@
 
 EFISTUB=usr/lib/systemd/boot/efi/linuxx64.efi.stub
 SYSUSERS=usr/bin/systemd-sysusers
@@ -59,10 +59,6 @@ else
 	echo "[ .. ] Removing local lock"
 	cp $PKG_FILE /tmp/efistub-pkgfile
 	cat /tmp/efistub-pkgfile | cut -d' ' -f2 > $PKG_FILE
-	# mv -v /tmp/efistub-pkgfile $PKG_FILE
-
-  # chown -v mh:mh $PKG_FILE
-  # chmod -v 666 $PKG_FILE
 fi
 
 echo "[ OK ] Done"

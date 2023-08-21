@@ -3,7 +3,7 @@
 if [[ $1 == '-x' ]]; then
   TMUX_NAME=tmux
 else
-  TMUX_NAME="tmux -f '/home/p/config/tmux-tty.conf'"
+  TMUX_NAME=@DOSHUTDOWN_TMUX_TTY@
 fi
 
 AS=${0##*/}
@@ -15,7 +15,7 @@ XTERM=urxvt
 unset XINITSLEEP
 unset XINITSLEEPARGS
 
-XINITSLEEP="/home/p/scripts/acpi/${AS_SESSION}-lock"
+XINITSLEEP=@DOSHUTDOWN_XINITSLEEP@
 XINITSLEEPARGS="$1"
 
 $TMUX_NAME new-session -d \

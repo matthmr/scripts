@@ -9,7 +9,6 @@ if [[ -z `pidof sxhkd` ]]; then
 fi
 
 # Unused
-#xmodmap /home/mh/.Xmodmap &
 #xcape -e 'Control_L=Escape' &
 
 # Mice are for pussies
@@ -21,7 +20,7 @@ xkbset ma 30 10 25 15 2 &
 # xset b off &
 
 # Load Xresources
-xrdb /home/mh/.Xresources &
+xrdb @XDAEMON_XRESOURCES@ &
 
 # > nice pape anon
-/home/mh/.fehbg &
+@XDAEMON_FEHBG@ &

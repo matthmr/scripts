@@ -7,7 +7,7 @@ AS=${AS/do/}
 
 unset XINITSLEEPARGS
 
-XINITSLEEP="/home/p/scripts/acpi/${AS}-confirm"
+XINITSLEEP=@DOSUSPEND_XINITSLEEP@
 TMUX_NAME=tmux
 
 CC=$($TMUX_NAME list-clients | cut -f1 -d:)
@@ -43,7 +43,7 @@ if [[ $1 == '-x' ]]; then
 else
   case $WM in
     'tty'|'tmux-tty')
-      TMUX_NAME="$TMUX_NAME -f '/home/p/config/tmux-tty.conf'" ;;
+      TMUX_NAME=@DOSUSPEND_TMUX_TTY@ ;;
   esac
 
   $TMUX_NAME new-session -d \

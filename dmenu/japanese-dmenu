@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-DMENU="/home/mh/Source/bin/dmenu"
-EDITCLIP="/home/p/scripts/x/edit-copy.sh"
+DMENU=@JAPANESE_DMENU_BIN@
+EDITCLIP=@JAPANESE_DMENU_EDIT_COPY@
 CLIPFILE="/tmp/clipboard"
 
 PROMPT="\
@@ -26,18 +26,18 @@ WORD=$(feed "" "write")
 
 case $MODE in
   "roma -> kana")
-    romaji "$WORD" | tr -d '\000' | sed -f ~p/romaji.c/scripts/norm.sed > $CLIPFILE;;
+    romaji "$WORD" | tr -d '\000' | sed -f @JAPANESE_DMENU_ROMAJI_NORMSED@ > $CLIPFILE;;
   "roma -> kanji")
-    romaji "$WORD" | tr -d '\000' | sed -f ~p/romaji.c/scripts/norm.sed -e 's:$: 1:' | kkc | kkc.awk > $CLIPFILE;;
+    romaji "$WORD" | tr -d '\000' | sed -f @JAPANESE_DMENU_ROMAJI_NORMSED@ -e 's:$: 1:' | kkc | kkc.awk > $CLIPFILE;;
   "kanji -> kana")
 	  echo "$WORD" |\
-		  KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
-		    ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
+		  KANWADICTPATH=@JAPANESE_DMENU_KAKASI_KANWADICT@\
+		    ITAIJIDICTPATH=@JAPANESE_DMENU_KAKASI_ITAIJIDICT@\
 		    kakasi -i utf8 -JH -KH > $CLIPFILE;;
   "kanji -> roma")
 	  echo "$WORD" |\
-		  KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict\
-		    ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict\
+		  KANWADICTPATH=@JAPANESE_DMENU_KAKASI_KANWADICT@\
+		    ITAIJIDICTPATH=@JAPANESE_DMENU_KAKASI_ITAIJIDICT@\
 		    kakasi -i utf8 -Ja -Ha -Ka > $CLIPFILE;;
   "kana -> kanji")
     echo "$WORD" |\

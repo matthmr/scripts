@@ -29,9 +29,9 @@ Minor Modes:
 esac
 
 ### BEGIN: CONSTS ###
-WIKI="/home/mh/Documents/Org/Wiki"
-JOURNAL="/home/mh/Documents/Org/Journal"
-PROJECT="/home/mh/Git/MH"
+WIKI=@DOCS_WIKI@
+JOURNAL=@DOCS_JOURNAL@
+PROJECT=@DOCS_PROJECT_BASE@
 ### END: CONSTS ###
 
 ### BEGIN: VARS ###
@@ -158,7 +158,7 @@ case $1 in
     INT=$DMENU;;
   '-t')
     mode_arg=$2
-    TMUX_NAME="$TMUX_NAME -f '/home/p/config/tmux-tty.conf'";;
+    TMUX_NAME=@DOCS_TMUX_TTY@;;
   *)
     mode_arg=$1;;
 esac

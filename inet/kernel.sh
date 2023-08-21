@@ -16,7 +16,7 @@ case $1 in
 esac
 
 COMP='xz'
-DIR='/mnt/hdd/git/NONGIT/'
+DIR=@KERNEL_DIR@
 
 REMOVE=false
 case $1 in

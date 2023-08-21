@@ -1,9 +1,9 @@
 #!/usr/bin/bash
 
-source /home/p/scripts/sh/bash_environment
+source @BASH_PROFILE_BASH_ENVIRONMENT@
 
 # load schedl
-/home/mh/Git/MH/scripts/job/schedl.sh
+@BASH_PROFILE_SCHEDL@
 
 # load `session' if `system-day' is set by `schedl', 0 if doesn't exist, one if
 # it does

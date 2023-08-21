@@ -1,20 +1,14 @@
 #!/usr/bin/env bash
 # Made by mH (https://github.com/matthmr)
 
-#*****************************************************
-# change anything that is followed by "#change this" #
-#*****************************************************
-
-# td: a framework for working with the linux tmpfs
-
 if [[ -z "$TMP" ]]
 then
-	TMP=/tmp # change this
+	TMP=/tmp
 fi
 
-TMP_ROOT=/tmp # change this
-LOCKFILE=$TMP_ROOT/td.lock # change this
-DIFF=/bin/diff # change this
+TMP_ROOT=/tmp
+LOCKFILE=$TMP_ROOT/td.lock
+DIFF=/bin/diff
 
 VERSION="v0.4.1"
 

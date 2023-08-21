@@ -2,10 +2,8 @@
 # overrides
 alias lf='lf -single'
 alias tmux='tmux -u'
-alias lynx='lynx -lss=/home/mh/.lynx/lynx.lss -display_charset=utf8 -emacskeys -cookies=off -editor=emacsc -homepage=file:// /home/mh/Source/HTML/lynx.html'
 alias ed="ed -Ep '(ed) '"
 alias feh='feh --scale-down -B "#303030"'
-alias ltrace='ltrace -F /mnt/ssd/root/etc/ltrace.conf'
 alias chess='gnuchess -g'
 alias rp='realpath'
 alias ip='ip -color=auto'
@@ -21,13 +19,12 @@ alias xc='xclip -selection clipboard'
 alias g='git'
 alias b='busybox'
 alias js='jobs -ld'
-alias high='highlight -D /mnt/ssd/root/usr/share/highlight -O ansi'
 alias bap='bat -p'
 alias gip='git -P'
 alias torrentd='transmission-daemon -e /tmp/transmission.log --log-level=info'
 alias torrentc='transmission-remote'
 alias rss='newsboat'
-alias getmail='mbsync -V mh'
+alias getmail='mbsync -V @ALIAS_USER@'
 alias mail='neomutt'
 alias mpvterm='2>/dev/null mpv --vo=tct'
 alias master='git stash push && git tag "merger-$(git branch --show-current)-$(date +%Y%m%d)" stash && git checkout master && git stash pop'
@@ -54,10 +51,5 @@ alias cld='dirs -c'
 alias ...='../..'
 alias ....='../../..'
 
-# environment
-alias py='PYTHONPATH=/mnt/ssd/root/usr/lib/python3.10/site-packages/'
-alias rb='RUBYLIB=/mnt/ssd/root/usr/lib/ruby'
-
 # functional
 alias man="LESS_TERMCAP_md=$'\e[01;31m' LESS_TERMCAP_me=$'\e[0m' LESS_TERMCAP_se=$'\e[0m' LESS_TERMCAP_so=$'\e[01;44;33m' LESS_TERMCAP_ue=$'\e[0m' LESS_TERMCAP_us=$'\e[01;32m' /usr/bin/man"
-alias kakasi="KANWADICTPATH=/mnt/ssd/root/usr/share/kakasi/kanwadict ITAIJIDICTPATH=/mnt/ssd/root/usr/share/kakasi/itaijidict kakasi -i utf8"

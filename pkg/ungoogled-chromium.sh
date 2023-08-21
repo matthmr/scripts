@@ -12,14 +12,14 @@ case "$1" in
 	;;
 esac
 
-DEST_PKG="/home/mh/Source/pkg/ungoogled-chromium"
-DEST_BIN="/home/mh/Source/bin/ungoogled-chromium"
+DEST_PKG=@UNGOOGLED_CHROMIUM_DEST@
+DEST_BIN=@UNGOOGLED_CHROMIUM_BIN@
 PKG="/tmp/ungoogled-chromium.appimage"
 PKG_ROOT="/tmp/squashfs-root"
-CHROMIUM_HOME="/home/mh/.config/chromium"
+CHROMIUM_HOME=@UNGOOGLED_CHROMIUM_HOME@
 URL="https://raw.githubusercontent.com/ungoogled-software/ungoogled-chromium-binaries/master/feed.xml"
 CURL="/usr/bin/curl"
-XML="/mnt/ssd/root/usr/bin/xml"
+XML=@UNGOOGLED_CHROMIUM_XML@
 LAST_LOCAL_VERSION=$(cat "$CHROMIUM_HOME/Last Version")
 
 echo "[ .. ] Starting update on ungoogled-chromium"

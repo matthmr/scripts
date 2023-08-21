@@ -94,7 +94,7 @@ if [[ -z $RAW_QUERY ]]; then
   exit 1
 fi
 
-[[ -z $DIRECTORY ]] && TORRENT_OPT_DOWNLOAD_DIR="--download-dir /mnt/ssd/torrents" || \
+[[ -z $DIRECTORY ]] && TORRENT_OPT_DOWNLOAD_DIR="--download-dir @NYAA_DIR@" || \
                        TORRENT_OPT_DOWNLOAD_DIR="--download-dir $DIRECTORY"
 TORRENT_OPT_ADD_TORRENT="--add"
 
@@ -102,7 +102,7 @@ QUERY=$(query-encode $RAW_QUERY)
 NYAA_QUERY="/?q=$QUERY"
 NYAA_BASE="https://nyaa.si/"
 NYAA="$NYAA_BASE/$NYAA_QUERY"
-MKLNK=/home/p/scripts/inet/mklnk.awk
+MKLNK=@NYAA_MKLNK@
 
 # file1: [#] <NAME> <SIZE> <DATE> <SEEDERS> <LEECHERS> <DOWNLOADS>
 # file2: [#] <TORRENT> <MAGNET>

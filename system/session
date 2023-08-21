@@ -261,9 +261,9 @@ while :; do
       exec $SHELL;;
     'tty'|'tmux-tty'|'emacs-tty')
       if [[ $SESSION == 'tmux-tty' ]]; then
-        XINIT='tmux-tty new-session -A -s tmux /home/p/scripts/system/ttysession'
+        XINIT=@SESSION_TMUX_TTY@
       else
-        XINIT='/home/p/scripts/system/ttysession'
+        XINIT=@SESSION_TTYSESSION@
       fi ;;
     *)
       header "Choose a Xinit implementation to log in with"

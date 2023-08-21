@@ -56,4 +56,4 @@ fi
 
 sleep 1
 
-"/home/p/scripts/acpi/lock.sh" "${ARG}:${AS}"
+@SHUTDOWN_LOCK_LOCK@ "${ARG}:${AS}"

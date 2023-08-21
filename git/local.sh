@@ -8,7 +8,7 @@ case $1 in
 esac
 
 OOD=''
-GITLOCAL=/home/p/scripts/git/mh-local.txt
+GITLOCAL=@MHLOCAL_TXT@
 TTY=$(tty)
 SHELL=zsh
 

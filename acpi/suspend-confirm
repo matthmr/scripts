@@ -3,7 +3,7 @@
 AS=${0##*/}
 AS=${AS/-confirm/}
 
-COMMAND=/home/p/scripts/acpi/${AS}.sh
+COMMAND=@SUSPEND_CONFIRM_ACPI@
 
 read -p "[y/N] ${AS}? " ans
 

@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
 # Made by mH (https://github.com/matthmr)
 
-#*****************************************************
-# change anything that is followed by "#change this" #
-#*****************************************************
 
-# cmus-dmenu: cmus integration with dmenu
-
-DMENU="/home/mh/Source/bin/dmenu" # change this
-PLAYLIST_CACHE="/home/mh/.config/cmus/playlists/" # change this
-MUSIC_DIR="/home/mh/Music" # change this
-CMUS_REMOTE=cmus-remote # change this
+DMENU=@CMUS_DMENU_BIN@
+PLAYLIST_CACHE=@CMUS_DMENU_PLAYLISTS_DIR@
+MUSIC_DIR=@CMUS_DMENU_MUSIC_DIR@
+CMUS_REMOTE=cmus-remote
 
 PROMPT="\
  pause
