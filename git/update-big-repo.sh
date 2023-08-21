@@ -10,7 +10,7 @@ case $1 in
     exit 1;;
 esac
 
-BIG_SRC=/home/mh/Scripts/git/big.txt
+BIG_SRC=/home/p/scripts/git/big.txt
 
 while read repo; do
   if [[ $repo =~ ^#.*$ || $repo =~ ^( \t)*$ ]]; then

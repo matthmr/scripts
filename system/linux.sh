@@ -54,37 +54,37 @@ TMP=/tmp/pacman
 echo "[ .. ] Running user scripts"
 
 echo "[ .. ] Updating Git-controlled packages"
-/home/mh/Scripts/git/git.sh
+/home/p/scripts/git/git.sh
 
 echo "[ .. ] Updating locally Git-controlled packages"
-/home/mh/Scripts/git/mh-local.sh update
+/home/p/scripts/git/mh-local.sh update
 
 echo "[ .. ] Updating big Git-controlled repositories"
-/home/mh/Scripts/git/update-big-repo.sh
+/home/p/scripts/git/update-big-repo.sh
 
 # TODO: make this a source list to something like `pacwrap' or `pkgm'
 echo "[ .. ] Updating source-controlled packages"
-/home/mh/Scripts/pkg/ungoogled-chromium.sh
+/home/p/scripts/pkg/ungoogled-chromium.sh
 
 #################### MISC ####################
 echo "[ .. ] Generating dmenu cache"
-/home/mh/Scripts/dmenu-gencache.sh
+/home/p/scripts/dmenu/dmenu-gencache.sh
 
 echo "[ .. ] Running user-defined daemons"
-/home/mh/Scripts/system/usr-srv.sh
+/home/p/scripts/system/usr-srv.sh
 
 #################### ROOT / GLOBAL PACKAGES ####################
 echo "[ .. ] Preparing to run root scripts"
 
 # always try to get the root password
-while ! $SUDO /home/mh/Scripts/system/linux-root.sh $TMP; do continue; done
+while ! $SUDO /home/p/scripts/system/linux-root.sh $TMP; do continue; done
 
 # not a root script, but it needs to be run after those
-/home/mh/Scripts/pkg/efistub.sh $TMP
+/home/p/scripts/pkg/efistub.sh $TMP
 
 #################### HOOKS ####################
 echo "[ .. ] Finding hooks"
-/home/mh/Scripts/hooks.sh
+/home/p/scripts/misc/hooks.sh
 
 echo "[ OK ] linux.sh: Done"
 exit 0

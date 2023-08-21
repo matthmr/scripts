@@ -81,11 +81,11 @@ function _pacman {
     echo "[ !! ] Ignoring ... "
   else
     if [[ $MANUAL = 'y' ]]; then
-      #/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/pacman-update | /bin/less
-      /home/mh/Scripts/find/wiki-find-pacman-index.sh /tmp/pacman/pacman-update | /bin/less
+      #/home/p/scripts/find/wiki-find-pacman.sh /tmp/pacman/pacman-update | /bin/less
+      /home/p/scripts/find/wiki-find-pacman-index.sh /tmp/pacman/pacman-update | /bin/less
     else
-      #/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/pacman | /bin/less
-      /home/mh/Scripts/find/wiki-find-pacman-index.sh /tmp/pacman/pacman | /bin/less
+      #/home/p/scripts/find/wiki-find-pacman.sh /tmp/pacman/pacman | /bin/less
+      /home/p/scripts/find/wiki-find-pacman-index.sh /tmp/pacman/pacman | /bin/less
     fi
   fi
 
@@ -137,11 +137,11 @@ function _paru {
     echo "[ !! ] Ignoring ... "
   else
     if [[ $MANUAL = 'y' ]]; then
-      #/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/paru-update | /bin/less
-      /home/mh/Scripts/find/wiki-find-pacman-index.sh /tmp/pacman/paru-update | /bin/less
+      #/home/p/scripts/find/wiki-find-pacman.sh /tmp/pacman/paru-update | /bin/less
+      /home/p/scripts/find/wiki-find-pacman-index.sh /tmp/pacman/paru-update | /bin/less
     else
-      #/home/mh/Scripts/find/wiki-find-pacman.sh /tmp/pacman/paru | /bin/less
-      /home/mh/Scripts/find/wiki-find-pacman-index.sh /tmp/pacman/paru | /bin/less
+      #/home/p/scripts/find/wiki-find-pacman.sh /tmp/pacman/paru | /bin/less
+      /home/p/scripts/find/wiki-find-pacman-index.sh /tmp/pacman/paru | /bin/less
     fi
   fi
 
@@ -171,7 +171,7 @@ function _efistub {
     return 0
   fi
 
-  while ! $SUDO /home/mh/Scripts/root/efistub.sh; do continue; done
+  while ! $SUDO /home/p/scripts/root/update-efistub.sh; do continue; done
 }
 
 [[ ! -z $EFISTUB ]] && _efistub

@@ -10,4 +10,4 @@ esac
 /usr/bin/ls -1 /usr/bin > /tmp/root-bin
 /usr/bin/ls -1 /mnt/ssd/root/usr/bin > /tmp/ssd-bin
 
-/home/mh/Scripts/diff/diff.sh - /tmp/ssd-bin /tmp/root-bin | grep '^ '
+/home/p/scripts/diff/diff.sh - /tmp/ssd-bin /tmp/root-bin | grep '^ '

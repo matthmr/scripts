@@ -28,23 +28,23 @@ fi
 
 # set locks
 if [[ -d /tmp/pacman ]]; then
-	if [[ -f /tmp/pacman/lock-pacman ]]; then
-		echo "[ .. ] Package lock found:" "found package lock set by \`linux.sh'. Wait to shutdown"
+  if [[ -f /tmp/pacman/pacman-lock ]]; then
+    echo "[ .. ] Package lock found:" "found package lock set by \`linux.sh'. Wait to shutdown"
     sleep 1
-		ARG=p
-	fi
+    ARG=p
+  fi
 
-	if [[ -f /tmp/pacman/lock-paru ]]; then
-		echo "[ .. ] Package lock found (subsystem):" "also found lock for \`paru'"
+  if [[ -f /tmp/pacman/paru-lock ]]; then
+    echo "[ .. ] Package lock found (subsystem):" "also found lock for \`paru'"
     sleep 1
-		ARG="${ARG}n"
-	fi
+    ARG="${ARG}n"
+  fi
 
-	if [[ -f /tmp/pacman/lock-efistub ]]; then
-		echo "[ .. ] Efistub lock found:" "found efistub lock set by \`linux.sh'. Wait to shutdown"
+  if [[ -f /tmp/pacman/efistub-lock ]]; then
+    echo "[ .. ] Efistub lock found:" "found efistub lock set by \`linux.sh'. Wait to shutdown"
     sleep 1
-		ARG="${ARG}e"
-	fi
+    ARG="${ARG}e"
+  fi
 fi
 
 echo "[ .. ] Preparing to send ACPI event..."
@@ -56,4 +56,4 @@ fi
 
 sleep 1
 
-"/home/mh/Scripts/system/lock.sh" "${ARG}:${AS}"
+"/home/p/scripts/acpi/lock.sh" "${ARG}:${AS}"

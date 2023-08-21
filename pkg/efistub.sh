@@ -20,11 +20,11 @@ TARGET=systemd
 ARCH=x86_64
 
 CACHE=/mnt/ssd/pacman/cache
-PKG_DIR=/home/mh/Scripts/pkg
+PKG_DIR=/home/p/scripts/pkg
 PMAN_DIR=$1
 
 VER_FILE=$PKG_DIR/efistub.txt
-LCK_FILE=$PMAN_DIR/lock-efistub
+LCK_FILE=$PMAN_DIR/efistub-lock
 PKG_FILE=$PMAN_DIR/efistub.tar.zstd
 
 function do_update {

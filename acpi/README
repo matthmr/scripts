@@ -1,0 +1,17 @@
+These are scripts for ACPI actions, of which we consider only these four:
+
+1. shutdown
+2. reboot
+3. suspend (to RAM)
+4. suspend (to disk, aka hibernate)
+
+The intended usage of these scripts is to call the ACPI action with the script
+name being the name of the action, plus the prefix `do-` (doshutdown, dosuspend,
+etc). They create a new tmux session, with the action name as the session name.
+
+From there, 1 and 2 will call the script with prefix `-lock`, and it will lock
+the action to do house-cleaning. It will then call `lock.sh` and try to do the
+actions set by `-lock`.
+
+3 and 4 will call the script with prefix `-confirm` to confirm the action, with
+no house-cleaning needed.

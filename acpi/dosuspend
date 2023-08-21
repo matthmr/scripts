@@ -7,7 +7,7 @@ AS=${AS/do/}
 
 unset XINITSLEEPARGS
 
-XINITSLEEP="/home/mh/Scripts/bin/${AS}-confirm"
+XINITSLEEP="/home/p/scripts/acpi/${AS}-confirm"
 TMUX_NAME=tmux
 
 CC=$($TMUX_NAME list-clients | cut -f1 -d:)

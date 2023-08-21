@@ -11,4 +11,4 @@ SSH_TERMUX="u0_a455"
 #export FZF_TMUX="1"
 export KEYTIMEOUT="1"
 
-source ~p/scripts/sh/bash_environment
+source /home/p/scripts/sh/bash_environment

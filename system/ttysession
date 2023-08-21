@@ -36,7 +36,7 @@ if [[ ! -f /tmp/schedl/session-lock ]]; then
     session_msg "Note: There are Schedl script jobs pending"
     tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
          -s 'schedl' \
-         -e XINITSLEEP='/home/mh/Scripts/job/schedl-session.sh' \
+         -e XINITSLEEP='/home/p/scripts/job/schedl-session.sh' \
          -e XINITSLEEPARGS="$(echo $sh_jobs | tr '\n' ' ')" \
          zsh
   fi
@@ -66,7 +66,7 @@ case $WM in
       touch /tmp/session-lock
       session_msg "Note: There's an Xsession tmux session [xsession] pending"
       tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
-           -e XINITSLEEP='/home/mh/Scripts/system/linux.sh' \
+           -e XINITSLEEP='/home/p/scripts/system/linux.sh' \
            -s ttysession zsh
     fi ;;
 
@@ -75,7 +75,7 @@ case $WM in
     SESSION=emacs
 
     if [[ $XSESSION == "1" ]]; then
-      export XINITSLEEP='/home/mh/Scripts/system/linux.sh'
+      export XINITSLEEP='/home/p/scripts/system/linux.sh'
     else
       unset XINITSLEEP
     fi ;;

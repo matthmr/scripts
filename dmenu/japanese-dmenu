@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 DMENU="/home/mh/Source/bin/dmenu"
-EDITCLIP="/home/mh/Scripts/edit-copy.sh"
+EDITCLIP="/home/p/scripts/x/edit-copy.sh"
 CLIPFILE="/tmp/clipboard"
 
 PROMPT="\

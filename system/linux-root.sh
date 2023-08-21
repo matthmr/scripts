@@ -21,15 +21,15 @@ echo "[ .. ] Running root scripts"
 
 # See (20221105)
 # echo "[ .. ] Running temporary scripts"
-# /home/mh/Scripts/tmp/copylog
+# /home/p/scripts/tmp/copylog
 
 echo "[ .. ] Synchronizing clock"
 # update 20220910: increase the time in `sync-clock' to 10 seconds and therefore send it to the background
-/home/mh/Scripts/sync-clock.sh &
+/home/p/scripts/root/sync-clock.sh &
 
 # See (20230318)
 echo "[ .. ] Starting services"
-/home/mh/Scripts/system/srv.sh
+/home/p/scripts/system/srv.sh
 
 #################### GLOBAL PACKAGES ####################
 echo "[ .. ] Updating pacman's database"
@@ -56,9 +56,9 @@ echo "[ .. ] Setting update locks for pacman"
 	grep -qwi "$PACMAN_TRIGGER" /tmp/pacman/pacman
 } && {
 	echo "[ OK ] Found pacman lock"
-	touch /tmp/pacman/lock-pacman
-	chown -Rv mh:mh /tmp/pacman/lock-pacman
-	chmod -Rv a+w /tmp/pacman/lock-pacman
+	touch /tmp/pacman/pacman-lock
+	chown -Rv mh:mh /tmp/pacman/pacman-lock
+	chmod -Rv a+w /tmp/pacman/pacman-lock
 } || {
 	echo "[ !! ] No lock was found for pacman"
 }
@@ -68,9 +68,9 @@ echo "[ .. ] Setting update locks for paru"
 	grep -qi "$PARU_TRIGGER" /tmp/pacman/paru
 } && {
 	echo "[ OK ] Found paru lock"
-	touch /tmp/pacman/lock-paru
-	chown -Rv mh:mh /tmp/pacman/lock-paru
-	chmod -Rv a+w /tmp/pacman/lock-paru
+	touch /tmp/pacman/paru-lock
+	chown -Rv mh:mh /tmp/pacman/paru-lock
+	chmod -Rv a+w /tmp/pacman/paru-lock
 } || {
 	echo "[ !! ] No lock was found for paru"
 }

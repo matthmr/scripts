@@ -15,7 +15,7 @@ XTERM=urxvt
 unset XINITSLEEP
 unset XINITSLEEPARGS
 
-XINITSLEEP="/home/mh/Scripts/bin/${AS_SESSION}-lock"
+XINITSLEEP="/home/p/scripts/acpi/${AS_SESSION}-lock"
 XINITSLEEPARGS="$1"
 
 $TMUX_NAME new-session -d \

@@ -5,4 +5,4 @@ if [[ $USER != 'root' ]]; then
   exit 1
 fi
 
-exec unshare -n -- ~p/scripts/root/unshare.sh
+exec unshare -n -- /home/p/scripts/root/unshare.sh

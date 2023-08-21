@@ -15,7 +15,7 @@ if [[ $USER != root ]]; then
 fi
 
 PMAN_DIR=/tmp/pacman
-PKG_FILE=/home/mh/Scripts/pkg/efistub.txt
+PKG_FILE=/home/p/scripts/pkg/efistub.txt
 
 EFISTUB=usr/lib/systemd/boot/efi/linuxx64.efi.stub
 SYSUSERS=usr/bin/systemd-sysusers
@@ -25,7 +25,7 @@ LIBS=('libsystemd-core' 'libsystemd-shared')
 # Header
 echo "[ HOOK ] Updating the EFI stub using systemd : $0"
 
-if [[ ! -f $PMAN_DIR/lock-efistub ]]; then
+if [[ ! -f $PMAN_DIR/efistub-lock ]]; then
 	echo "[ !! ] No updates were found"
 	exit 0
 else
@@ -54,7 +54,7 @@ else
 
 	# Remove lock
 	echo "[ .. ] Removing lock"
-	rm -v $PMAN_DIR/lock-efistub
+	rm -v $PMAN_DIR/efistub-lock
 
 	echo "[ .. ] Removing local lock"
 	cp $PKG_FILE /tmp/efistub-pkgfile

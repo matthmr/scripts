@@ -102,7 +102,7 @@ QUERY=$(query-encode $RAW_QUERY)
 NYAA_QUERY="/?q=$QUERY"
 NYAA_BASE="https://nyaa.si/"
 NYAA="$NYAA_BASE/$NYAA_QUERY"
-MKLNK=/home/mh/Scripts/inet/mklnk.awk
+MKLNK=/home/p/scripts/inet/mklnk.awk
 
 # file1: [#] <NAME> <SIZE> <DATE> <SEEDERS> <LEECHERS> <DOWNLOADS>
 # file2: [#] <TORRENT> <MAGNET>

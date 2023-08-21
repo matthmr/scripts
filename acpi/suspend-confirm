@@ -3,7 +3,7 @@
 AS=${0##*/}
 AS=${AS/-confirm/}
 
-COMMAND=/home/mh/Scripts/root/${AS}.sh
+COMMAND=/home/p/scripts/acpi/${AS}.sh
 
 read -p "[y/N] ${AS}? " ans
 
