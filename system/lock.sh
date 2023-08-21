@@ -17,14 +17,13 @@ esac
 # carve out the command
 PACMAN= PARU= EFISTUB=
 len=${#COMMAND}
-len=$((len - 1))
-for (( i = 0 ; i <= len; i++ )); do
-  case ${COMMAND:i:1} in
+for (( i = 0 ; i < len; i++ )); do
+  CMD_CHAR=${COMMAND:i:1}
+  case $CMD_CHAR in
     'p') PACMAN=y;;
     'n') PARU=y;;
     'e') EFISTUB=y;;
   esac
-  COMMAND=${COMMAND:i}
 done
 
 case $AS in

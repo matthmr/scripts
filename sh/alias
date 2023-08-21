@@ -29,6 +29,7 @@ alias torrentc='transmission-remote'
 alias rss='newsboat'
 alias getmail='mbsync -V mh'
 alias mail='neomutt'
+alias mpvterm='2>/dev/null mpv --vo=tct'
 alias master='git stash push && git tag "merger-$(git branch --show-current)-$(date +%Y%m%d)" stash && git checkout master && git stash pop'
 
 # coreutils overrides

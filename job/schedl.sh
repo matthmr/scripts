@@ -1,6 +1,7 @@
 #!/usr/bin/sh
 
 mkdir -p /tmp/schedl/ 2>/dev/null
+touch /tmp/schedl/schedl.log
 
 [[ -f /tmp/schedl/session-lock ]] && exit 1
 
@@ -10,7 +11,7 @@ while read jobfile; do
     continue
   fi
 
-  schedl $jobfile 2>/dev/null \
+  schedl $jobfile 2>>/tmp/schedl/schedl.log \
   | sed -n \
         -e '/^JOB:/s/JOB: //p' \
         -e '/^DO:/s/DO: /!/p'\

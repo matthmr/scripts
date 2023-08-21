@@ -19,8 +19,10 @@ function session_msg {
 }
 
 if [[ ! -f /tmp/schedl/session-lock ]]; then
-  jobs=$(find /tmp/schedl -type f -not -name '*.sh' 2>/dev/null)
-  sh_jobs=$(find /tmp/schedl -type f -name '*.sh' 2>/dev/null)
+  jobs=$(find /tmp/schedl -type f \
+              -not -name '*.sh' -not -name '*.log' 2>/dev/null)
+  sh_jobs=$(find /tmp/schedl \
+                 -type f -name '*.sh' 2>/dev/null)
 
   touch /tmp/schedl/session-lock
 
@@ -31,7 +33,7 @@ if [[ ! -f /tmp/schedl/session-lock ]]; then
   fi
 
   if [[ ! -z $sh_jobs ]]; then
-    session_msg "NOTE: There are Schedl script jobs pending"
+    session_msg "Note: There are Schedl script jobs pending"
     tmux -f "/home/p/config/tmux-tty.conf" new-session -d \
          -s 'schedl' \
          -e XINITSLEEP='/home/mh/Scripts/job/schedl-session.sh' \
