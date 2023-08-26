@@ -5,7 +5,7 @@
 # [ -z `pidof dunst` ] && dunst &
 
 if [[ -z `pidof sxhkd` ]]; then
-  sxhkd < /dev/null >& /dev/null &
+  sxhkd -a 'bracketleft' < /dev/null >& /dev/null &
 fi
 
 # Unused

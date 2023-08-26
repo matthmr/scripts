@@ -43,7 +43,7 @@ if [[ ! -f /tmp/schedl/session-lock ]]; then
 fi
 
 gpm-tty status >/dev/null 2>/dev/null
-GPM_STAT=0 #$? # FIXME
+GPM_STAT=$?
 
 if [[ $GPM_STAT == '1' ]]; then
   tmux -f @TTYSESSION_TMUX_TTY_CONF@ new-session -d \

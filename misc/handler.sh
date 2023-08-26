@@ -62,6 +62,8 @@ case "$(file --dereference --brief --mime-type -- "$uri")" in
   image/*) $IMGVIEW $uri ;;
   video/*) $VIDEOPLAYER $uri ;;
   audio/* | application/octet-stream) $AUDIOPLAYER $uri ;;
+  # this only works if the program runs in a terminal
+  text/html) $BROWSER $uri ;;
   */pdf) $PDFVIEW $uri ;;
   *) $EDITOR $uri ;;
 esac
