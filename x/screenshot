@@ -7,6 +7,7 @@ DMENU=@SCREENSHOT_DMENU_BIN@
 SCREENSHOT=@SCREENSHOT_SHOTGUN_BIN@
 SCREENSHOT_OPTS=""
 SCREENSHOT_DIR=@SCREENSHOT_SHOTGUN_DIR@
+SCREENSHOT_TMP_DIR=@SCREENSHOT_TMP_DIR@
 NOTIFY=herbe
 
 OPT_X11_GEOM=@SCREENSHOT_X11_GEOM@
@@ -33,24 +34,26 @@ function feedopt {
   esac
 }
 
-if [[ $AS = 'screenshot-quick' ]]; then
-  FILENAME=/tmp/$(date +"%Y%m%d%H%M%S").png
-  SCREENSHOT_OPTS='-s'
-	#OPT=`feeddmenu "$OPT" "option"`
-  #SCREENSHOT_OPTS=$(feedopt "$OPT")
-else
-  FILENAME=`feeddmenu "" "filename"`
-  if [[ -z $FILENAME ]]; then
-    exit 1
-  else
-	  OPT=`feeddmenu "$OPT" "option"`
-    SCREENSHOT_OPTS=$(feedopt "$OPT")
-  fi
-  # FILENAME=$FILENAME.png
-fi
+case $AS in
+  'screenshot-quick')
+    FILENAME=/tmp/$(date +"%Y%m%d%H%M%S").png
+    SCREENSHOT_OPTS='-s';;
+  'screenshot-quick-dir')
+    FILENAME=$SCREENSHOT_TMP_DIR/$(date +"%Y%m%d%H%M%S").png
+    SCREENSHOT_OPTS='-s';;
+  *)
+    FILENAME=`feeddmenu "" "filename"`
+    if [[ -z $FILENAME ]]; then
+      exit 1
+    else
+      OPT=`feeddmenu "$OPT" "option"`
+      SCREENSHOT_OPTS=$(feedopt "$OPT")
+    fi
+    FILENAME=$FILENAME.png;;
+esac
 
 if [[ $AS = 'screenshot-dir' ]]; then
-    FILENAME=$SCREENSHOT_DIR/$FILENAME.png
+  FILENAME=$SCREENSHOT_DIR/$FILENAME
 fi
 
 $SCREENSHOT $SCREENSHOT_OPTS $FILENAME

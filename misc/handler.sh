@@ -5,7 +5,8 @@ case $1 in
     echo "Usage:       handler.sh [OPTIONS] URI/FILE"
     echo "Description: Opens a file given a handler for its type"
     echo "Options:
-  -u: use URI; default is FILE"
+  -u: use URI; default is FILE
+  -i: run interactively"
     exit 0;;
 esac
 
@@ -24,11 +25,13 @@ PDFVIEW=mupdf
 #### CMDLINE PARSER
 
 ext_url=false
+int=false
 uri=
 
 for arg in $@; do
   case $arg in
     '-u') ext_url=true; continue ;;
+    '-i') int=true; continue ;;
     *)    uri=$arg ; continue ;;
   esac
 done
@@ -38,7 +41,7 @@ if [[ -z $uri ]]; then
   exit 1
 fi
 
-#### HANDLER
+#### MAIN
 
 function ignoreuriparam {
   local uri=$1
@@ -50,23 +53,50 @@ function mktmpuri {
   echo /tmp/uri-$(echo "$uri" | md5sum | cut -d' ' -f1)
 }
 
+if $int; then
+  echo -n "[ ?? ] Use FILE? [y/N] "
+  read ans
+
+  if [[ -z $ans || $ans == 'n' ]]; then
+    ext_url=true
+  else
+    ext_url=false
+  fi
+fi
+
 if $ext_url; then
   uri=$(ignoreuriparam $uri)
   tmp_uri=$(mktmpuri $uri)
-  curl -Ls $uri > $tmp_uri
+  $FETCHURL -Ls $uri > $tmp_uri
   uri=$tmp_uri
 fi
 
-case "$(file --dereference --brief --mime-type -- "$uri")" in
-  image/gif) $GIFVIEW $uri ;;
-  image/*) $IMGVIEW $uri ;;
-  video/*) $VIDEOPLAYER $uri ;;
-  audio/* | application/octet-stream) $AUDIOPLAYER $uri ;;
-  # this only works if the program runs in a terminal
-  text/html) $BROWSER $uri ;;
-  */pdf) $PDFVIEW $uri ;;
-  *) $EDITOR $uri ;;
-esac
+if $int; then
+  echo -n "[ ?? ] Override handler? [y/N] "
+  read ans
+
+  if [[ -z $ans || $ans == 'n' ]]; then
+    case "$(file --dereference --brief --mime-type -- "$uri")" in
+      image/gif) $GIFVIEW $uri ;;
+      image/*) $IMGVIEW $uri ;;
+      video/*) $VIDEOPLAYER $uri ;;
+      audio/* | application/octet-stream) $AUDIOPLAYER $uri ;;
+      # this only works if the program runs in a terminal
+      text/html) $BROWSER $uri ;;
+      */pdf) $PDFVIEW $uri ;;
+      *) $EDITOR $uri ;;
+    esac
+  else
+    echo -n "[ .. ] Handle with: "
+    read cmd
+
+    if [[ ! -z $cmd ]]; then
+      $cmd $uri
+    else
+      echo "[ !! ] Cmd is empty"
+    fi
+  fi
+fi
 
 if $ext_url; then
   rm -v $uri

@@ -78,14 +78,22 @@ fi
 if $SHOULD_MSG; then
   (sleep $TIMEOUT && \
      {
+       if ! tmux has-session; then
+         tmux new-session -d &
+       fi
+
        CC=$(tmux list-clients | cut -f1 -d:)
        CCS=$(echo $CC | wc -l)
 
+       # if there's a client already, there's no need to switch back, just skip
+       # and display the popup
        if [[ $CCS -gt 1 ]]; then
          exit 1
        elif [[ -z $CC ]]; then
-         $XTERM -e tmux new-session -A -s 'xsession' &
+         $XTERM -e tmux attach-session &
        fi
+
+       sleep 1
 
        tmux display-popup \
             -c $CC \
@@ -95,13 +103,21 @@ if $SHOULD_MSG; then
   ) &
 fi
 
-CC=$(tmux list-clients | cut -f1 -d:)
-CCS=$(echo $CC | wc -l)
+if [[ ! -f /tmp/session-docs ]]; then
+  touch /tmp/session-docs
 
-if [[ $CCS -gt 1 ]]; then
-  exit 1
-elif [[ -z $CC ]]; then
-  exec $XTERM -e tmux attach-session -t 'docs'
-else
-  exec tmux switch-client -C $CC -t 'docs'
+  if ! tmux has-session -t 'docs'; then
+    exit 1
+  fi
+
+  CC=$(tmux list-clients | cut -f1 -d:)
+  CCS=$(echo $CC | wc -l)
+
+  if [[ $CCS -gt 1 ]]; then
+    exit 1
+  elif [[ -z $CC ]]; then
+    exec $XTERM -e tmux attach-session -t 'docs'
+  else
+    exec tmux switch-client -C $CC -t 'docs'
+  fi
 fi

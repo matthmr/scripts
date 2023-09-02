@@ -22,9 +22,11 @@ if [[ ! -f $FILE ]]; then
   exit 1
 fi
 
+# select the first one as the default in case of merge conflicts
 awk '
 BEGIN {p = 1;}
-/^<<<<<<</ {p = 0; next}
+/^<<<<<<</ {next}
+/^\|\|\|\|\|\|\|/ || /^=======/ {p = 0; next}
 /^>>>>>>>/ {p = 1; next}
 {if (p) print;}' $FILE > /tmp/git-merge-succ
 

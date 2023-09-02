@@ -28,6 +28,7 @@ alias getmail='mbsync -V @ALIAS_USER@'
 alias mail='neomutt'
 alias mpvterm='2>/dev/null mpv --vo=tct'
 alias master='git stash push && git tag "merger-$(git branch --show-current)-$(date +%Y%m%d)" stash && git checkout master && git stash pop'
+alias ddg='w3m https://html.duckduckgo.com/html/'
 
 # coreutils overrides
 alias grep='grep --color=always'
