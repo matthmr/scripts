@@ -21,8 +21,7 @@ fi
 if [[ $1 == '-x' ]]; then
   $TMUX_NAME new-session -d \
              -s "$AS" \
-             -e XINITSLEEP=$XINITSLEEP \
-             zsh
+             "XINITSLEEP=$XINITSLEEP zsh"
   did=$?
 
   if [[ -z $CC ]]; then
@@ -31,8 +30,7 @@ if [[ $1 == '-x' ]]; then
 
       $TMUX_NAME new-session -d \
            -s "$AS" \
-           -e XINITSLEEP=$XINITSLEEP \
-           zsh
+           "XINITSLEEP=$XINITSLEEP zsh"
     fi
 
     exec $XTERM -e $TMUX_NAME attach-session -t "$AS"
@@ -48,16 +46,14 @@ else
 
   $TMUX_NAME new-session -d \
              -s "$AS" \
-             -e XINITSLEEP=$XINITSLEEP \
-             zsh
+             "XINITSLEEP=$XINITSLEEP zsh"
 
   if [[ $? == 1 ]]; then
     $TMUX_NAME kill-session -t "$AS"
 
     $TMUX_NAME new-session -d \
                -s "$AS" \
-               -e XINITSLEEP=$XINITSLEEP \
-               zsh
+               "XINITSLEEP=$XINITSLEEP zsh"
   fi
 
   case $WM in

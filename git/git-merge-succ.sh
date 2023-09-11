@@ -33,4 +33,4 @@ BEGIN {p = 1;}
 git show @:$FILE | diff -u - /tmp/git-merge-succ |\
   sed "s:^\(---\|+++\) \(-\|/tmp/git-merge-succ\):\1 $FILE:"
 
-rm -v /tmp/git-merge-succ
+rm /tmp/git-merge-succ

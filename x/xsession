@@ -45,9 +45,8 @@ if [[ ! -f /tmp/schedl/session-lock ]]; then
     session_msg "Note: There are Schedl script jobs pending"
     tmux new-session -d \
          -s 'schedl' \
-         -e XINITSLEEP=@XSESSION_XINITSLEEP@ \
-         -e XINITSLEEPARGS="$(echo $sh_jobs | tr '\n' ' ')" \
-         zsh
+         "XINITSLEEP=@XSESSION_XINITSLEEP@ \
+          XINITSLEEPARGS=\"$(echo $sh_jobs | tr '\n' ' ')\" zsh"
   fi
 fi
 
@@ -71,8 +70,7 @@ if [[ $2 == "1" && ! -f /tmp/session-lock ]]; then
 
   tmux new-session -d \
        -s 'xsession' \
-       -e XINITSLEEP=@XSESSION_XINITSLEEP@ \
-       zsh
+       "XINITSLEEP=@XSESSION_XINITSLEEP@ zsh"
 fi
 
 if $SHOULD_MSG; then

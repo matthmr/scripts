@@ -20,18 +20,14 @@ XINITSLEEPARGS="$1"
 
 $TMUX_NAME new-session -d \
            -s "$AS_SESSION" \
-           -e XINITSLEEP=$XINITSLEEP \
-           -e XINITSLEEPARGS=$XINITSLEEPARGS \
-           zsh
+           "XINITSLEEP=$XINITSLEEP XINITSLEEPARGS=$XINITSLEEPARGS zsh"
 
 if [[ $? == 1 ]]; then
   $TMUX_NAME kill-session -t "$AS_SESSION"
 
   $TMUX_NAME new-session -d \
            -s "$AS_SESSION" \
-           -e XINITSLEEP=$XINITSLEEP \
-           -e XINITSLEEPARGS=$XINITSLEEPARGS \
-           zsh
+           "XINITSLEEP=$XINITSLEEP XINITSLEEPARGS=$XINITSLEEPARGS zsh"
 fi
 
 CC=$(tmux list-clients | cut -f1 -d:)

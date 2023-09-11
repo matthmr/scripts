@@ -7,5 +7,5 @@ source @BASH_PROFILE_BASH_ENVIRONMENT@
 
 # load `session' if `system-day' is set by `schedl', 0 if doesn't exist, one if
 # it does
-exec session $([[ -f /tmp/schedl/system-day ]];
+exec session $([[ -f /tmp/schedl/xsession ]];
                if (( $? == 0 )) ; then echo 1 ; else echo 0 ; fi)

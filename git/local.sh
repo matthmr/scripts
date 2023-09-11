@@ -2,7 +2,7 @@
 
 case $1 in
   '-h'|'--help')
-    echo "Usage:       mh-local.sh [update]"
+    echo "Usage:       local.sh [update]"
     echo "Description: Update or flag locally git-controlled packages"
     exit 1
 esac
@@ -26,7 +26,7 @@ function fetch_repo {
 
     repo_name=${repo_path##*/}
 
-    echo "[ .. ] mh-local.sh: fetching fork repo: $repo_name:$repo_branch"
+    echo "[ .. ] local.sh: fetching fork repo: $repo_name:$repo_branch"
 
     if [[ ! -z $repo_foreign ]]; then
       echo "[ == ] Running as: git -C $repo_path fetch $repo_foreign -- \
@@ -92,6 +92,6 @@ else
   echo "[ OK ] All repos are up-to-date"
 fi
 
-echo "[ OK ] mh-local.sh: Done"
+echo "[ OK ] local.sh: Done"
 
 exit 0

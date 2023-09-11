@@ -36,9 +36,8 @@ if [[ ! -f /tmp/schedl/session-lock ]]; then
     session_msg "Note: There are Schedl script jobs pending"
     tmux -f @TTYSESSION_TMUX_TTY_CONF@ new-session -d \
          -s 'schedl' \
-         -e XINITSLEEP=@TTYSESSION_XINITSLEEP@ \
-         -e XINITSLEEPARGS="$(echo $sh_jobs | tr '\n' ' ')" \
-         zsh
+         "XINITSLEEP=@TTYSESSION_XINITSLEEP@ \
+          XINITSLEEPARGS=\"$(echo $sh_jobs | tr '\n' ' ')\" zsh"
   fi
 fi
 
@@ -47,9 +46,8 @@ GPM_STAT=$?
 
 if [[ $GPM_STAT == '1' ]]; then
   tmux -f @TTYSESSION_TMUX_TTY_CONF@ new-session -d \
-       -e XINITSLEEP='gpm-tty' \
-       -e XINITSLEEPARGS='prompt' \
-       -s gpm-tty zsh
+       -s gpm-tty \
+       "XINITSLEEP='gpm-tty' XINITSLEEPARGS='prompt' zsh"
   session_msg "Note: There's a GPM tmux session [gpm-tty] pending"
 fi
 
@@ -66,8 +64,8 @@ case $WM in
       touch /tmp/session-lock
       session_msg "Note: There's an Xsession tmux session [xsession] pending"
       tmux -f @TTYSESSION_TMUX_TTY_CONF@ new-session -d \
-           -e XINITSLEEP=@TTYSESSION_XINITSLEEP@ \
-           -s ttysession zsh
+           -s ttysession \
+           "XINITSLEEP=@TTYSESSION_XINITSLEEP@ zsh"
     fi ;;
 
   # we don't start the server when running `emacs-tty'
