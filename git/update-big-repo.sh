@@ -18,5 +18,5 @@ while read repo; do
   fi
 
   echo "[ == ] Running as: git -C $repo pull origin --depth=1 --rebase -X theirs"
-  git -C $repo pull origin --depth=1 --rebase -X theirs
+  git -C $repo pull --ff --no-tags --prune --force --depth=1 --rebase -X theirs origin
 done < $BIG_SRC

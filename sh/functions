@@ -68,5 +68,5 @@ function unicode {
 
 function psof {
   /usr/bin/ps --forest -C "$1" -o \
-              pid,ppid,user,priority,nice,rss,s,%mem,%cpu,cputime,tty,command
+              pid,ppid,user,priority,nice,rss,s,%cpu,%mem,cputime,tty,command
 }

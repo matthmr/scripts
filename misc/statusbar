@@ -45,8 +45,5 @@ UPTIME="$_HOUR$_MIN"
 _DATE=$(date +'%a %Y%m%d%H%M')
 DATE="$_DATE"
 
-# Keyboard Layout
-LAYOUT=$(@STATUSBAR_KBDLAYOUT@)
-
-echo " $LAYOUT > $IP > $VOL > $MEM > $DISK > $DATE > $UPTIME "
-#echo " $LAYOUT < $IP < $VOL < $MEM < $DISK < $DATE < $UPTIME "
+#echo " $LAYOUT > $IP > $VOL > $MEM > $DISK > $DATE > $UPTIME "
+echo " $IP > $VOL > $MEM > $DISK > $DATE > $UPTIME "

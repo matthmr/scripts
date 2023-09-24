@@ -52,6 +52,10 @@ else
     cp -v $lib /usr/lib/${lib##*/}
   done
 
+  # Applying
+  echo "[ .. ] Making UKI"
+  mkinitcpio
+
 	# Remove lock
 	echo "[ .. ] Removing lock"
 	rm -v $PMAN_DIR/efistub-lock
