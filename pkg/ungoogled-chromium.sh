@@ -68,8 +68,8 @@ echo "[ .. ] Extracting AppImage: $PKG"
 chmod +x $PKG
 $PKG --appimage-extract
 echo "[ .. ] Making libraries : $DEST_PKG/ungoogled-chromium"
-pushd $PKG_ROOT/opt/google/
-cp -Truv chrome/ $DEST_PKG || exit 1
+pushd $PKG_ROOT/opt/
+cp -Truv ungoogled-chromium/ $DEST_PKG || exit 1
 popd
 echo "[ .. ] Removing $PKG and $PKG_ROOT"
 rm $PKG

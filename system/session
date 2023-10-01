@@ -3,7 +3,7 @@
 set -o noglob
 
 # hide the cursor (tty only)
-#printf '\x1b[?16;c'
+printf '\x1b[?16;c'
 
 ### BEGIN: DEFINITIONS ###
 SHELL=zsh

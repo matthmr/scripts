@@ -54,7 +54,7 @@ else
 
   # Applying
   echo "[ .. ] Making UKI"
-  mkinitcpio
+  @UPDATE_EFISTUB_MKUKIMG@
 
 	# Remove lock
 	echo "[ .. ] Removing lock"
