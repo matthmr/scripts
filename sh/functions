@@ -70,3 +70,27 @@ function psof {
   /usr/bin/ps --forest -C "$1" -o \
               pid,ppid,user,priority,nice,rss,s,%cpu,%mem,cputime,tty,command
 }
+
+function rsswith {
+  case $1 in
+    '--help'|'-h')
+      echo "Usage:       rssother <EXTENSIONLESS-FILE>"
+      echo "Description: Runs \`newsboat' without fucking up. You have to have \
+a \`.txt' file for urls, and \`.db' file for the database. Pass them \
+*without* their extensions"
+      return 0;;
+    *)
+      OTH=$1;;
+  esac
+
+  URL=$OTH.txt
+  DB=$OTH.db
+  REST=${@:2}
+
+  if [[ ! -f $URL ]]; then
+    echo "[ !! ] Missing file"
+    return 1
+  fi
+
+  newsboat -u $URL -c $DB $REST
+}

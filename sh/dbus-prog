@@ -6,7 +6,7 @@ case $1 in
     echo "Description: Starts or kills a program with dbus"
     echo "Options:
   --start: start (default)
-  --sys: also operate on the system bus
+  --file: use environment file
   --list: lists dbus-like processes
   --stop: stop
   --no-prog: ignore the program
@@ -14,34 +14,35 @@ case $1 in
     exit 1;;
 esac
 
-DBUS_SYS_START="doas rc-service dbus start"
-DBUS_SYS_STOP="doas rc-service dbus stop"
-
-DBUS_SES_START="dbus-launch"
-DBUS_SES_STOP=""
-
-on_sys=false
 no_prog=false
 no_bus=false
+
+on_file=false
+on_sys=false
+
 op=start
 prog=""
+
 for arg in ${@:1}; do
   case $arg in
     '--start')
       op=start;;
     '--stop')
       op=stop;;
+
     '--list')
       no_prog=true
       op=list;;
-    '--sys')
-      on_sys=true;;
+
+    '--file')
+      on_file=true;;
+
     '--no-prog')
       no_prog=true;;
     '--no-bus')
       no_bus=true;;
     *)
-      prog+=" $arg"
+      prog+="$arg "
   esac
 done
 
@@ -53,39 +54,45 @@ fi
 case $op in
   'list')
     echo "[ == ] pgrep -af dbus"
-    pgrep -af dbus
-    ;;
+    pgrep -af dbus ;;
+
   'start')
-    if $on_sys; then
-      echo "[ == ] $DBUS_SYS_START"
-      eval $DBUS_SYS_START
-      if $no_prog; then
-        exit 0
-      fi
-    elif $no_prog; then
+    if $no_prog; then
       echo "[ !! ] \`--no-prog' cannot be used with empty \`--start'"
       exit 1
     fi
+
     echo "[ == ] dbus-launch $prog"
-    exec dbus-launch $prog
-    ;;
+
+    if $on_file; then
+      echo "[ == ] Using file"
+
+      if [[ ! -f /tmp/dbus-env ]]; then
+        export DBUS_SESSION_BUS_ADDRESS=$(dbus-launch sh -c "echo \$DBUS_SESSION_BUS_ADDRESS")
+        echo "export DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\"" > /tmp/dbus-env
+      else
+        eval $(cat /tmp/dbus-env)
+      fi
+
+      exec $prog
+    else
+      exec dbus-launch $prog
+    fi ;;
+
   'stop')
+    if $on_file; then
+      rm -v /tmp/dbus-env
+    fi
+
     if ! $no_prog; then
       echo "[ == ] pkill -f -TERM $prog"
       eval pkill -f -TERM $prog
       echo "[ == ] sleep 5"
       sleep 5
     fi
+
     if ! $no_bus; then
       echo "[ == ] pkill -f -TERM 'dbus-daemon.*--session$'"
       eval pkill -f -TERM 'dbus-daemon.*--session$'
-    fi
-    if $on_sys; then
-      echo "[ == ] $DBUS_SYS_STOP"
-      eval $DBUS_SYS_STOP
-      if $no_prog; then
-        exit 0
-      fi
-    fi
-    ;;
+    fi ;;
 esac

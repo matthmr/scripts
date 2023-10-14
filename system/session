@@ -2,8 +2,7 @@
 
 set -o noglob
 
-# hide the cursor (tty only)
-printf '\x1b[?16;c'
+printf '\x1b[?1;c'
 
 ### BEGIN: DEFINITIONS ###
 SHELL=zsh
@@ -291,6 +290,8 @@ while :; do
   else
     ONCE='1'
   fi
+
+  printf '\x1b[?8;c'
 
   if [[ $ONCE == '0' ]]; then
     $XINIT $SESSION $SESSION_TYPE
