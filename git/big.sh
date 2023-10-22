@@ -5,8 +5,8 @@
 
 case $1 in
   '-h'|'--help')
-    echo "Usage:       ./update-big-repo.sh"
-    echo "Description: Updates a big repositories"
+    echo "Usage:       ./big.sh"
+    echo "Description: Updates shallow-tracked, big repositories"
     exit 1;;
 esac
 
