@@ -71,10 +71,25 @@ function psof {
               pid,ppid,user,priority,nice,rss,s,%cpu,%mem,cputime,tty,command
 }
 
+function gitat {
+  case $1 in
+    '--help'|'-h')
+      echo "Usage:       gitat DIR ARGS..."
+      echo "Description: Runs \`git -C' at DIR with ARGS"
+      return 0;;
+    *)
+      DIR=$1;;
+  esac
+
+  ARGS=${@:2}
+
+  git -C $DIR $ARGS
+}
+
 function rsswith {
   case $1 in
     '--help'|'-h')
-      echo "Usage:       rssother <EXTENSIONLESS-FILE>"
+      echo "Usage:       rsswith <EXTENSIONLESS-FILE>"
       echo "Description: Runs \`newsboat' without fucking up. You have to have \
 a \`.txt' file for urls, and \`.db' file for the database. Pass them \
 *without* their extensions"

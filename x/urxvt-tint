@@ -1,0 +1,27 @@
+#!/usr/bin/sh
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       urxvt-tint COLOR"
+    echo "Description: Color URXVT with tint COLOR (without the leading hash)"
+    exit 0;;
+  *)
+    TINT=$1;;
+esac
+
+case $TERM in
+  *tmux*) # for emacs
+    CC=$(tmux list-clients | cut -f1 -d:)
+    CCS=$(echo $CC | wc -l)
+
+    if [[ $CCS -gt 1 ]]; then
+      echo "[ !! ] Multiple tmux clients. Please have just one"
+      exit 1
+    elif [[ -z $CC ]]; then
+      exit 0 # tmux is not yet attached
+    else
+      printf "]705;#${TINT}" > $CC
+    fi;;
+  *)
+    printf "]705;#${TINT}";;
+esac

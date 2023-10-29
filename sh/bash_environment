@@ -1,4 +1,8 @@
-# Misc
+#### Misc
+
 export LESS="-S -R -I -Q -x2 --use-color --mouse --incsearch"
 export PAGER="less"
 export EDITOR="emacsc"
+export MPD_HOST=/tmp/mpd-socket
+export EMACS_SOCKET_NAME=/tmp/emacs/server
+export ALTERNATE_EDITOR=emacs

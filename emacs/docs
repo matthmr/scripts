@@ -36,8 +36,7 @@ PROJECT=@DOCS_PROJECT_BASE@
 
 ### BEGIN: VARS ###
 REPO=''
-EDITOR='emacsclient -s /tmp/emacs/server -t'
-EDITOR_ALT='-a emacs'
+EDITOR='emacsclient -t'
 INT='' # i->fzf,I->dmenu
 XTERM='urxvt'
 TMUX_NAME=tmux
@@ -209,11 +208,11 @@ if [[ ! -z $INT ]]; then
   esac
 fi
 
-echo "[ == ] Running as: $EDITOR $REPO $EDITOR_ALT"
+echo "[ == ] Running as: $EDITOR $REPO"
 $TMUX_NAME new-session -d \
            -s "docs" \
            -n "emacsclient" \
-           $EDITOR $REPO $EDITOR_ALT
+           $EDITOR $REPO
 
 CC=$(tmux list-clients | cut -f1 -d:)
 CCS=$(echo $CC | wc -l)

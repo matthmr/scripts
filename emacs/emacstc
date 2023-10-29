@@ -4,7 +4,6 @@ AS=${0##*/}
 
 XTERM=urxvt
 EMACSCLIENT=emacsclient
-EMACSALT=emacs
 NOTIFY=herbe
 
 case $1 in
@@ -33,17 +32,17 @@ fi
 $TMUX_NAME new-session -d \
       -s 'emacs' \
       -n 'emacsclient' \
-      $EMACSCLIENT -t -s "/tmp/emacs/server" ${@:1} -a "$EMACSALT"
+      $EMACSCLIENT -t ${@:1}
 DUPLICATE=$?
 
 if [[ $DUPLICATE == '1' ]]; then
   if ! $TMUX_NAME list-windows -t emacs | \
       cut -d' ' -f2 | \
-      grep -q "emacsclient\(-\*\)\?"; then
+      grep -q "emacsclient[-*]\?"; then
     $TMUX_NAME new-window -d \
                -t emacs: \
                -n emacsclient \
-               $EMACSCLIENT -t -s "/tmp/emacs/server" ${@:1} -a "$EMACSALT"
+               $EMACSCLIENT -t ${@:1}
   fi
 fi
 

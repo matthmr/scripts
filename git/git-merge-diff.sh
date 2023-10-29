@@ -4,9 +4,9 @@ set -e
 
 case $1 in
   '--help'|'-h')
-    echo "Usage:       git-merge-succ.sh <file>"
+    echo "Usage:       git-merge-diff.sh <file>"
     echo "Description: Displays a diff of successfully merged changes, where \
-the file conflicts"
+the file may conflict"
     exit 0;;
   *)
     FILE=$1;;
@@ -28,9 +28,9 @@ BEGIN {p = 1;}
 /^<<<<<<</ {next}
 /^\|\|\|\|\|\|\|/ || /^=======/ {p = 0; next}
 /^>>>>>>>/ {p = 1; next}
-{if (p) print;}' $FILE > /tmp/git-merge-succ
+{if (p) print;}' $FILE > /tmp/git-merge-diff
 
-git show @:$FILE | diff -u - /tmp/git-merge-succ |\
-  sed "s:^\(---\|+++\) \(-\|/tmp/git-merge-succ\):\1 $FILE:"
+git show @:$FILE | diff -u - /tmp/git-merge-diff |\
+  sed "s:^\(---\|+++\) \(-\|/tmp/git-merge-diff\):\1 $FILE:"
 
-rm /tmp/git-merge-succ
+rm /tmp/git-merge-diff

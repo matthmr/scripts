@@ -18,15 +18,14 @@ esac
 SHELL=/usr/bin/sh
 BASE=/tmp/emacs
 
-[[ -z $EMACSSERVER ]] && EMACSSERVER='/usr/bin/emacs'
-[[ -z $EMACSCLIENT ]] && EMACSCLIENT='/usr/bin/emacsclient'
+[[ -z $EMACSSERVER ]] && EMACSSERVER='emacs'
+[[ -z $EMACSCLIENT ]] && EMACSCLIENT='emacsclient'
 
 EMACSSERVER_OPTS="--daemon=$BASE/server"
-EMACSCLIENT_OPTS="-s $BASE/server"
 
 function emacseval {
   local lisp_expr=$1
-  ${EMACSCLIENT} ${EMACSCLIENT_OPTS} -e "${lisp_expr}"
+  ${EMACSCLIENT} -e "${lisp_expr}"
 }
 
 function start {

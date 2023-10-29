@@ -3,7 +3,6 @@
 AS=${0##*/}
 
 EMACSCLIENT=emacsclient
-EMACSALT=emacs
 
 case $1 in
   '--help'|'-h')
@@ -12,4 +11,4 @@ case $1 in
   exit 1
 esac
 
-exec $EMACSCLIENT -t -s "/tmp/emacs/server" ${@:1} -a "$EMACSALT"
+exec $EMACSCLIENT -t ${@:1}
