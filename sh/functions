@@ -81,9 +81,7 @@ function gitat {
       DIR=$1;;
   esac
 
-  ARGS=${@:2}
-
-  git -C $DIR $ARGS
+  git -C $DIR ${@:2}
 }
 
 function rsswith {
@@ -100,12 +98,11 @@ a \`.txt' file for urls, and \`.db' file for the database. Pass them \
 
   URL=$OTH.txt
   DB=$OTH.db
-  REST=${@:2}
 
   if [[ ! -f $URL ]]; then
     echo "[ !! ] Missing file"
     return 1
   fi
 
-  newsboat -u $URL -c $DB $REST
+  newsboat -u $URL -c $DB ${@:2}
 }

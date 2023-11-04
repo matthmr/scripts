@@ -20,6 +20,8 @@ case $COMMAND in
     sleep 0.5
     echo "[ == ] $MIXER set Headphone unmute"
     $MIXER set Headphone unmute
+    echo "[ == ] $MIXER set Front mute"
+    $MIXER set Front mute
     exit $?;;
   'off')
     echo "[ .. ] Disabling headset"
@@ -28,6 +30,8 @@ case $COMMAND in
     sleep 0.5
     echo "[ == ] $MIXER set Headphone mute"
     $MIXER set Headphone mute
+    echo "[ == ] $MIXER set Front unmute"
+    $MIXER set Front unmute
     exit $?;;
   *)
     echo "Headphone(s) active: "
