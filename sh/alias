@@ -29,6 +29,7 @@ alias mu='ncmpcpp'
 alias mail='neomutt'
 alias mpvterm='2>/dev/null mpv --vo=tct'
 alias ddg='w3m https://html.duckduckgo.com/html/'
+alias tolastfm='mpdscribble --no-daemon --log -'
 
 # coreutils overrides
 alias grep='grep --color=always'
