@@ -39,14 +39,22 @@ for arg in ${@:2}; do
   esac
 done
 
+function urlencode {
+  echo "$@" | tr ' ' '+'
+}
+
 case $from in
-  'artist') url="https://www.last.fm/player/station/music/${DATA}";;
-  'genre') url="https://www.last.fm/player/station/tag/${DATA}";;
-  'playlist') url="https://www.last.fm/player/station/${DATA}";;
-  'user') url="https://www.last.fm/player/station/user/${DATA}/${from_user}";;
+  'artist') url=$(urlencode \
+                  "https://www.last.fm/player/station/music/${DATA}");;
+  'genre') url=$(urlencode \
+                 "https://www.last.fm/player/station/tag/${DATA}");;
+  'playlist') url=$(urlencode \
+                    "https://www.last.fm/player/station/${DATA}");;
+  'user') url=$(urlencode \
+                "https://www.last.fm/player/station/user/${DATA}/${from_user}");;
 esac
 
-function mpc_hold() {
+function mpc_hold {
   local played=false
   local current=$1
 
@@ -79,62 +87,91 @@ function mpc_hold() {
 
 mpc clear
 
-curl -s ${url} |\
-  jq -r ".playlist[] | objects | \
-.name, \
-.artists[0].name, \
-.playlinks[0].id" |\
-  awk '
-BEGIN {l=0;s=""}
-{l++; s=$0 "	" s; if (l == 3) {l = 0; printf "%s\n", s; s=""}}' \
-      > /tmp/lastfm-manifest
+function main {
+  curl -s "${url}" |\
+    jq -r ".playlist[] | objects | \
+  .name, \
+  .artists[0].name, \
+  .playlinks[0].id" |\
+    awk '
+  BEGIN {l=0;s=""}
+  {l++; s=$0 "	" s; if (l == 3) {l = 0; printf "%s\n", s; s=""}}' \
+        > /tmp/lastfm-manifest
 
-export IFS='	'
-mu=()
-
-while read id artist title; do
-  mu+=("${id}	${artist}	${title}")
-done < /tmp/lastfm-manifest
-
-for line in "${mu[@]}"; do
-  id=$(echo "$line" | cut -d'	' -f1)
-  artist=$(echo "$line" | cut -d'	' -f2)
-  title=$(echo "$line" |cut -d'	' -f3)
-
-  echo "----------------------------------------
-[ .. ] Given title: $title, artist: $artist, id: $id"
-
-  if ! $continous; then
-    printf "[ ?? ] Play? [Y/n] "
-    read ans
-  else
-    ans='y'
+  if [[ $? != 0 || $(stat -c '%s' /tmp/lastfm-manifest) == 0 ]]; then
+    return 1
   fi
 
-  if [[ -z $ans || $ans == 'y' ]]; then
-    # We assume we're only playing the recommendations
-    mpc del 1
+  export IFS='	'
+  mu=()
 
-    echo "[ .. ] Downloading to /tmp/mu.mp4"
-    yt-dlp --format '140' --postprocessor-args \
-           "ffmpeg:-metadata title=${title@Q} -metadata artist=${artist@Q}" \
-           --force-overwrites -o /tmp/mu.mp4 "$id"
-    current="${artist} - ${title}"
+  while read id artist title; do
+    mu+=("${id}	${artist}	${title}")
+  done < /tmp/lastfm-manifest
 
-    # don't load the same song twice: if it failed to download, just continue
-    if [[ $? != 0 ]]; then
-      continue
+  for line in "${mu[@]}"; do
+    id=$(echo "$line" | cut -d'	' -f1)
+    artist=$(echo "$line" | cut -d'	' -f2)
+    title=$(echo "$line" |cut -d'	' -f3)
+
+    echo "----------------------------------------
+[ .. ] Given title: $title, artist: $artist, id: $id"
+
+    if ! $continous; then
+      printf "[ ?? ] Play? [Y/n] "
+      read ans
+    else
+      ans='y'
     fi
 
-    mpc add /tmp/mu.mp4
-    mpc play
+    if [[ -z $ans || $ans == 'y' ]]; then
+      # We assume we're only playing the recommendations
+      mpc del 1
 
-    if $continous; then
-      mpc_hold $current
+      echo "[ .. ] Downloading to /tmp/mu.mp4"
+      yt-dlp --format '140' --postprocessor-args \
+             "ffmpeg:-metadata title=${title@Q} -metadata artist=${artist@Q}" \
+             --force-overwrites -o /tmp/mu.mp4 "$id"
+      current="${artist} - ${title}"
 
-      if [[ $? == 1 ]]; then
-        break
+      # don't load the same song twice: if it failed to download, just continue
+      if [[ $? != 0 ]]; then
+        continue
+      fi
+
+      mpc add /tmp/mu.mp4
+      mpc play
+
+      if $continous; then
+        mpc_hold $current
+
+        if [[ $? == 1 ]]; then
+          break
+        fi
       fi
     fi
+  done
+}
+
+while :; do
+  main
+  main_ret=$?
+
+  if [[ $main_ret != 0 ]]; then
+    echo "[ !! ] Error while fetching"
+    exit $main_ret
+  fi
+
+  if ! $continous; then
+    printf "[ ?? ] Fetch another? [y/N] "
+    read ans
+
+    if [[ -z $ans || $ans == 'n' ]]; then
+      break
+    else
+      continue
+    fi
+  else
+    "[ .. ] Fetching another batch"
   fi
 done
