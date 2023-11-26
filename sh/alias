@@ -11,6 +11,7 @@ alias ps='ps --forest --deselect --ppid 2 -o pid,ppid,user,priority,nice,rss,s,%
 alias pkill='pkill --echo'
 alias kill='/usr/bin/kill --verbose'
 alias objdump='objdump --disassembler-color=on'
+alias tl='tree -Cpug --si'
 
 # shortenings
 alias xa='xargs -r'

@@ -172,6 +172,6 @@ while :; do
       continue
     fi
   else
-    "[ .. ] Fetching another batch"
+    echo "[ .. ] Fetching another batch"
   fi
 done
