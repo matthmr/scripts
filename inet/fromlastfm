@@ -29,7 +29,7 @@ from_user=recommended
 
 for arg in ${@:2}; do
   case $arg in
-    '-c') continous=true ; trap 'exit 0' 'INT' ;;
+    '-c') continous=true ; trap 'exit 1' 'INT' ;;
     '-a') from=artist ;;
     '-g') from=genre ;;
     '-p') from=playlist ;;
@@ -55,15 +55,12 @@ case $from in
 esac
 
 function mpc_hold {
-  local played=false
-  local current=$1
-
   while :; do
     mpc idle player >& /dev/null
 
-    _current=$(mpc current)
+    current=$(mpc current -f "%file%")
 
-    if [[ $_current == $current ]]; then
+    if [[ $current == "/tmp/mu.mp4" ]]; then
       # pause? seeked?
       case $(mpc status '%state%') in
         'playing')
@@ -71,7 +68,7 @@ function mpc_hold {
           continue ;;
         'paused')
           # paused? stopped?
-          if [[ $(mpc status '%currenttime') == '0:00' ]]; then
+          if [[ $(mpc status '%currenttime%') == '0:00' ]]; then
             # stopped. return
             return 0
           else
@@ -79,13 +76,17 @@ function mpc_hold {
             continue
           fi ;;
       esac
+    elif [[ ! -z $current ]]; then
+      # another song is playing, wait for it to finish
+      continue
     else
+      # nothing is playing
       return 0
     fi
   done
 }
 
-mpc clear
+# mpc clear
 
 function main {
   curl -s "${url}" |\
@@ -125,14 +126,19 @@ function main {
     fi
 
     if [[ -z $ans || $ans == 'y' ]]; then
-      # We assume we're only playing the recommendations
-      mpc del 1
+      pos=$(mpc playlist -f "%file%	%position%" |\
+              grep '^/tmp/mu\.mp4' |\
+              cut -d'	' -f2)
+
+      if [[ ! -z $pos ]]; then
+        mpc del $pos
+      fi
 
       echo "[ .. ] Downloading to /tmp/mu.mp4"
       yt-dlp --format '140' --postprocessor-args \
              "ffmpeg:-metadata title=${title@Q} -metadata artist=${artist@Q}" \
-             --force-overwrites -o /tmp/mu.mp4 "$id"
-      current="${artist} - ${title}"
+             --force-overwrites -o /tmp/mu.mp4 \
+             "https://www.youtube.com/watch?v=${id}"
 
       # don't load the same song twice: if it failed to download, just continue
       if [[ $? != 0 ]]; then
@@ -140,10 +146,15 @@ function main {
       fi
 
       mpc add /tmp/mu.mp4
-      mpc play
+
+      pos=$(mpc playlist -f "%file%	%position%" |\
+              grep '^/tmp/mu\.mp4' |\
+              cut -d'	' -f2)
+
+      mpc play $pos
 
       if $continous; then
-        mpc_hold $current
+        mpc_hold
 
         if [[ $? == 1 ]]; then
           break
