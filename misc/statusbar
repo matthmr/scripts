@@ -42,7 +42,7 @@ UPTIME="$_HOUR$_MIN"
 #KERNEL="${_KERNEL%-arch*}"
 
 # Time
-_DATE=$(date +'%a %Y%m%d%H%M')
+_DATE=$(date +'%Y%m%d %a %I%M%p')
 DATE="$_DATE"
 
 #echo " $LAYOUT > $IP > $VOL > $MEM > $DISK > $DATE > $UPTIME "
