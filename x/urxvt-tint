@@ -16,7 +16,6 @@ case $TERM in
 
     if [[ $CCS -gt 1 ]]; then
       echo "[ !! ] Multiple tmux clients. Please have just one"
-      exit 1
     elif [[ -z $CC ]]; then
       exit 0 # tmux is not yet attached
     else
@@ -25,3 +24,5 @@ case $TERM in
   *)
     printf "]705;#${TINT}";;
 esac
+
+exit 0

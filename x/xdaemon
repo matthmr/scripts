@@ -16,11 +16,15 @@ fi
 #    [mk-delay> <mk_interval> <mk_time_to_max mk-max_speed> <mk_curve]
 xkbset ma 30 10 25 15 2 &
 
-# No fucking bell
-# xset b off &
-
 # Load Xresources
 xrdb @XDAEMON_XRESOURCES@ &
 
+# clipmenu
+clipmenud &
+
 # > nice pape anon
 @XDAEMON_FEHBG@ &
+
+# I don't thing can do this in XKB source
+#         \  UP  LFT RGH DWN
+for kc in 51 111 113 114 116; do xset r $kc ; done
