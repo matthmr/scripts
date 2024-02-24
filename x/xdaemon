@@ -8,9 +8,6 @@ if [[ -z `pidof sxhkd` ]]; then
   sxhkd -a 'bracketleft' < /dev/null >& /dev/null &
 fi
 
-# Unused
-#xcape -e 'Control_L=Escape' &
-
 # Mice are for pussies
 # `xkbset ma` syntax:
 #    [mk-delay> <mk_interval> <mk_time_to_max mk-max_speed> <mk_curve]
@@ -23,8 +20,8 @@ xrdb @XDAEMON_XRESOURCES@ &
 clipmenud &
 
 # > nice pape anon
-@XDAEMON_FEHBG@ &
+@XDAEMON_WPSET@ -d @XDAEMON_WPDIR@ >&/dev/null &
 
-# I don't thing can do this in XKB source
+# I don't think can do this in XKB source
 #         \  UP  LFT RGH DWN
 for kc in 51 111 113 114 116; do xset r $kc ; done

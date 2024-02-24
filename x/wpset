@@ -1,21 +1,27 @@
 #!/usr/bin/sh
 
 test=false
+random=false
 
 case $1 in
   '--help'|'-h')
-    echo "Usage:       wpset [-tr] FILE"
+    echo "Usage:       wpset [OPTIONS...] FILE"
     echo "Description: Sets or tests FILE as the current wallpaper"
+    echo "Options:
+  -t: test: don't set anything other than the wallpaper
+  -r: reuse the default wallpaper
+  -d: set random from directory"
     exit 0;;
-  '-t')
-    test=true
-    file=$2;;
-  '-r')
-    $HOME/.fehbg
-    exit $?;;
-  *)
-    file=$1;;
 esac
+
+for arg in $@; do
+  case $arg in
+    '-t') test=true ;;
+    '-d') random=true ;;
+    '-r') $HOME/.fehbg; exit $? ;;
+    *) file=$arg ;;
+  esac
+done
 
 if [[ -z $file ]]; then
   echo "[ !! ] Missing file. See \`--help'"
@@ -26,6 +32,12 @@ opt='--bg-scale'
 
 if $test; then
   opt+=' --no-fehbg'
+else
+  if $random; then
+    file=$(find $file -type f | shuf -n1)
+  fi
+
+  ln -svf $file $HOME/.wp
 fi
 
 feh $opt $file

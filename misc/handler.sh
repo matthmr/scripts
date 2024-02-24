@@ -74,7 +74,13 @@ function prompt_for_handler {
   read cmd
 
   if [[ ! -z $cmd ]]; then
-    $cmd $uri
+    if [[ $cmd =~ ^"f " ]]; then
+      cmd=${cmd/f /}
+      f=$uri
+      eval "$cmd"
+    else
+      eval "$cmd $uri"
+    fi
   else
     echo "[ !! ] Cmd is empty"
   fi

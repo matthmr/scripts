@@ -21,6 +21,12 @@ function icd {
   dirs -c
 }
 
+function mcd {
+  if mkdir -v $1; then
+    cd $1
+  fi
+}
+
 function tcd {
   icd ~
   cd  $1

@@ -6,7 +6,40 @@ DRIVES=(@STATUSBAR_DRIVES@)
 DRIVENO=${#DRIVES[@]}
 DRIVEIN=$(($RANDOM % $DRIVENO))
 DRIVE=${DRIVES[DRIVEIN]}
-DISK=$(df -H "$DRIVE" | awk '!/^Filesystem/ {print $3 "/" $2 " ["$5"]" " ["$6"]"}')
+DISK=$(df --output='size,used,target' -BKB "$DRIVE" | awk -v drive=$DRIVE '
+  BEGIN {
+    sufs[0]="M"; sufs[1]="G"; sufs[2]="T"; sufs[3]="E"
+  }
+  NR == 2 {
+    total=$1
+    used=$2
+    target=$3
+
+    gsub("kB","",total)
+    gsub("kB","",used)
+
+    total_suf=""; used_suf="";
+
+    it=0
+    while (it <= 3 && total >= 1000) {
+       total=total / 1000
+       total_suf=sufs[it]
+       it++
+    }
+
+    it=0
+    while (it <= 3 && used >= 1000) {
+       used=used / 1000
+       used_suf=sufs[it]
+       it++
+    }
+
+    perc=(used / total) * 100
+
+    printf("%s %s %.2f%sB/%.2f%sB [%.2f%%]",
+      drive, target, used, used_suf, total, total_suf, perc)
+    exit
+  }')
 
 # Volume
 VOL=$(amixer get Master | grep -Eo '\[[0-9]{1,3}%\] \[-?[0-9]{1,3}\.[0-9]{1,2}dB')
@@ -14,36 +47,75 @@ DB=${VOL/\[*%\] /}
 PERC=${VOL/$DB/}
 PERC=${PERC/\[/}
 PERC=${PERC/\]/}
-VOL="$PERC$DB+]"
+VOL="$PERC$DB]"
 
 # Memory
-MEM=$(free -h --si | awk '/^Mem:/ {print $3 "/" $2}')
-_MEM=$(free --mega | awk '/^Mem:/ {print $2 "/" $3}')
-PERC=$(( 100 / ($_MEM) ))
-MEM="$MEM [$PERC%]"
+MEM=$(awk -F: '
+  /^MemTotal/ {
+     total_kb=$2; total=$2/1000000
+  }
+  /^Active:/ {
+    used_kb=$2; used_suf="M"; used=$2/1000;
+    if (used > 1000) {used_suf="G"; used=used/1000}
+    perc=((used_kb / total_kb) * 100)
+  }
+  END {
+    printf("%.2f%sB/%.2fGB [%.2f%%]\n", used, used_suf, total, perc)
+  }' /proc/meminfo)
 
-# Ethernet
-INTERFACE="eth0"
-_IP=$(ip addr show $INTERFACE | awk '/192\.168/ {print $2}')
-_IP=${_IP%/*}
-IP="${_IP/192.168.} [$INTERFACE]"
+# Network
+IF="eth0"
+IP=$(awk -v nif=$IF '
+  /^ {11}\|-- 192\.168\.[0-9]{1,3}\.[^0]/ {
+    ifm=$0
+    gsub("^ {11}\\|-- ", "", ifm)
+    printf("%s %s", nif, ifm)
+    exit
+  }' /proc/net/fib_trie)
+
+IPSTAT=$(awk '
+  BEGIN {
+    sufs[0]="K"; sufs[1]="M"; sufs[2]="G"; sufs[3]="T"; sufs[4]="P"
+  }
+
+  /eth0/ {
+    dnb_suf=""; upb_suf="";
+    dnb=$2; upb=$10;
+
+    it=0
+    while (it <= 4 && dnb >= 1000) {
+       dnb=dnb / 1000
+       dnb_suf=sufs[it]
+       it++
+    }
+
+    it=0
+    while (it <= 4 && upb >= 1000) {
+       upb=upb / 1000
+       upb_suf=sufs[it]
+       it++
+    }
+
+    printf("[%.2f%sBD/%.2f%sBU]", dnb, dnb_suf, upb, upb_suf); exit
+  }' /proc/net/dev)
+
+IP="$IP $IPSTAT"
 
 # Uptime
-_UPTIME=$(awk -F. '{print $1}' /proc/uptime)
-_MIN=$(($_UPTIME / 60))
-_HOUR=$(($_MIN / 60))
-_MIN=$(($_MIN % 60))
-[[ $_HOUR =~ ^[0-9]$ ]] && _HOUR="0$_HOUR"
-[[ $_MIN =~ ^[0-9]$ ]] && _MIN="0$_MIN"
-UPTIME="$_HOUR$_MIN"
+UPTIME=$(awk '
+  {
+    minutes=int($1 / 60); hours=int(minutes / 60)
+    if (hours < 10) { hours="0" hours}
+    minutes_rem=minutes % 60
+    if (minutes_rem < 10) { minutes_rem="0" minutes_rem}
+    printf("%s%s", hours, minutes_rem)
+  }' /proc/uptime)
 
 # Kernel
-#_KERNEL=$(uname -r)
-#KERNEL="${_KERNEL%-arch*}"
+KERNEL="Linux $(cut -d' ' -f3 /proc/version)"
 
 # Time
 _DATE=$(date +'%Y%m%d %a %I%M%p')
 DATE="$_DATE"
 
-#echo " $LAYOUT > $IP > $VOL > $MEM > $DISK > $DATE > $UPTIME "
-echo " $IP > $VOL > $MEM > $DISK > $DATE > $UPTIME "
+echo " $IP | $VOL | $MEM | $DISK | $KERNEL | $DATE | $UPTIME " # min

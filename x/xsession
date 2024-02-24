@@ -80,7 +80,7 @@ if $SHOULD_MSG; then
          tmux new-session -d &
        fi
 
-       CC=$(tmux list-clients | cut -f1 -d:)
+       CC=$(tmux list-clients -F "#{client_name}")
        CCS=$(echo $CC | wc -l)
 
        # if there's a client already, there's no need to switch back, just skip
@@ -108,7 +108,7 @@ if [[ ! -f /tmp/session-docs ]]; then
     exit 1
   fi
 
-  CC=$(tmux list-clients | cut -f1 -d:)
+  CC=$(tmux list-clients -F "#{client_name}")
   CCS=$(echo $CC | wc -l)
 
   if [[ $CCS -gt 1 ]]; then
