@@ -15,7 +15,7 @@ esac
 
 [[ -z $TMUX_NAME ]] && TMUX_NAME=tmux
 
-CC=$(tmux list-clients | cut -f1 -d:)
+CC=$(tmux list-clients -F "#{client_name}")
 CCS=$(echo $CC | wc -l)
 
 ATTACHED=false

@@ -82,7 +82,7 @@ esac
 if $SHOULD_MSG; then
   (sleep $TIMEOUT && \
      {
-       CC=$(tmux list-clients | cut -f1 -d:)
+       CC=$(tmux list-clients -F "#{client_name}")
        CCS=$(echo $CC | wc -l)
 
        if [[ $CCS -gt 1 || -z $CC ]]; then
