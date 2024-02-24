@@ -48,11 +48,16 @@ if [[ -d /tmp/pacman ]]; then
 fi
 
 echo "[ .. ] Preparing to send ACPI event..."
-if [[ $1 == '-x' ]]; then
-  printf '\a' > /dev/tty${DISPLAY:1:1}
-else
-  printf '\a' > /dev/tty1 # imagine...
-fi
+
+notify="printf '\a' > /dev/tty1"
+
+for arg in $@; do
+  if [[ $arg == '-x' ]]; then
+    notify="printf '\a' > /dev/tty${DISPLAY:1:1}"
+  fi
+done
+
+eval $notify
 
 sleep 1
 

@@ -3,11 +3,14 @@
 AS=${0##*/}
 AS=${AS/-confirm/}
 
-COMMAND=@SUSPEND_CONFIRM_ACPI@
+COMMAND=$(realpath @SUSPEND_CONFIRM_ACPI@)
 
 read -p "[y/N] ${AS}? " ans
 
 if [[ $ans = 'y' ]]; then
+  echo "ACPI event sent:" "waiting to send ACPI event; press C-c to ignore it"
+  sleep 3
+
   doas $COMMAND
   exit $?
 else

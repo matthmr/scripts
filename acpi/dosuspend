@@ -10,7 +10,7 @@ unset XINITSLEEPARGS
 XINITSLEEP=@DOSUSPEND_XINITSLEEP@
 TMUX_NAME=tmux
 
-CC=$($TMUX_NAME list-clients | cut -f1 -d:)
+CC=$($TMUX_NAME list-clients -F "#{client_name}")
 CCS=$(echo $CC | wc -l)
 
 if [[ $CCS -gt 1 ]]; then

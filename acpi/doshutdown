@@ -1,26 +1,37 @@
 #!/usr/bin/bash
 
-if [[ $1 == '-x' ]]; then
-  TMUX_NAME=tmux
-else
-  TMUX_NAME=@DOSHUTDOWN_TMUX_TTY@
-fi
-
 AS=${0##*/}
 AS=${AS/x/}
 AS_SESSION=${AS/do/}
 
+TMUX_NAME=@DOSHUTDOWN_TMUX_TTY@
+TMUX_ATTACH="$TMUX_NAME attach-session -t \"$AS_SESSION\""
+
 XTERM=urxvt
+FORCE=false
+
+for arg in $@; do
+  case $arg in
+    '-x')
+       TMUX_NAME=tmux
+       TMUX_ATTACH="$XTERM -e tmux attach-session -t \"$AS_SESSION\"" ;;
+    '-f') FORCE=true ;;
+  esac
+done
 
 unset XINITSLEEP
 unset XINITSLEEPARGS
 
-XINITSLEEP=@DOSHUTDOWN_XINITSLEEP@
-XINITSLEEPARGS="$1"
+if $FORCE; then
+  XINITSLEEP=@DOSHUTDOWN_XINITSLEEP_FORCE@
+else
+  XINITSLEEP=@DOSHUTDOWN_XINITSLEEP_LOCK@
+  XINITSLEEPARGS="$@"
+fi
 
 $TMUX_NAME new-session -d \
            -s "$AS_SESSION" \
-           "XINITSLEEP=$XINITSLEEP XINITSLEEPARGS=$XINITSLEEPARGS zsh"
+           "XINITSLEEP=$XINITSLEEP XINITSLEEPARGS=\"$XINITSLEEPARGS\" zsh"
 
 if [[ $? == 1 ]]; then
   $TMUX_NAME kill-session -t "$AS_SESSION"
@@ -30,18 +41,14 @@ if [[ $? == 1 ]]; then
            "XINITSLEEP=$XINITSLEEP XINITSLEEPARGS=$XINITSLEEPARGS zsh"
 fi
 
-CC=$(tmux list-clients | cut -f1 -d:)
+CC=$(tmux list-clients -F "#{client_name}")
 CCS=$(echo $CC | wc -l)
 
 if [[ $CCS -gt 1 ]]; then
   echo "[ !! ] Multiple tmux clients. Please have just one"
   exit 1
 elif [[ -z $CC ]]; then
-  if [[ $1 == '-x' ]]; then
-    exec $XTERM -e tmux attach-session -t "$AS_SESSION"
-  else
-    exec $TMUX_NAME attach-session -t "$AS_SESSION"
-  fi
+  eval "exec $TMUX_ATTACH"
 else
   exec $TMUX_NAME switch-client -c $CC -t "$AS_SESSION"
 fi

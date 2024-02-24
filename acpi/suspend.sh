@@ -12,27 +12,21 @@ if [[ $USER != root ]]; then
   exit 1
 fi
 
-export OP
-
 STATE=
 SYSFS=
 
 case ${0##*/} in
   'suspend.sh')
-    OP="suspend"
-    STATE="mem"
-    SYSFS="/sys/power/state";;
+    STATE="mem" ;;
   'hibernate.sh')
-    OP="hibernate"
     STATE="disk"
-    SYSFS="/sys/power/state";;
+    echo 'shutdown' > /sys/power/disk ;;
   *)
     echo "[ !! ] What are you doing?"
     exit 1;;
 esac
 
 echo "[ OK ] Handing over to openrc"
-echo "ACPI event sent:" "waiting to send ACPI event; press C-c to ignore it"
-sleep 5
+sleep 1
 
-echo "$STATE" > "$SYSFS"
+echo "$STATE" > /sys/power/state
