@@ -22,6 +22,12 @@ clipmenud &
 # > nice pape anon
 @XDAEMON_WPSET@ -d @XDAEMON_WPDIR@ >&/dev/null &
 
+# start bar (not for i3)
+
+if [[ $1 != i3 ]]; then
+  polybar-start mh-$1 &
+fi
+
 # I don't think can do this in XKB source
 #         \  UP  LFT RGH DWN
 for kc in 51 111 113 114 116; do xset r $kc ; done

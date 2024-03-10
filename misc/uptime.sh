@@ -1,11 +1,10 @@
 #!/usr/bin/sh
 
-_UPTIME=$(cut -d. -f1 /proc/uptime)
-_MIN=$(($_UPTIME / 60))
-_HOUR=$(($_MIN / 60))
-_MIN=$(($_MIN % 60))
-[[ $_HOUR =~ ^[0-9]$ ]] && _HOUR="0$_HOUR"
-[[ $_MIN =~ ^[0-9]$ ]] && _MIN="0$_MIN"
-UPTIME="$_HOUR$_MIN"
-
-echo "$UPTIME "
+awk '
+  {
+    minutes=int($1 / 60); hours=int(minutes / 60)
+    if (hours < 10) { hours="0" hours}
+    minutes_rem=minutes % 60
+    if (minutes_rem < 10) { minutes_rem="0" minutes_rem}
+    printf("%s%s", hours, minutes_rem)
+  }' /proc/uptime

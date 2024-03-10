@@ -1,121 +1,178 @@
-#!/usr/bin/env bash
-# Made by mH (https://github.com/matthmr)
+#!/usr/bin/sh
+
+#### FUNCTIONS
 
 # Disk
 DRIVES=(@STATUSBAR_DRIVES@)
-DRIVENO=${#DRIVES[@]}
-DRIVEIN=$(($RANDOM % $DRIVENO))
-DRIVE=${DRIVES[DRIVEIN]}
-DISK=$(df --output='size,used,target' -BKB "$DRIVE" | awk -v drive=$DRIVE '
-  BEGIN {
-    sufs[0]="M"; sufs[1]="G"; sufs[2]="T"; sufs[3]="E"
-  }
-  NR == 2 {
-    total=$1
-    used=$2
-    target=$3
+function st_disk() {
+  local driveno=${#DRIVES[@]}
+  local drivein=$(($RANDOM % $driveno))
+  local drive=${DRIVES[drivein]}
 
-    gsub("kB","",total)
-    gsub("kB","",used)
-
-    total_suf=""; used_suf="";
-
-    it=0
-    while (it <= 3 && total >= 1000) {
-       total=total / 1000
-       total_suf=sufs[it]
-       it++
+  df --output='size,used,target' -BKB "$drive" | awk -v drive=$drive '
+    BEGIN {
+      sufs[0]="M"; sufs[1]="G"; sufs[2]="T"; sufs[3]="E"
     }
+    NR == 2 {
+      total=$1
+      used=$2
+      target=$3
 
-    it=0
-    while (it <= 3 && used >= 1000) {
-       used=used / 1000
-       used_suf=sufs[it]
-       it++
-    }
+      gsub("kB","",total)
+      gsub("kB","",used)
 
-    perc=(used / total) * 100
+      total_suf=""; used_suf="";
 
-    printf("%s %s %.2f%sB/%.2f%sB [%.2f%%]",
-      drive, target, used, used_suf, total, total_suf, perc)
-    exit
-  }')
+      it=0
+      while (it <= 3 && total >= 1000) {
+         total=total / 1000
+         total_suf=sufs[it]
+         it++
+      }
+
+      it=0
+      while (it <= 3 && used >= 1000) {
+         used=used / 1000
+         used_suf=sufs[it]
+         it++
+      }
+
+      perc=(used / total) * 100
+
+      # printf("%s %s %.2f%sB/%.2f%sB [%.2f%%]",
+      #   drive, target, used, used_suf, total, total_suf, perc)
+      printf("%s %.2f%sB/%.2f%sB [%.2f%%]",
+        target, used, used_suf, total, total_suf, perc)
+      exit
+    }'
+}
 
 # Volume
-VOL=$(amixer get Master | grep -Eo '\[[0-9]{1,3}%\] \[-?[0-9]{1,3}\.[0-9]{1,2}dB')
-DB=${VOL/\[*%\] /}
-PERC=${VOL/$DB/}
-PERC=${PERC/\[/}
-PERC=${PERC/\]/}
-VOL="$PERC$DB]"
+function st_vol() {
+  local vol=$(amixer get Master |\
+                grep -Eo '\[[0-9]{1,3}%\] \[-?[0-9]{1,3}\.[0-9]{1,2}dB')
+  local db=${vol/\[*%\] /}
+  local perc=${vol/$db/}
+  perc=${perc/\[/}
+  perc=${perc/\]/}
+  echo "$perc$db]"
+}
 
 # Memory
-MEM=$(awk -F: '
-  /^MemTotal/ {
-     total_kb=$2; total=$2/1000000
-  }
-  /^Active:/ {
-    used_kb=$2; used_suf="M"; used=$2/1000;
-    if (used > 1000) {used_suf="G"; used=used/1000}
-    perc=((used_kb / total_kb) * 100)
-  }
-  END {
-    printf("%.2f%sB/%.2fGB [%.2f%%]\n", used, used_suf, total, perc)
-  }' /proc/meminfo)
+function st_mem() {
+  awk -F: '
+    /^MemTotal/ {
+       total_kb=$2; total=$2/1000000
+    }
+    /^Active:/ {
+      used_kb=$2; used_suf="M"; used=$2/1000;
+      if (used > 1000) {used_suf="G"; used=used/1000}
+      perc=((used_kb / total_kb) * 100)
+    }
+    END {
+      printf("%.2f%sB/%.2fGB [%.2f%%]\n", used, used_suf, total, perc)
+    }' /proc/meminfo
+}
 
 # Network
 IF="eth0"
-IP=$(awk -v nif=$IF '
-  /^ {11}\|-- 192\.168\.[0-9]{1,3}\.[^0]/ {
-    ifm=$0
-    gsub("^ {11}\\|-- ", "", ifm)
-    printf("%s %s", nif, ifm)
-    exit
-  }' /proc/net/fib_trie)
+function st_net() {
+  local ip=$(awk '
+    /^ {11}\|-- 192\.168\.[0-9]{1,3}\.[^0]/ {
+      ifm=$0
+      gsub("^ {11}\\|-- 192.168.", "", ifm)
+      printf("*.%s", ifm)
+      exit
+    }' /proc/net/fib_trie)
 
-IPSTAT=$(awk '
-  BEGIN {
-    sufs[0]="K"; sufs[1]="M"; sufs[2]="G"; sufs[3]="T"; sufs[4]="P"
-  }
-
-  /eth0/ {
-    dnb_suf=""; upb_suf="";
-    dnb=$2; upb=$10;
-
-    it=0
-    while (it <= 4 && dnb >= 1000) {
-       dnb=dnb / 1000
-       dnb_suf=sufs[it]
-       it++
+  local ipstat=$(awk '
+    BEGIN {
+      sufs[0]="K"; sufs[1]="M"; sufs[2]="G"; sufs[3]="T"; sufs[4]="P"
     }
 
-    it=0
-    while (it <= 4 && upb >= 1000) {
-       upb=upb / 1000
-       upb_suf=sufs[it]
-       it++
-    }
+    /eth0/ {
+      dnb_suf=""; upb_suf="";
+      dnb=$2; upb=$10;
 
-    printf("[%.2f%sBD/%.2f%sBU]", dnb, dnb_suf, upb, upb_suf); exit
-  }' /proc/net/dev)
+      it=0
+      while (it <= 4 && dnb >= 1000) {
+         dnb=dnb / 1000
+         dnb_suf=sufs[it]
+         it++
+      }
 
-IP="$IP $IPSTAT"
+      it=0
+      while (it <= 4 && upb >= 1000) {
+         upb=upb / 1000
+         upb_suf=sufs[it]
+         it++
+      }
+
+      printf("[%.2f%sB/%.2f%sB]", dnb, dnb_suf, upb, upb_suf); exit
+    }' /proc/net/dev)
+
+  echo "$ip $ipstat"
+}
 
 # Uptime
-UPTIME=$(awk '
-  {
-    minutes=int($1 / 60); hours=int(minutes / 60)
-    if (hours < 10) { hours="0" hours}
-    minutes_rem=minutes % 60
-    if (minutes_rem < 10) { minutes_rem="0" minutes_rem}
-    printf("%s%s", hours, minutes_rem)
-  }' /proc/uptime)
+function st_uptime() {
+  awk '
+    {
+      minutes=int($1 / 60); hours=int(minutes / 60)
+      if (hours < 10) { hours="0" hours}
+      minutes_rem=minutes % 60
+      if (minutes_rem < 10) { minutes_rem="0" minutes_rem}
+      printf("%s%s up", hours, minutes_rem)
+    }' /proc/uptime
+}
 
 # Kernel
-KERNEL="Linux $(cut -d' ' -f3 /proc/version)"
+function st_kernel() {
+  echo "Linux $(cut -d' ' -f3 /proc/version)"
+}
 
 # Time
-_DATE=$(date +'%Y%m%d %a %I%M%p')
-DATE="$_DATE"
+function st_date() {
+  local date=$(date +'%Y%m%d %a %I%M%p')
+  echo "$date"
+}
 
-echo " $IP | $VOL | $MEM | $DISK | $KERNEL | $DATE | $UPTIME " # min
+FUNCTIONS=(
+  'st_date'
+  'st_kernel'
+  'st_uptime'
+  'st_net'
+  'st_mem'
+  'st_vol'
+  'st_disk')
+
+#### Constructor
+
+function mkbar() {
+  local bar=" "
+  local res=""
+
+  for func in $@; do
+    res=$(eval $func)
+
+    bar+="$res | "
+  done
+
+  echo -n "${bar%|*}"
+}
+
+#### Main
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage: statusbar FUNCTIONS..."
+    echo "Description: Output a status given what to ignore"
+    echo "Available functions:"
+    for func in ${FUNCTIONS[@]}; do
+      echo "  - $func"
+    done ;;
+  *)
+    mkbar $@ ;;
+esac
+
+# echo " $IP | $VOL | $MEM | $DISK | $KERNEL | $DATE | $UPTIME "

@@ -2,10 +2,11 @@
 
 case $1 in
   '-h'|'--help'|'')
-    echo "Usage:       docs [options] [major-mode]:[minor-mode]"
+    echo "Usage:       docs [OPTIONS] MAJOR-MODE:MINOR-MODE"
     echo "Description: Writes documentation on local document repositories"
     echo "Options:
   -i: launch interactive (fzf-like command)
+  -x: launch a X terminal emulator
   -I: launch interactive (dmenu-like command)
   -t: use tmux-tty
 
@@ -21,67 +22,46 @@ Minor Modes:
     :YYMM
   Project
     :project:file-path"
-    echo "Environment:
-  EDITOR: editor command
-  DMENU: dmenu-like command for \`-i'
-  FZF: fzf-like command for \`-I'"
   exit 1;;
 esac
 
-### BEGIN: CONSTS ###
+#### Defaults
+
 WIKI=@DOCS_WIKI@
 JOURNAL=@DOCS_JOURNAL@
 PROJECT=@DOCS_PROJECT_BASE@
-### END: CONSTS ###
-
-### BEGIN: VARS ###
 REPO=''
 EDITOR='emacsclient -t'
-INT='' # i->fzf,I->dmenu
-XTERM='urxvt'
+MENU_CHOOSE='' # i=fzf, I=dmenu
+XTERM=urxvt
 TMUX_NAME=tmux
-### END: VARS ###
 
-### BEGIN: MODES ###
+#### Modes
+
+# Expect: FILE_PATH
 function wikicmd {
+  local file=''
+
   if [[ -z $1 ]]; then
-    # let interactive-mode figure it out
-    if [[ ! -z $INT ]]; then
-      return 0
-    fi
-
     echo "[ WW ] Missing command for \`wiki-mode'; defaulting to index"
-    FILE=index
+    file=index
   else
-    if [[ ! -z $INT ]]; then
-      echo "[ !! ] \`interactive-mode' with existing mode is not supported"
-      exit 1
-    fi
-
-    FILE=$1
+    file=$1
   fi
 
-  if [[ -d $REPO/$FILE ]]; then
-    REPO+="/$FILE"
+  if [[ -d $WIKI/$FILE ]]; then
+    REPO="$WIKI/$FILE"
   else
-    REPO+="/$FILE.org"
+    REPO="$WIKI/$FILE.org"
   fi
 }
 
+# Expect: REPO_PATH:FILE_PATH
 function projectcmd {
   if [[ -z $1 ]]; then
-    # let interactive-mode figure it out
-    if [[ ! -z $INT ]]; then
-      return 0
-    fi
-
-    echo "[ !! ] Missing command for \`project-mode'; defaulting \`project-mode' is not supported"
+    echo "[ !! ] Missing command for \`project-mode'; \
+defaulting \`project-mode' is not supported"
     exit 1
-  else
-    if [[ ! -z $INT ]]; then
-      echo "[ !! ] \`interactive-mode' with existing mode is not supported"
-      exit 1
-    fi
   fi
 
   local repo=${1%%:*}
@@ -99,116 +79,109 @@ function projectcmd {
     file="dev/$file.org"
   fi
 
-  REPO+="/$repo/$file"
+  REPO="$project/$repo/$file"
 }
 
+# Expect: YY, YYMM
 function journalcmd {
+  local date=''
+
   if [[ -z $1 ]]; then
-
-    # let interactive-mode figure it out
-    if [[ ! -z $INT ]]; then
-      return 0
-    fi
-
-    echo "[ WW ] Missing command for \`journal-mode'; defaulting to current date"
-    DATE=$(date +'%y%m')
+    echo "[ WW ] Missing command for \`journal-mode'; \
+defaulting to current date"
+    date=$(date +'%y%m')
   else
-    if [[ ! -z $INT ]]; then
-      echo "[ !! ] \`interactive-mode' with existing mode is not supported"
-      exit 1
-    fi
-
-    DATE=$1
+    date=$1
   fi
 
-  local yy= mm=
-
-  while :; do
-    if (( ${#DATE} != 4 )); then
-      break
-    fi
-
-    yy=${DATE:0:2}
-    mm=${DATE:2:2}
-
-    [[ -d $REPO/20$yy/ ]]        || break
-    [[ -f $REPO/20$yy/$mm.org ]] || break
-
-    REPO+="/20$yy/$mm.org"
-
-    return 0
-  done
-
-  echo "[ !! ] Command doesn't evaluate"
-  exit 1
+  case $date in
+    [0-9][0-9][0-9][0-9])
+      local yy=${date:0:2}
+      local mm=${date:2:2}
+      REPO="$JOURNAL/20$yy/$mm.org" ;;
+    [0-9][0-9])
+      local yy=${date:0:2}
+      REPO="$JOURNAL/20$yy" ;;
+    *)
+      echo "[ !! ] Command doesn't evaluate"
+      exit 1 ;;
+  esac
 }
-### END: MODES ###
 
-### BEGIN: OPTIONS ###
+#### Args
 
-case $1 in
-  '-i')
-    mode_arg=$2
-    [[ -z $FZF ]] && FZF=fzf
-    INT=$FZF;;
-  '-I')
-    mode_arg=$2
-    [[ -z $DMENU ]] && DMENU='dmenu -p choose'
-    INT=$DMENU;;
-  '-t')
-    mode_arg=$2
-    TMUX_NAME=@DOCS_TMUX_TTY@;;
-  *)
-    mode_arg=$1;;
-esac
-### END: OPTIONS ###
+use_x=false
+
+for arg in $@; do
+  case $arg in
+    '-i')
+      mode_arg=$arg
+      MENU_CHOOSE='fzf';;
+    '-x')
+      use_x=true ;;
+    '-I')
+      mode_arg=$arg
+      MENU_CHOOSE='dmenu -p choose';;
+    '-t')
+      mode_arg=$arg
+      TMUX_NAME=@DOCS_TMUX_TTY@;;
+    *)
+      mode_arg=$arg ;;
+  esac
+done
 
 mode=${mode_arg%%:*}
 cmd=${mode_arg#*:}
+
+case $mode in
+  'wiki')
+    REPO=$WIKI ;;
+  'journal')
+    REPO=$JOURNAL ;;
+  'project')
+    REPO=$PROJECT ;;
+  *)
+    echo "[ !! ] Invalid mode"
+    exit 1;;
+esac
 
 # there is no `:'
 if [[ $cmd = $mode ]]; then
   cmd=''
 fi
 
-case $mode in
-  'wiki')
-    REPO=$WIKI
-    wikicmd ${cmd};;
-  'journal')
-    REPO=$JOURNAL
-    journalcmd ${cmd};;
-  'project')
-    REPO=$PROJECT
-    projectcmd ${cmd};;
-  *)
-    echo "[ !! ] Invalid mode"
-    exit 1;;
-esac
-
-function feed {
- ans=$(echo "$@" | $INT)
-
- if [[ -z $ans ]]; then
-   echo "[ !! ] Missing command: \`interactive-mode' returned nil"
-   exit 1
- fi
-
- echo $ans
-}
-
-if [[ ! -z $INT ]]; then
+if [[ ! -z $MENU_CHOOSE ]]; then
   case $mode in
     'wiki')
-      REPO=$(feed "$(find $REPO -type f -name '*.org')");;
+      CHOOSE=$(find $REPO -type f -name '*.org' | $MENU_CHOOSE) ;;
     'journal')
-      REPO=$(feed "$(find $REPO -type f -name '[0-9][0-9].org')");;
+      CHOOSE=$(find $REPO -type f -name '[0-9][0-9].org' | $MENU_CHOOSE) ;;
     'project')
-      REPO=$(feed "$(find $REPO/*/dev -type f -name '*.org')");;
+      CHOOSE=$(find $REPO/*/dev -type f -name '*.org' | $MENU_CHOOSE) ;;
+  esac
+
+  if [[ -z $CHOOSE ]]; then
+    echo "[ !! ] Chose nothing"
+    exit 1
+  fi
+
+  REPO=$CHOOSE
+else
+  case $mode in
+    'wiki')
+      wikicmd $cmd;;
+    'journal')
+      journalcmd $cmd;;
+    'project')
+      projectcmd $cmd;;
+    *)
+      echo "[ !! ] Invalid mode"
+      exit 1;;
   esac
 fi
 
 echo "[ == ] Running as: $EDITOR $REPO"
+
 $TMUX_NAME new-session -d \
            -s "docs" \
            -n "emacsclient" \
@@ -219,10 +192,9 @@ CCS=$(echo $CC | wc -l)
 
 if [[ $CCS -gt 1 ]]; then
   echo "[ !! ] Multiple tmux clients. Please have just one"
-  exit 1
-elif [[ -z $CC ]]; then
-  exit 0 # tmux is not yet attached
+  exit 0
+elif $use_x && [[ -z $CC ]]; then
+  exec $XTERM -e $TMUX_NAME attach-session -t 'docs' # tmux is not yet attached
 else
   $TMUX_NAME switch-client -c $CC -t 'docs'
-  exit 2
 fi
