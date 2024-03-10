@@ -1,0 +1,24 @@
+#!/usr/bin/sh
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       tmuxc COMMAND"
+    echo "Description: Send output of COMMAND on the client TTY of tmux"
+    exit 0;;
+  *)
+    cmd=$@;;
+esac
+
+term=""
+CC=$(tmux list-clients -F "#{client_name}")
+CCS=$(echo $CC | wc -l)
+
+if [[ $CCS -gt 1 ]]; then
+  echo "[ !! ] Multiple tmux clients. Please have just one"
+elif [[ -z $CC ]]; then
+  exit 0 # tmux is not yet attached
+else
+  term="> $CC"
+fi
+
+[[ ! -z $cmd ]] && eval $cmd $term

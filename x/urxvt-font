@@ -1,0 +1,70 @@
+#!/usr/bin/sh
+
+SIZE=
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       urxvt-font SIZE [SPEC FONT]..."
+    echo "Description: Change the value of SPEC to FONT"
+    echo "Specs:
+  n: normal
+  b: bold
+  i: italic
+  B: bolditalic"
+    echo "Fonts:
+  If a font has been given, setting FONT to something starting with \`:' \
+(colon) reuses it with extra properties as FONT.
+  E.g: \`urxvt-font 12 n Terminus Bbi :bold' defined Terminus as the normal font,
+with bold, italic and bolditalic being the italic version of Terminus"
+    exit 0;;
+  *) SIZE=$1 ;;
+esac
+
+if [[ -z $SIZE ]]; then
+  echo "[ !! ] Size is missing"
+  exit 1
+elif ! test "$SIZE" -eq "$SIZE" >&/dev/null; then
+  echo "[ !! ] Size is not valid"
+  exit 1
+fi
+
+SPEC=
+FONT=
+_FONT=
+
+for arg in ${@:2}; do
+  if [[ -z $SPEC ]]; then
+    SPEC=$(printf $arg | sed 's/./\0\n/g' | while read c; do
+      ret=""
+
+      case $c in
+        'n') ret+="710 " ;;
+        'b') ret+="711 " ;;
+        'i') ret+="712 " ;;
+        'B') ret+="713 " ;;
+        *) echo "[ !! ] Spec is not valid. See \`--help'"; exit 1 ;;
+      esac
+
+      echo $ret
+    done)
+
+  elif [[ -z $FONT ]]; then
+    if [[ $arg =~ ^: ]]; then
+      FONT="${_FONT}${arg}"
+    else
+      FONT=$arg
+    fi
+
+    echo $SPEC | tr ' ' '\n' |
+      while read spec; do
+         printf "\e]${spec};xft:${FONT}:size=${SIZE}\007"
+      done
+
+    SPEC=
+    _FONT=$FONT
+    FONT=
+  fi
+done
+
+# We ignore if some SPEC is pending
+exit 0

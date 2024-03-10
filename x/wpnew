@@ -1,0 +1,3 @@
+#!/usr/bin/sh
+
+wpset -d ~/Images/Wallpapers/_

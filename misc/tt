@@ -1,0 +1,94 @@
+#!/usr/bin/sh
+
+PROG='flavours'
+PROGOPTS='generate --stdout dark'
+
+case $1 in
+  '-h'|'--help')
+    echo "Usage:       tt [OPTIONS...] -- [PROG_OPTIONS...]"
+    echo "Description: Manipulate terminal colors with base16"
+    echo "Options:
+  -r: apply from home
+  -c: apply from cache"
+    exit 0
+    ;;
+  *)
+    FILE=$1
+    ;;
+esac
+
+defer=false
+use_tmux=false
+skip_bg=false
+cmd=''
+
+for arg in ${@:1}; do
+  if $defer; then
+    MOREPROGOPTS+=" $arg"
+  else
+    case $arg in
+      '-r') cmd="cat $HOME/tt" ;;
+      '-c') cmd="cat $HOME/ttwp" ;;
+      '-t') use_tmux=true ;;
+      '--') defer=true ;;
+      *) MOREPROGOPTS+=" $arg" ;;
+    esac
+  fi
+done
+
+if $defer; then
+  $PROG $PROGOPTS $MOREPROGOPTS |
+    awk '
+    BEGIN {
+      col["base00:"]=0; col["base01:"]=0; col["base02:"]=0; col["base03:"]=0
+      col["base04:"]=0; col["base05:"]=0; col["base06:"]=0; col["base07:"]=0
+      col["base08:"]=0; col["base09:"]=0; col["base0A:"]=0; col["base0B:"]=0
+      col["base0C:"]=0; col["base0D:"]=0; col["base0E:"]=0; col["base0F:"]=0
+    }
+
+    /^base..:/ {
+      hex=$2
+      gsub(/"/,"",hex)
+
+      col[$1]=hex
+    }
+
+    END {
+      # 8 color
+      printf("\033]4;0;#%s\033\\", col["base00:"]);
+      printf("\033]4;1;#%s\033\\", col["base08:"]);
+      printf("\033]4;2;#%s\033\\", col["base0B:"]);
+      printf("\033]4;3;#%s\033\\", col["base0A:"]);
+      printf("\033]4;4;#%s\033\\", col["base0D:"]);
+      printf("\033]4;5;#%s\033\\", col["base0E:"]);
+      printf("\033]4;6;#%s\033\\", col["base0C:"]);
+      printf("\033]4;7;#%s\033\\", col["base05:"]);
+
+      # bright variant
+      printf("\033]4;8;#%s\033\\", col["base03:"]);
+      printf("\033]4;9;#%s\033\\", col["base08:"]);
+      printf("\033]4;10;#%s\033\\", col["base0B:"]);
+      printf("\033]4;11;#%s\033\\", col["base0A:"]);
+      printf("\033]4;12;#%s\033\\", col["base0D:"]);
+      printf("\033]4;13;#%s\033\\", col["base0E:"]);
+      printf("\033]4;14;#%s\033\\", col["base0C:"]);
+      printf("\033]4;15;#%s\033\\", col["base07:"]);
+
+      # 256 colors
+      printf("\033]4;16;#%s\033\\", col["base09:"]);
+      printf("\033]4;17;#%s\033\\", col["base0F:"]);
+      printf("\033]4;18;#%s\033\\", col["base01:"]);
+      printf("\033]4;19;#%s\033\\", col["base02:"]);
+      printf("\033]4;20;#%s\033\\", col["base04:"]);
+      printf("\033]4;21;#%s\033\\", col["base06:"]);
+
+      # fg/bg
+      printf("\033]10;#%s\033\\", col["base05:"]);
+      printf("\033]11;#%s\033\\", col["base00:"]);
+
+      # cursor (invert video). could also be "base05:"
+      printf("\033]12;7\033\\")
+    }' > $HOME/ttwp
+fi
+
+eval $cmd
