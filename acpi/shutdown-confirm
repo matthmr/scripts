@@ -1,0 +1,22 @@
+#!/usr/bin/bash
+
+AS=${0##*/}
+AS=${AS/-confirm/}
+
+case $AS in
+  'shutdown') COMMAND="poweroff now";;
+  'reboot') COMMAND="reboot now";;
+  *) echo '[ !! ] Invalid command!'; exit 1 ;;
+esac
+
+read -p "[y/N] ${AS}? " ans
+
+if [[ $ans = 'y' ]]; then
+  echo "ACPI event sent:" "waiting to send ACPI event; press C-c to ignore it"
+  sleep 3
+
+  exec doas $COMMAND
+else
+  echo "[ !! ] Cancelled"
+  exit 1
+fi

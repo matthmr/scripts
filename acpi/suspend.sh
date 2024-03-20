@@ -19,8 +19,7 @@ case ${0##*/} in
   'suspend.sh')
     STATE="mem" ;;
   'hibernate.sh')
-    STATE="disk"
-    echo 'shutdown' > /sys/power/disk ;;
+    STATE="disk" ;;
   *)
     echo "[ !! ] What are you doing?"
     exit 1;;
