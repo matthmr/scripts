@@ -4,7 +4,7 @@ case $1 in
   '-h'|'--help')
     echo "Usage:       git.sh FILES..."
     echo "Description: Update git-controlled packages"
-    echo "Syntax: The syntax of the files is the following:
+    echo "Syntax:      The syntax of the files is the following:
 
   LOCAL_REPO_ORIGIN [LOCAL_REPO_BRANCH] [REMOTE_REPO_ORIGIN] [REMOTE_REPO_BRANCH]
 

@@ -7,7 +7,7 @@ function google {
 
   case $1 in
     '-h'|'--help')
-      echo "Usage: google '<query>'"
+      echo "Usage: google 'QUERY'"
       return 0;;
   esac
 
@@ -35,7 +35,7 @@ function tcd {
 function mkscript {
   case $1 in
     '-h'|'--help')
-      echo "Usage: mkscript <script> [editor]"
+      echo "Usage: mkscript SCRIPT [EDITOR]"
       return 1;;
   esac
 
@@ -45,8 +45,9 @@ function mkscript {
 function mkproj {
   case $1 in
     '-h'|'--help')
-      printf "Usage: mkproj [-s] <project> [editor]\n"
-      printf "Options:\n  -s: <project> is relative to the standard source, otherwise it's absolute\n"
+      echo "Usage: mkproj [-s] PROJECT [EDITOR]"
+      echo "Options:
+  -s: PROJECT is relative to the standard source, otherwise it's absolute"
       return 1;;
   esac
 
@@ -93,7 +94,7 @@ function gitat {
 function rsswith {
   case $1 in
     '--help'|'-h')
-      echo "Usage:       rsswith <EXTENSIONLESS-FILE>"
+      echo "Usage:       rsswith EXTENSIONLESS-FILE"
       echo "Description: Runs \`newsboat' without fucking up. You have to have \
 a \`.txt' file for urls, and \`.db' file for the database. Pass them \
 *without* their extensions"

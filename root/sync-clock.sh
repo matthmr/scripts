@@ -24,12 +24,16 @@ then
   exit 1
 fi
 
-echo "[ .. ] Sleeping $TIMEOUT seconds"
-sleep $TIMEOUT
+(
+  {
+    echo "[ .. ] Sleeping $TIMEOUT seconds"
+    sleep $TIMEOUT
 
-echo "[ .. ] Turning off chrony"
-rc-service chrony stop
+    echo "[ .. ] Turning off chrony"
+    rc-service chrony stop
 
-echo "[ OK ] sync-clock.sh: Done"
+    echo "[ OK ] sync-clock.sh: Done"
+  } &
+)
 
 exit 0

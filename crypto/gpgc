@@ -1,0 +1,61 @@
+#!/usr/bin/sh
+
+AS=${0##*/}
+
+p=false
+pp=false
+
+passwd=''
+ptyp=''
+
+input=''
+gpg_opts=''
+
+case $AS in
+  'enc') DO='Encrypt'; gpg_do='-c' ;;
+  'dec') DO='Decrypt'; gpg_do='-d' ;;
+  *) echo '[ !! ] What did you do?' 1>&2; exit 1 ;;
+esac
+
+case $1 in
+'--help'|'-h')
+  echo "Usage:       $AS [OPTIONS] [INPUT]"
+  echo "Description: $DO a file with GPG to STDOUT"
+  echo "Options:
+  -p PASSWD: decrypt with PASSWD
+  -pp PASSWD: call \`pass' to output the PASSWD
+  [INPUT]: If no INPUT is given, take it from stdin, which requires \`-p' or
+    \`-pp' to be set. If it is given, then stdin might be for prompting the
+    passphrase"
+  exit 1;;
+esac
+
+for arg in $@; do
+if $p; then
+  passwd=$arg
+  ptyp=p
+  p=false
+elif $pp; then
+  passwd=$arg
+  ptyp=pp
+  pp=false
+else
+  case $arg in
+    '-p') p=true ;;
+    '-pp') pp=true ;;
+    *) input=$arg ;;
+  esac
+fi
+done
+
+if [[ -z $input && -z $passwd ]]; then
+  echo "[ !! ] Invalid use. See \`--help'" 1>&2
+  exit 1
+fi
+
+case $ptyp in
+  'p') gpg_opts="--passphrase='$passwd'" ;;
+  'pp') gpg_opts="--passphrase=\"\$(pass show '$passwd')\"" ;;
+esac
+
+eval gpg --batch $gpg_opts -o - $gpg_do $input
