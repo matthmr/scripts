@@ -1,63 +1,37 @@
 #!/usr/bin/bash
 
-XTERM=urxvt
+# -x: use x (with tmux)
+# -t: use tmux (attach)
 
 AS=${0##*/}
-AS=${AS/do/}
+AS_SESSION=${AS/do/}
 
-unset XINITSLEEPARGS
+use_x=false
+use_tmux=false
 
-XINITSLEEP=@DOSUSPEND_XINITSLEEP@
-TMUX_NAME=tmux
+SWITCH=''
 
-CC=$($TMUX_NAME list-clients -F "#{client_name}")
-CCS=$(echo $CC | wc -l)
-
-if [[ $CCS -gt 1 ]]; then
-  echo "[ !! ] Multiple tmux clients. Please have just one"
-  exit 1
-fi
-
-if [[ $1 == '-x' ]]; then
-  $TMUX_NAME new-session -d \
-             -s "$AS" \
-             "XINITSLEEP=$XINITSLEEP zsh"
-  did=$?
-
-  if [[ -z $CC ]]; then
-    if [[ $did == 1 ]]; then
-      $TMUX_NAME kill-session -t "$AS"
-
-      $TMUX_NAME new-session -d \
-           -s "$AS" \
-           "XINITSLEEP=$XINITSLEEP zsh"
-    fi
-
-    exec $XTERM -e $TMUX_NAME attach-session -t "$AS"
-  else
-    exec $TMUX_NAME switch-client -c $CC -t "$AS"
-  fi
-
-else
-  case $WM in
-    'tty'|'tmux-tty')
-      TMUX_NAME=@DOSUSPEND_TMUX_TTY@ ;;
+for arg in $@; do
+  case $arg in
+    '-x') use_x=true; use_tmux=true ; SWITCH='-t' ;;
+    '-t') use_tmux=true; SWITCH='-t' ;;
   esac
+done
 
-  $TMUX_NAME new-session -d \
-             -s "$AS" \
-             "XINITSLEEP=$XINITSLEEP zsh"
+unset LOGINCMD
+
+LOGINCMD=@DOSUSPEND_CONFIRM@
+
+if $use_tmux; then
+  tmux new-session -d -s "$AS_SESSION" "LOGINCMD=$LOGINCMD zsh"
 
   if [[ $? == 1 ]]; then
-    $TMUX_NAME kill-session -t "$AS"
+    tmux kill-session -t "$AS_SESSION"
 
-    $TMUX_NAME new-session -d \
-               -s "$AS" \
-               "XINITSLEEP=$XINITSLEEP zsh"
+    tmux new-session -d -s "$AS_SESSION" "LOGINCMD=$LOGINCMD zsh"
   fi
 
-  case $WM in
-    'tty') $TMUX_NAME attach-session -t "$AS" ;;
-    'tmux-tty') $TMUX_NAME switch-client -c $CC -t "$AS" ;;
-  esac
+  tmuxa $($use_x && echo '-x') "$AS_SESSION"
+else
+  exec $LOGINCMD
 fi

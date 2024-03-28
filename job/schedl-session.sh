@@ -1,13 +1,12 @@
 #!/usr/bin/sh
 
-# SSL of jobs
-JOBS=$1
-TIMEOUT=3
+TIMEOUT=2
 
-for job in $JOBS; do
+for job in $@; do
   printf "[ ?? ] Schedl: Run \`$job'? [Y/n] "
   read ans
-  if [[ $ans = 'n' ]]; then
+
+  if [[ ! -z $ans && $ans != 'y' ]]; then
     echo "[ !! ] Ignoring ... "
   else
     echo "[ .. ] Executing \`$job'. Press C-c to cancel..."

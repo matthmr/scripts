@@ -1,4 +1,17 @@
 #!/usr/bin/bash
+
+function tux {
+  echo "\
+      ___
+     (.. |
+     (<> |
+    / __  \\
+   ( /  \\ /|
+  _/\\ __)/_)
+  \\/-____\\/
+  "
+}
+
 function google {
   [[ $# = 0 ]] && {
     echo "[ !! ] See \`--help'"

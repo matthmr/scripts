@@ -2,6 +2,7 @@
 
 AS=${0##*/}
 AS=${AS/-confirm/}
+SUDO=doas
 
 case $AS in
   'shutdown') COMMAND="poweroff now";;
@@ -9,13 +10,13 @@ case $AS in
   *) echo '[ !! ] Invalid command!'; exit 1 ;;
 esac
 
-read -p "[y/N] ${AS}? " ans
+read -p "[Y/n] ${AS}? " ans
 
-if [[ $ans = 'y' ]]; then
+if [[ -z $ans || $ans == 'y' ]]; then
   echo "ACPI event sent:" "waiting to send ACPI event; press C-c to ignore it"
   sleep 3
 
-  exec doas $COMMAND
+  exec $SUDO $COMMAND
 else
   echo "[ !! ] Cancelled"
   exit 1

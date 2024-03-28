@@ -1,6 +1,0 @@
-#!/usr/bin/sh
-
-export WM=tmux-tty
-export TERM=linux
-
-exec tmux -f @TMYX_TTY_CONF@ $@

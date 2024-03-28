@@ -4,43 +4,31 @@ set -o noglob
 
 printf '\x1b[?1;c'
 
-### BEGIN: DEFINITIONS ###
 SHELL=zsh
 GARR=()
 GIDX=0
 
 READINPUT="read -r -n 1 -s key"
 
-### HIGHLIGHTING
 HIGHLIGHT_ENTRY="\x1b[7;49;37m"
 BULLET=" * "
 BULLET_INFO="\x1b[1;92m$BULLET\x1b[0m"
 BULLET_ERR="\x1b[1;91m$BULLET\x1b[0m"
 
-### SESSION
-SESSIONS=('dwm' 'i3' 'emacs-xsession' 'emacs-xwm' 'tty' 'tmux-tty' 'shell')
+SESSIONS=(@SESSION_SESSIONS@)
 SESSIONS_ENTRY=()
 SESSION=
-SESSION_TYPE=$1
 LIST_YES=('yes' 'no')
 LIST_NO=('no' 'yes')
 
-### XINIT
-XINITS=('sx-mouse' 'sx')
-XINITS_ENTRY=()
-XINIT=
+################################################################################
 
-### END: DEFINITIONS ###
-
-### BEGIN: HIGHLIGHTING ###
 # header <msg>
 header() {
   local msg=$1
   printf "\n$BULLET_INFO ${msg}\n\n"
 }
-### END: HIGHLIGHTING ###
 
-### BEGIN: MOVEMENT ###
 # header_yesno <msg> <default> -> [ 1 if yes, 0 if no ]
 header_yesno() {
   local msg=$1
@@ -129,9 +117,6 @@ handle_key() {
       exit 1;;
   esac
 }
-### END: MOVEMENT ###
-
-### BEGIN: LIST ###
 
 # fmt_entry <item> <high> -> <entry>
 fmt_entry() {
@@ -227,76 +212,39 @@ list_choose() {
 
   return $idx
 }
-### END: LIST ###
 
-### BEGIN: DAEMON ###
-mkdir -m 700 -p /tmp/emacs 2> /dev/null
+################################################################################
 
-touch /tmp/emacs/daemon.log
-touch /tmp/session-msg
-
-if [[ ! -f /tmp/mpd-pid ]]; then
-  mpd 1>/dev/null 2>/dev/null &
-fi
-### END: DAEMON ###
-
-### BEGIN: MAIN ###
-# continously prompt the user for a new session. Shutting down the computer
-# through `doshutdown' breaks this cycle
-ONCE=0
-while :; do
+if [[ -z $1 ]]; then
   header "Choose a session to log in with"
   list_choose "${SESSIONS[@]}"
   SESSION=${SESSIONS[$?]}
+else
+  SESSION=$1
+fi
 
-  if [[ $SESSION != 'shell' ]]; then
-    header "Run once?"
-    list_choose "${LIST_YES[@]}"
-    ONCE=${LIST_YES[$?]}
-  fi
+case $SESSION in
+  # TTY session
+  'shell')
+    LOGIN="$SHELL" ;;
 
-  case $SESSION in
-    'shell')
-      exec $SHELL;;
-    'tty'|'tmux-tty'|'emacs-tty')
-      if [[ $SESSION == 'tmux-tty' ]]; then
-        XINIT=@SESSION_TMUX_TTY@
-      else
-        XINIT=@SESSION_TTYSESSION@
-      fi ;;
-    *)
-      header "Choose a Xinit implementation to log in with"
-      list_choose "${XINITS[@]}"
-      XINIT=${XINITS[$?]} ;;
-  esac
+  'tmux')
+    # I don't why either
+    TMUXCMD="'LOGINCMD=\"@SESSION_TMUXCMD\" $SHELL'"
 
-  if [[ $SESSION_TYPE == '1' ]]; then
-    SESSION_TYPEV=with
-  else
-    SESSION_TYPEV=without
-  fi
+    LOGIN="tmux new-session -A -s tmux $TMUXCMD" ;;
 
-  case $SESSION in
-    'tty'|'tmux-tty'|'emacs-tty')
-      header "Logging in with $SESSION > $(tty) > $SESSION_TYPEV TTYsession";;
-    *)
-      header "Logging in with $XINIT > $SESSION > $SESSION_TYPEV Xsession";;
-  esac
+  # X session
+  *)
+    LOGIN="sx $SESSION" ;;
+esac
 
-  sleep 1
+####
 
-  if [[ $ONCE == 'no' ]]; then
-    ONCE='0'
-  else
-    ONCE='1'
-  fi
+header "Logging in with ${SESSION:-$(tty)}"
 
-  printf '\x1b[?8;c'
+sleep 1
 
-  if [[ $ONCE == '0' ]]; then
-    $XINIT $SESSION $SESSION_TYPE
-  else
-    exec $XINIT $SESSION $SESSION_TYPE
-  fi
-done
-### END: MAIN ###
+printf '\x1b[?8;c'
+
+eval exec $LOGIN

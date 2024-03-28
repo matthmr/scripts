@@ -1,64 +1,217 @@
 #!/usr/bin/bash
 
+# -t: use tmux
+
 SUDO=doas
-XTERM=urxvt
 
 AS=${0##*/}
-AS=${AS/-lock/}
-ARG=
-
-DOCS_SWITCH=""
+COMMAND=${AS/-lock/}
+CONFIRM=@SHUTDOWN_LOCK_CONFIRM@
+USER_SHELL=/bin/zsh
 
 # clear them first
-unset XINITSLEEP
-unset XINITSLEEPARGS
+unset LOGINCMD
 
-case $WM in
-  'tmux-tty'|'tty')
-     DOCS_SWITCH="-t" ;;
-esac
+### Prompt docs
 
-# called by sxhkd; only call for non-emacs
-if [[ -z $XSESSION ]]; then
-  echo "[ .. ] Prompting user for checkout on the journal"
-  sleep 3
+echo "[ .. ] Prompting user for checkout on the journal"
+sleep 1
 
-  docs $DOCS_SWITCH journal
+docs $1 journal
+
+### Wallpaper (only after `wpnew', which uses `wpset')
+
+if [[ -s /tmp/.wp ]]; then
+  read -p "[ ?? ] Update Wallpaper? [Y/n] " ans
+
+  if [[ -z $ans && $ans == 'y' ]]; then
+    file=$(cat /tmp/.wp)
+
+    find $file -maxdepth 1 2>/dev/null
+
+    if [[ $? == 0 ]]; then
+      ln -svf $file ~/.wp
+    else
+      echo "[ !! ] Invalid wallpaper"
+    fi
+  else
+    echo "[ !! ] Ignoring ... "
+  fi
+
 fi
 
-# set locks
+### Set locks
+
+function lock_man {
+  read -p "[ ?? ] Update ManDB? [Y/n] " ans
+
+  if [[ ! -z $ans && $ans != 'y' ]]; then
+    echo "[ !! ] Ignoring ... "
+    echo "Ignore lock:" "lock was ignored for man"
+    return 0
+  fi
+
+  while ! $SUDO mandb; do continue; done
+}
+
+function lock_pacman {
+  local MANUAL=''
+
+  read -p "[ ?? ] Update packages (pacman)? [Y/n] " ans
+
+  if [[ ! -z $ans && $ans != 'y' ]]; then
+    echo "[ !! ] Ignoring ... "
+    echo "Ignore lock:" "lock was ignored for pacman"
+    return 0
+  fi
+
+  read -p "[ ?? ] Manual review? [y/N] " ans
+
+  if [[ ! -z $ans && $ans != 'n' ]]; then
+    MANUAL=y
+  else
+    MANUAL=n
+  fi
+
+  if [[ $MANUAL = 'y' ]]; then
+    echo "[ .. ] Updating pacman database for manual review"
+    while ! $SUDO pacman -Sy; do continue; done
+    echo "[ .. ] Generating new pacman updatable package file"
+    pacman -Qu > /tmp/pacman/pacman-update-raw
+    sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' /tmp/pacman/pacman-update-raw |\
+      awk '{print $1}' > /tmp/pacman/pacman-update
+    echo "[ .. ] Setting permissions"
+    chown -Rv @SHUTDOWN_LOCK_USER@ /tmp/pacman/pacman-update \
+          /tmp/pacman/pacman-update-raw
+    chmod -Rv a+w /tmp/pacman/pacman-update /tmp/pacman/pacman-update-raw
+    echo "[ .. ] Listing updatable packages"
+    less -R /tmp/pacman/pacman-update-raw
+  fi
+
+  read -p "[ ?? ] Check against wiki? [Y/n] " ans
+
+  if [[ ! -z $ans && $ans != 'y' ]]; then
+    echo "[ !! ] Ignoring ... "
+  else
+    if [[ $MANUAL = 'y' ]]; then
+      @SHUTDOWN_LOCK_FIND_WIKI_PACMAN_INDEX@ \
+        /tmp/pacman/pacman-update | less
+    else
+      @SHUTDOWN_LOCK_FIND_WIKI_PACMAN_INDEX@ /tmp/pacman/pacman |\
+        less
+    fi
+  fi
+
+  read -p "[ ?? ] Handle SSD packages (pacman)? [Y/n] " ans
+  if [[ ! -z $ans && $ans != 'y' ]]; then
+    echo "[ !! ] Ignoring ... "
+  else # open a new shell, wait for it to die, then continue
+    echo "[ OK ] Waiting for SSD packages to be handled"
+    $USER_SHELL
+  fi
+
+  echo "[ .. ] Updating system (pacman)"
+  $SUDO pacman -Su
+
+  echo "[ .. ] Removing lock"
+  rm -v /tmp/pacman/lock-pacman
+}
+
+function lock_paru {
+  local MANUAL=''
+
+  read -p "[ ?? ] Update packages (AUR)? [Y/n] " ans
+
+  if [[ ! -z $ans && $ans != 'y' ]]; then
+    echo "[ !! ] Ignoring ... "
+    echo "Ignore lock:" "lock was ignored for paru"
+    return 0
+  fi
+
+  read -p "[ ?? ] Manual review? [y/N] " ans
+
+  if [[ ! -z $ans && $ans != 'n' ]]; then
+    MANUAL=y
+  else
+    MANUAL=n
+  fi
+
+  if [[ $MANUAL = 'y' ]]; then
+    echo "[ .. ] Updating database for manual review"
+    paru -Sy
+    echo "[ .. ] Generating new pacman updatable package file"
+    paru -Qu > /tmp/pacman/paru-update-raw
+    sed -E 's/\x1b\[0;1m|\x1b\[0;32m//g' /tmp/pacman/paru-update-raw |\
+      awk '{print $1}' > /tmp/pacman/paru-update
+    echo "[ .. ] Setting permissions"
+    chown -Rv @SHUTDOWN_LOCK_USER@ /tmp/pacman/paru-update \
+          /tmp/pacman/paru-update-raw
+    chmod -Rv a+w /tmp/pacman/paru-update /tmp/pacman/paru-update-raw
+    echo "[ .. ] Listing updatable packages"
+    less -R /tmp/pacman/paru-update-raw
+  fi
+
+  read -p "[ ?? ] Check against wiki? [Y/n] " ans
+
+  if [[ ! -z $ans && $ans != 'y' ]]; then
+    echo "[ !! ] Ignoring ... "
+  else
+    if [[ $MANUAL = 'y' ]]; then
+      @SHUTDOWN_LOCK_FIND_WIKI_PACMAN_INDEX@ /tmp/pacman/paru-update |\
+        less
+    else
+      @SHUTDOWN_LOCK_FIND_WIKI_PACMAN_INDEX@ /tmp/pacman/paru |\
+        less
+    fi
+  fi
+
+  read -p "[ ?? ] Handle SSD packages? [Y/n] " ans
+
+  if [[ ! -z $ans && $ans != 'y' ]]; then
+    echo "[ !! ] Ignoring ... "
+  else # open a new shell, wait for it to die, then continue
+    echo "[ OK ] Waiting for SSD packages to be handled"
+    $USER_SHELL
+  fi
+
+  echo "[ .. ] Updating system (AUR)"
+  paru -Su
+
+  echo "[ .. ] Removing lock"
+  rm -v /tmp/pacman/lock-paru
+}
+
+function lock_efistub {
+  read -p "[ ?? ] Update packages (efistub)? [Y/n] " ans
+
+  if [[ ! -z $ans && $ans != 'y' ]]; then
+    echo "[ !! ] Ignoring ... "
+    echo "Ignore lock:" "lock was ignored for efistub"
+    return 0
+  fi
+
+  while ! $SUDO @SHUTDOWN_LOCK_UPDATE_EFISTUB@; do continue; done
+}
+
 if [[ -d /tmp/pacman ]]; then
   if [[ -f /tmp/pacman/pacman-lock ]]; then
-    echo "[ .. ] Package lock found:" "found package lock set by \`linux.sh'. Wait to shutdown"
-    sleep 1
-    ARG=p
+    echo "[ .. ] Package lock found"
+
+    lock_pacman
+    lock_man
   fi
 
   if [[ -f /tmp/pacman/paru-lock ]]; then
-    echo "[ .. ] Package lock found (subsystem):" "also found lock for \`paru'"
-    sleep 1
-    ARG="${ARG}n"
+    echo "[ .. ] Package lock found (AUR)"
+
+    lock_paru
   fi
 
   if [[ -f /tmp/pacman/efistub-lock ]]; then
-    echo "[ .. ] Efistub lock found:" "found efistub lock set by \`linux.sh'. Wait to shutdown"
-    sleep 1
-    ARG="${ARG}e"
+    echo "[ .. ] Efistub lock found"
+
+    lock_efistub
   fi
 fi
 
-echo "[ .. ] Preparing to send ACPI event..."
-
-notify="printf '\a' > /dev/tty1"
-
-for arg in $@; do
-  if [[ $arg == '-x' ]]; then
-    notify="printf '\a' > /dev/tty${DISPLAY:1:1}"
-  fi
-done
-
-eval $notify
-
-sleep 1
-
-@SHUTDOWN_LOCK_LOCK@ "${ARG}:${AS}"
+exec $CONFIRM

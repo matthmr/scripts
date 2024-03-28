@@ -1,54 +1,44 @@
 #!/usr/bin/bash
 
+# -x: use x (with tmux)
+# -t: use tmux (attach)
+# -f: force: don't run lock
+
 AS=${0##*/}
-AS=${AS/x/}
 AS_SESSION=${AS/do/}
 
-TMUX_NAME=@DOSHUTDOWN_TMUX_TTY@
-TMUX_ATTACH="$TMUX_NAME attach-session -t \"$AS_SESSION\""
+use_x=false
+use_tmux=false
+force=false
 
-XTERM=urxvt
-FORCE=false
+SWITCH=''
 
 for arg in $@; do
   case $arg in
-    '-x')
-       TMUX_NAME=tmux
-       TMUX_ATTACH="$XTERM -e tmux attach-session -t \"$AS_SESSION\"" ;;
-    '-f') FORCE=true ;;
+    '-x') use_x=true; use_tmux=true ; SWITCH='-t' ;;
+    '-t') use_tmux=true; SWITCH='-t' ;;
+    '-f') force=true ;;
   esac
 done
 
-unset XINITSLEEP
-unset XINITSLEEPARGS
+unset LOGINCMD
 
-if $FORCE; then
-  XINITSLEEP=@DOSHUTDOWN_XINITSLEEP_FORCE@
+if $force; then
+  LOGINCMD=@DOSHUTDOWN_LOGINCMD_CONFIRM@
 else
-  XINITSLEEP=@DOSHUTDOWN_XINITSLEEP_LOCK@
-  XINITSLEEPARGS="$@"
+  LOGINCMD=@DOSHUTDOWN_LOGINCMD_LOCK@
 fi
 
-$TMUX_NAME new-session -d \
-           -s "$AS_SESSION" \
-           "XINITSLEEP=$XINITSLEEP XINITSLEEPARGS=\"$XINITSLEEPARGS\" zsh"
+if $use_tmux; then
+  tmux new-session -d -s "$AS_SESSION" "LOGINCMD=\"$LOGINCMD\" zsh"
 
-if [[ $? == 1 ]]; then
-  $TMUX_NAME kill-session -t "$AS_SESSION"
+  if [[ $? == 1 ]]; then
+    tmux kill-session -t "$AS_SESSION"
 
-  $TMUX_NAME new-session -d \
-           -s "$AS_SESSION" \
-           "XINITSLEEP=$XINITSLEEP XINITSLEEPARGS=$XINITSLEEPARGS zsh"
-fi
+    tmux new-session -d -s "$AS_SESSION" "LOGINCMD=\"$LOGINCMD\" zsh"
+  fi
 
-CC=$(tmux list-clients -F "#{client_name}")
-CCS=$(echo $CC | wc -l)
-
-if [[ $CCS -gt 1 ]]; then
-  echo "[ !! ] Multiple tmux clients. Please have just one"
-  exit 1
-elif [[ -z $CC ]]; then
-  eval "exec $TMUX_ATTACH"
+  tmuxa $($use_x && echo '-x') "$AS_SESSION"
 else
-  exec $TMUX_NAME switch-client -c $CC -t "$AS_SESSION"
+  exec $LOGINCMD
 fi

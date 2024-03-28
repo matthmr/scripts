@@ -1,10 +1,5 @@
 #!/usr/bin/sh
 
-mkdir -p /tmp/schedl/ 2>/dev/null
-touch /tmp/schedl/schedl.log
-
-[[ -f /tmp/schedl/session-lock ]] && exit 1
-
 file= content= script_content= script=false
 while read jobfile; do
   if [[ $jobfile =~ ^#.*$ || $jobfile =~ ^( \t)*$ ]]; then

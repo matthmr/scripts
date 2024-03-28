@@ -1,6 +1,8 @@
 #!/usr/bin/sh
 
-# start X daemons
+# start X daemons/scripts
+# By session:
+#   $1: wm
 
 # [ -z `pidof dunst` ] && dunst &
 
@@ -20,14 +22,16 @@ xrdb @XDAEMON_XRESOURCES@ &
 clipmenud &
 
 # > nice pape anon
-@XDAEMON_WPSET@ -d @XDAEMON_WPDIR@ >&/dev/null &
+@XDAEMON_WPSET@ &
 
 # start bar (not for i3)
-
 if [[ $1 != i3 ]]; then
   polybar-start mh-$1 &
 fi
 
+# start session
+@XDAEMON_SESSION_MSG@ x "$1" &
+
 # I don't think can do this in XKB source
-#         \  UP  LFT RGH DWN
-for kc in 51 111 113 114 116; do xset r $kc ; done
+#        BSP UP LFT RGH DWN
+for kc in 51 98 100 102 104; do xset r $kc ; done
