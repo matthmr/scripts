@@ -1,9 +1,13 @@
 #!/usr/bin/bash
 
 function help {
-  echo "Usage:       vm.sh [opts...] -- [extra opts...]"
+  echo "Usage:       vm.sh [OPTIONS...] -- [QEMU OPTIONS...]"
   echo "Description: Sets options to start a VM"
   echo "Options:
+  Help:
+    -h: see help
+    -k: dry
+
   Include flags:
     +a: enable host audio
     +n: enable host networking (port forwarding)
@@ -17,16 +21,22 @@ function help {
     cpu:<n>: host cpu core count
 
   NOTE:
-    [extra opts...] may be raw options to the vm command
+    [QEMU OPTIONS...] may be raw options to the vm command
     use \`@' instead of \`\"' to denote joining"
   echo "Variables:
     VM=vm command"
   exit 1
 }
 
+dry=false
+all_args=$@
+
 case "$1" in
   '-h'|'--help')
     help;;
+  '-k')
+    dry=true
+    all_args=${@:2};;
 esac
 
 [[ -z $1 ]] && help
@@ -113,8 +123,7 @@ RAW_OPTS_OFF=
 function parse_args {
   local off=1
 
-  for arg in $@; do
-
+  for arg in $all_args; do
     if [[ $arg =~ ^\+ ]]; then
       parse_include_opt $arg || die_opt
     elif [[ $arg =~ : ]]; then
@@ -143,5 +152,9 @@ parse_args $@
 VM_CMDLINE=$(echo $VM_CMDLINE | sed "s:~:$HOME:g")
 VM_CMDLINE+=" -display gtk,show-tabs=on"
 
-echo "[ == ] Running as: $VM $VM_CMDLINE"
-$VM $VM_CMDLINE
+if $dry; then
+  echo $VM $VM_CMDLINE
+else
+  echo "[ == ] Running as: $VM $VM_CMDLINE"
+  $VM $VM_CMDLINE
+fi

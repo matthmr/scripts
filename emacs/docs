@@ -5,10 +5,10 @@ case $1 in
     echo "Usage:       docs [OPTIONS] MAJOR-MODE:MINOR-MODE"
     echo "Description: Writes documentation on local document repositories"
     echo "Options:
-  -i: launch interactive (fzf-like command)
-  -x: launch a X terminal emulator
-  -I: launch interactive (dmenu-like command)
-  -t: use tmux-tty
+  -i: choose interactively (fzf/dmenu-like command)
+  -x: be aware of X
+  -s: launch a tmux session
+  -t: ... and attach to it
 
 Major Modes:
   - wiki
@@ -32,9 +32,7 @@ JOURNAL=@DOCS_JOURNAL@
 PROJECT=@DOCS_PROJECT_BASE@
 REPO=''
 EDITOR='emacsclient -t'
-MENU_CHOOSE='' # i=fzf, I=dmenu
 XTERM=urxvt
-TMUX_NAME=tmux
 
 #### Modes
 
@@ -111,22 +109,18 @@ defaulting to current date"
 #### Args
 
 use_x=false
+use_tmux=''
+int=''
 
 for arg in $@; do
   case $arg in
-    '-i')
-      mode_arg=$arg
-      MENU_CHOOSE='fzf';;
-    '-x')
-      use_x=true ;;
-    '-I')
-      mode_arg=$arg
-      MENU_CHOOSE='dmenu -p choose';;
-    '-t')
-      mode_arg=$arg
-      TMUX_NAME=@DOCS_TMUX_TTY@;;
-    *)
-      mode_arg=$arg ;;
+    '-i') int='fzf';;
+    '-x') use_x=true
+          if [[ ! -z $int ]]; then
+            int='dmenu -p choose'
+          fi ;;
+    '-s'|'-t') use_tmux=$arg ;;
+    *) mode_arg=$arg ;;
   esac
 done
 
@@ -150,14 +144,14 @@ if [[ $cmd = $mode ]]; then
   cmd=''
 fi
 
-if [[ ! -z $MENU_CHOOSE ]]; then
+if [[ ! -z $int ]]; then
   case $mode in
     'wiki')
-      CHOOSE=$(find $REPO -type f -name '*.org' | $MENU_CHOOSE) ;;
+      CHOOSE=$(find $REPO -type f -name '*.org' | $int) ;;
     'journal')
-      CHOOSE=$(find $REPO -type f -name '[0-9][0-9].org' | $MENU_CHOOSE) ;;
+      CHOOSE=$(find $REPO -type f -name '[0-9][0-9].org' | $int) ;;
     'project')
-      CHOOSE=$(find $REPO/*/dev -type f -name '*.org' | $MENU_CHOOSE) ;;
+      CHOOSE=$(find $REPO/*/dev -type f -name '*.org' | $int) ;;
   esac
 
   if [[ -z $CHOOSE ]]; then
@@ -182,19 +176,18 @@ fi
 
 echo "[ == ] Running as: $EDITOR $REPO"
 
-$TMUX_NAME new-session -d \
-           -s "docs" \
-           -n "emacsclient" \
-           $EDITOR $REPO
+if [[ ! -z $use_tmux ]]; then
+  tmux new-session -d -s "docs" -n "emacsclient" $EDITOR $REPO
 
-CC=$(tmux list-clients -F "#{client_name}")
-CCS=$(echo $CC | wc -l)
-
-if [[ $CCS -gt 1 ]]; then
-  echo "[ !! ] Multiple tmux clients. Please have just one"
-  exit 0
-elif $use_x && [[ -z $CC ]]; then
-  exec $XTERM -e $TMUX_NAME attach-session -t 'docs' # tmux is not yet attached
+  if [[ $use_tmux == '-t' ]]; then
+    if $use_x; then
+      exec tmuxa -x docs
+    else
+      exec tmuxa docs
+    fi
+  fi
+elif $use_x; then
+  exec $XTERM -e $EDITOR $REPO
 else
-  $TMUX_NAME switch-client -c $CC -t 'docs'
+  exec $EDITOR $REPO
 fi

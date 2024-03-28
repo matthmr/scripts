@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/sh
 
 case $1 in
   '--help'|'-h')
@@ -62,7 +62,6 @@ function mktmpuri {
 function fetch_into_local {
   local uri=$1
 
-  uri=$(ignoreuriparam $uri)
   tmp_uri=$(mktmpuri $uri)
   $FETCHURL -Ls $uri > $tmp_uri
 
@@ -77,9 +76,9 @@ function prompt_for_handler {
     if [[ $cmd =~ ^"f " ]]; then
       cmd=${cmd/f /}
       f=$uri
-      eval "$cmd"
+      eval $cmd
     else
-      eval "$cmd $uri"
+      $cmd $uri
     fi
   else
     echo "[ !! ] Cmd is empty"
@@ -104,8 +103,6 @@ function handle_file {
 function handle_uri {
   local uri=$1
 
-  uri=$(ignoreuriparam $uri)
-
   case $uri in
     *.png|*.jpg|*.jpeg|*.webp|*.bmp) $IMGVIEW $uri ;;
     *.mp4|*.mkv|*.mov|*.webm|*.gif) $VIDEOPLAYER $uri ;;
@@ -117,6 +114,13 @@ function handle_uri {
 }
 
 if $int; then
+  echo -n "[ ?? ] Ignore URI params? [Y/n] "
+  read ans
+
+  if [[ -z $ans || $ans == 'y' ]]; then
+    uri=$(ignoreuriparam $uri)
+  fi
+
   if $fetch; then
     echo -n "[ ?? ] Fetch locally? [Y/n] "
     read ans
@@ -135,7 +139,7 @@ if $int; then
   read ans
 
   if [[ -z $ans || $ans == 'n' ]]; then
-    eval $handler "$uri"
+    $handler "$uri"
   else
     prompt_for_handler
   fi
@@ -152,7 +156,7 @@ else
     handler=handle_file
   fi
 
-  eval $handler $uri
+  $handler "$uri"
 fi
 
 if [[ $handler == 'handle_file' ]]; then

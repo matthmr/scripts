@@ -1,24 +1,32 @@
 #!/usr/bin/sh
 
-test=false
+tmp=true
 random=false
+lock=false
+file=''
 
 case $1 in
   '--help'|'-h')
-    echo "Usage:       wpset [OPTIONS...] FILE"
-    echo "Description: Sets or tests FILE as the current wallpaper"
+    echo "Usage:       wpset [OPTIONS...] [FILE]"
+    echo "Description: Sets or tests FILE as the current wallpaper. Unless
+  \`-t' is given, it will echo the path of the wallpaper in /tmp/.wp. If \`-l' is
+  given, it'll link the path to ~/.wp, which is restorable by \`-r'"
     echo "Options:
-  -t: test: don't set anything other than the wallpaper
-  -r: reuse the default wallpaper
-  -d: set random from directory"
+  -t: don't set TMP
+  -l: lock
+  -r: FILE from ~/.wp
+  -R: FILE from /tmp/.wp
+  -d: FILE from random in directory (FILE)"
     exit 0;;
 esac
 
 for arg in $@; do
   case $arg in
-    '-t') test=true ;;
+    '-t') tmp=false ;;
     '-d') random=true ;;
-    '-r') $HOME/.fehbg; exit $? ;;
+    '-l') lock=true ;;
+    '-r') file=~/.wp ;;
+    '-R') file=$(cat /tmp/.wp 2>/dev/null) ;;
     *) file=$arg ;;
   esac
 done
@@ -28,16 +36,16 @@ if [[ -z $file ]]; then
   exit 1
 fi
 
-opt='--bg-scale'
-
-if $test; then
-  opt+=' --no-fehbg'
-else
-  if $random; then
-    file=$(find $file -type f | shuf -n1)
-  fi
-
-  ln -svf $file $HOME/.wp
+if $random; then
+  file=$(find $file -type f | shuf -n1)
 fi
 
-feh $opt $file
+if ! $tmp; then
+  echo $file > /tmp/.wp
+fi
+
+if $lock; then
+  ln -svf $file ~/.wp
+fi
+
+feh --bg-scale --no-fehbg $file
