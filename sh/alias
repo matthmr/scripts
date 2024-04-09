@@ -34,6 +34,7 @@ alias tolastfm='mpdscribble --no-daemon --log -'
 alias ttw='tt -c -- --cols16 -i ~/.wp'
 alias ttws='tt -s -c -- --cols16 -i ~/.wp'
 alias c='clear'
+alias e='exec'
 
 # coreutils overrides
 alias grep='grep --color=always'

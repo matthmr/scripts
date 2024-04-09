@@ -3,8 +3,7 @@
 
 AS=${0##*/}
 
-DMENU=@SCREENSHOT_DMENU_BIN@
-SCREENSHOT=@SCREENSHOT_SHOTGUN_BIN@
+SCREENSHOT="shotgun"
 SCREENSHOT_OPTS=""
 SCREENSHOT_DIR=@SCREENSHOT_SHOTGUN_DIR@
 SCREENSHOT_TMP_DIR=@SCREENSHOT_TMP_DIR@
@@ -18,7 +17,7 @@ select
 "
 
 function feeddmenu {
-	echo -ne "$1" | $DMENU -p "$2"
+	echo -ne "$1" | dmenu -p "$2"
 }
 
 function feedopt {

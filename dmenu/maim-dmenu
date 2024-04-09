@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Made by mH (https://github.com/matthmr)
 
-DMENU=@MAIN_DMENU_BIN@
-MAIM=@MAIM_DMENU_CMDLINE@
+MAIM="maim --quiet -o -B -d 0.25 -u"
 NOTIFY=herbe
 
 OPT="\
@@ -11,7 +10,7 @@ select
 "
 
 feeddmenu() {
-	echo -ne "$1" | $DMENU -p "$2"
+	echo -ne "$1" | dmenu -p "$2"
 }
 
 main() {

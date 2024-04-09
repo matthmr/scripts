@@ -4,7 +4,7 @@
 
 # Disk
 DRIVES=(@STATUSBAR_DRIVES@)
-function st_disk() {
+function _disk() {
   local driveno=${#DRIVES[@]}
   local drivein=$(($RANDOM % $driveno))
   local drive=${DRIVES[drivein]}
@@ -48,7 +48,7 @@ function st_disk() {
 }
 
 # Volume
-function st_vol() {
+function _vol() {
   local vol=$(amixer get Master |\
                 grep -Eo '\[[0-9]{1,3}%\] \[-?[0-9]{1,3}\.[0-9]{1,2}dB')
   local db=${vol/\[*%\] /}
@@ -59,7 +59,7 @@ function st_vol() {
 }
 
 # Memory
-function st_mem() {
+function _mem() {
   awk -F: '
     /^MemTotal/ {
        total_kb=$2; total=$2/1000000
@@ -76,7 +76,7 @@ function st_mem() {
 
 # Network
 IF="eth0"
-function st_net() {
+function _net() {
   local ip=$(awk '
     /^ {11}\|-- 192\.168\.[0-9]{1,3}\.[^0]/ {
       ifm=$0
@@ -115,7 +115,7 @@ function st_net() {
 }
 
 # Uptime
-function st_uptime() {
+function _uptime() {
   awk '
     {
       minutes=int($1 / 60); hours=int(minutes / 60)
@@ -127,24 +127,24 @@ function st_uptime() {
 }
 
 # Kernel
-function st_kernel() {
+function _kernel() {
   echo "Linux $(cut -d' ' -f3 /proc/version)"
 }
 
 # Time
-function st_date() {
-  local date=$(date +'%Y%m%d %a %I%M%p')
+function _date() {
+  local date=$(date +'%Y%m%d-%w %I%M%p')
   echo "$date"
 }
 
 FUNCTIONS=(
-  'st_date'
-  'st_kernel'
-  'st_uptime'
-  'st_net'
-  'st_mem'
-  'st_vol'
-  'st_disk')
+  '_date'
+  '_kernel'
+  '_uptime'
+  '_net'
+  '_mem'
+  '_vol'
+  '_disk')
 
 #### Constructor
 

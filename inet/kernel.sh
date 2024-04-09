@@ -16,7 +16,6 @@ case $1 in
 esac
 
 COMP='xz'
-DIR=@KERNEL_DIR@
 
 REMOVE=false
 case $1 in

@@ -114,22 +114,22 @@ function handle_uri {
 }
 
 if $int; then
-  echo -n "[ ?? ] Ignore URI params? [Y/n] "
+  echo -n "[ ?? ] Ignore URI params? [y/N] "
   read ans
 
-  if [[ -z $ans || $ans == 'y' ]]; then
+  if [[ ! -z $ans && $ans != 'n' ]]; then
     uri=$(ignoreuriparam $uri)
   fi
 
   if $fetch; then
-    echo -n "[ ?? ] Fetch locally? [Y/n] "
+    echo -n "[ ?? ] Fetch locally? [y/N] "
     read ans
 
-    if [[ -z $ans || $ans == 'y' ]]; then
+    if [[ -z $ans || $ans == 'n' ]]; then
+      handler=handle_uri
+    else
       uri=$(fetch_into_local $uri)
       handler=handle_file
-    else
-      handler=handle_uri
     fi
   else
     handler=handle_file

@@ -20,24 +20,8 @@ sleep 1
 docs $1 journal
 
 ### Wallpaper (only after `wpnew', which uses `wpset')
-
 if [[ -s /tmp/.wp ]]; then
-  read -p "[ ?? ] Update Wallpaper? [Y/n] " ans
-
-  if [[ -z $ans && $ans == 'y' ]]; then
-    file=$(cat /tmp/.wp)
-
-    find $file -maxdepth 1 2>/dev/null
-
-    if [[ $? == 0 ]]; then
-      ln -svf $file ~/.wp
-    else
-      echo "[ !! ] Invalid wallpaper"
-    fi
-  else
-    echo "[ !! ] Ignoring ... "
-  fi
-
+  wpset -k -r -l
 fi
 
 ### Set locks

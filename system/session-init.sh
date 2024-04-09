@@ -61,7 +61,7 @@ if [[ ! -f /tmp/schedl/session-lock ]]; then
                  -name '*.sh' 2>/dev/null)
 
   # TODO: should be a proper job
-  if [[ -f /tmp/schedl/system ]]; then
+  if [[ -f /tmp/schedl/update-system ]]; then
     session_msg "Note: There is a system session pending"
   fi
 

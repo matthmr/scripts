@@ -5,7 +5,7 @@ AS=${AS/-confirm/}
 
 COMMAND=$(realpath @SUSPEND_CONFIRM_ACPI@)
 
-read -p "[Y/n] ${AS}? " ans
+read -p "[ ?? ] ${AS}? [Y/n] " ans
 
 if [[ -z $ans || $ans == 'y' ]]; then
   echo "ACPI event sent:" "waiting to send ACPI event; press C-c to ignore it"

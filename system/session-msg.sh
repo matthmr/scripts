@@ -9,7 +9,6 @@ SESSION=$2
 
 XTERM=urxvt
 
-
 case $TYPE in
   'x') function validate_session() {
          local tries=5
@@ -57,6 +56,7 @@ if [[ -s /tmp/session-msg ]]; then
             -T 'note' \
             "cat /tmp/session-msg" >/dev/null 2>/dev/null
 
+       cp /tmp/session-msg /tmp/session-msg.txt
        printf '' > /tmp/session-msg
      } &
   )

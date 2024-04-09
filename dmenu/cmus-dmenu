@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # Made by mH (https://github.com/matthmr)
 
-
-DMENU=@CMUS_DMENU_BIN@
 PLAYLIST_CACHE=@CMUS_DMENU_PLAYLISTS_DIR@
 MUSIC_DIR=@CMUS_DMENU_MUSIC_DIR@
 CMUS_REMOTE=cmus-remote
@@ -26,7 +24,7 @@ PROMPT="\
 #蘿 playlist
 
 feeddmenu() {
-	echo -ne "$1" | $DMENU -p "$2"
+	echo -ne "$1" | dmenu -p "$2"
 }
 
 handle_command() {

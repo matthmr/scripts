@@ -10,7 +10,7 @@ case $AS in
   *) echo '[ !! ] Invalid command!'; exit 1 ;;
 esac
 
-read -p "[Y/n] ${AS}? " ans
+read -p "[ ?? ] ${AS}? [Y/n] " ans
 
 if [[ -z $ans || $ans == 'y' ]]; then
   echo "ACPI event sent:" "waiting to send ACPI event; press C-c to ignore it"

@@ -3,6 +3,7 @@
 tmp=true
 random=false
 lock=false
+dry=false
 file=''
 
 case $1 in
@@ -13,6 +14,7 @@ case $1 in
   given, it'll link the path to ~/.wp, which is restorable by \`-r'"
     echo "Options:
   -t: don't set TMP
+  -k: dry: don't call FEH
   -l: lock
   -r: FILE from ~/.wp
   -R: FILE from /tmp/.wp
@@ -25,6 +27,7 @@ for arg in $@; do
     '-t') tmp=false ;;
     '-d') random=true ;;
     '-l') lock=true ;;
+    '-k') dry=true ;;
     '-r') file=~/.wp ;;
     '-R') file=$(cat /tmp/.wp 2>/dev/null) ;;
     *) file=$arg ;;
@@ -40,7 +43,9 @@ if $random; then
   file=$(find $file -type f | shuf -n1)
 fi
 
-if ! $tmp; then
+file=$(realpath $file)
+
+if $tmp; then
   echo $file > /tmp/.wp
 fi
 
@@ -48,4 +53,6 @@ if $lock; then
   ln -svf $file ~/.wp
 fi
 
-feh --bg-scale --no-fehbg $file
+if ! $dry; then
+  feh --bg-scale --no-fehbg $file
+fi

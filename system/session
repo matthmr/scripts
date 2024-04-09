@@ -241,6 +241,8 @@ esac
 
 ####
 
+export SESSION=$SESSION
+
 header "Logging in with ${SESSION:-$(tty)}"
 
 sleep 1

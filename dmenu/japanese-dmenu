@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-DMENU=@JAPANESE_DMENU_BIN@
 EDITCLIP=@JAPANESE_DMENU_EDIT_COPY@
 CLIPFILE="/tmp/clipboard"
 
@@ -13,7 +12,7 @@ kana -> kanji
 "
 
 function feed {
-	echo -ne "$1" | $DMENU -p "$2"
+	echo -ne "$1" | dmenu -p "$2"
 }
 
 MODE=$(feed "$PROMPT" "mode")

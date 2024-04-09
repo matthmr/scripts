@@ -19,7 +19,6 @@ PKG_ROOT="/tmp/squashfs-root"
 CHROMIUM_HOME=@UNGOOGLED_CHROMIUM_HOME@
 URL="https://raw.githubusercontent.com/ungoogled-software/ungoogled-chromium-binaries/master/feed.xml"
 CURL="/usr/bin/curl"
-XML=@UNGOOGLED_CHROMIUM_XML@
 LAST_LOCAL_VERSION=$(cat "$CHROMIUM_HOME/Last Version")
 
 echo "[ .. ] Starting update on ungoogled-chromium"
@@ -51,13 +50,13 @@ function check_update {
 }
 
 echo "[ .. ] Querying feed URL: $URL"
-QUERY_URL=$($CURL $URL 2>/dev/null | $XML elements -v | grep -m 1 "feed/entry/link\[@href='.*'\]" | awk "BEGIN { FS = \"'\" } ; { print \$2 }")
+QUERY_URL=$($CURL $URL 2>/dev/null | xml elements -v | grep -m 1 "feed/entry/link\[@href='.*'\]" | awk "BEGIN { FS = \"'\" } ; { print \$2 }")
 
 echo "[ .. ] Checking if there are any updates available : check_update"
 check_update "$QUERY_URL"
 
 echo "[ .. ] Querying AppImage URL: $QUERY_URL"
-APPIMAGE_URL=$($CURL $QUERY_URL 2>/dev/null | $XML elements -v | grep -m 1 "html/body/ul/li/a\[@href='.*\.AppImage'\]" | cut -d "'" -f 2)
+APPIMAGE_URL=$($CURL $QUERY_URL 2>/dev/null | xml elements -v | grep -m 1 "html/body/ul/li/a\[@href='.*\.AppImage'\]" | cut -d "'" -f 2)
 
 update
 echo "[ .. ] Downloading AppImage: $APPIMAGE_URL"

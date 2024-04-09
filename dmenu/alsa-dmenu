@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # Made by mH (https://github.com/matthmr)
 
-DMENU=@ALSA_DMENU_BIN@
-AMIXER="amixer"
-NOTIFY="herbe"
+NOTIFY="herbe" # change this
 
 PROMPT="\
 perc+
@@ -18,7 +16,7 @@ current
 "
 
 feeddmenu() {
-	echo -ne "$1" | $DMENU -p "$2"
+	echo -ne "$1" | dmenu -p "$2"
 }
 
 handle_command() {
@@ -51,12 +49,12 @@ handle_command() {
 
 	[ -z $COMMAND ] && exit 0
 
-	$AMIXER set "$CARD" "$COMMAND"
+	amixer set "$CARD" "$COMMAND"
 
 }
 
 get_card() {
-	CARDS=`$AMIXER scontrols | sed -e 's/Simple mixer control //g' -e "s/'\(.*\)',./\1/g"`
+	CARDS=`amixer scontrols | sed -e 's/Simple mixer control //g' -e "s/'\(.*\)',./\1/g"`
 	echo `feeddmenu "$CARDS" 'card:'`
 }
 
@@ -89,13 +87,13 @@ main() {
 		;;
 
 	'current')
-		$NOTIFY -u normal "Current Level of $CARD" "$($AMIXER get "$CARD")"
+		$NOTIFY -u normal "Current Level of $CARD" "$(amixer get "$CARD")"
 		;;
 	'mute')
-		$AMIXER set "$CARD" mute
+		amixer set "$CARD" mute
 		;;
 	'unmute')
-		$AMIXER set "$CARD" unmute
+		amixer set "$CARD" unmute
 		;;
 
 	esac

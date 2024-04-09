@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # Made by mH (https://github.com/matthmr)
 
-DMENU=@MPC_DMENU_BIN@
-MPC=@MPC_DMENU_MPC_BIN@
 NOTIFY="herbe"
 
 PROMPT="\
@@ -43,11 +41,11 @@ queued
 QUIT
 "
 
-LS=`$MPC ls`
+LS=`mpc ls`
 DIR=.
 
 feeddmenu() {
-	echo -ne "$1" | $DMENU -p "$2"
+	echo -ne "$1" | dmenu -p "$2"
 }
 
 get_action() {
@@ -114,20 +112,20 @@ handle_input() {
 		'volume'|'seek'|'seekthrough'|'add'|'insert'|'load'|'rm'|'del'|'save')
 			COMMON=`feeddmenu "" "$action: "`
 			[[ -z $COMMON ]] && exit 0
-			OUTPUT=`$MPC $action $COMMON 2>&1` || {
+			OUTPUT=`mpc $action $COMMON 2>&1` || {
 				$NOTIFY "ERROR:" "$OUTPUT" && return 1
 			} ;;
 
 		'ls')
 			LS=`feeddmenu "" "ls: "`
-			FILES=`$MPC ls $LS 2>&1` || {
+			FILES=`mpc ls $LS 2>&1` || {
 				$NOTIFY "ERROR:" "$FILES" && return 1
 			} && $NOTIFY "Contents: " "$FILES" ;;
 
 		'search'|'searchadd'|'searchplay')
 			SEARCH=`feeddmenu "" "search: "`
 			[[ -z $SEARCH ]] && exit 0
-			OUTPUT=`$MPC $action filename $SEARCH 2>&1` || {
+			OUTPUT=`mpc $action filename $SEARCH 2>&1` || {
 				$NOTIFY "ERROR:" "$OUTPUT" &&\
 				return 1
 			} && $NOTIFY "Found:" "$OUTPUT" ;;
@@ -137,7 +135,7 @@ handle_input() {
 			[[ -z $FROM ]] && exit 0
 			TO=`feeddmenu "" "to: "`
 			[[ -z $TO ]] && exit 0
-			OUTPUT=`$MPC move $FROM $TO 2>&1` || $NOTIFY "ERROR:" "$OUTPUT" ;;
+			OUTPUT=`mpc move $FROM $TO 2>&1` || $NOTIFY "ERROR:" "$OUTPUT" ;;
 
 	esac
 
@@ -156,11 +154,11 @@ main() {
 	else
 
 		`is_blunt $DMENU_ACTION` && {
-			$MPC "$DMENU_ACTION"
+			mpc "$DMENU_ACTION"
 			continue
 		}
 		`is_visual $DMENU_ACTION` && {
-			$NOTIFY "Currently playing:" "$($MPC "$DMENU_ACTION")"
+			$NOTIFY "Currently playing:" "$(mpc "$DMENU_ACTION")"
 			continue
 		}
 		`is_input $DMENU_ACTION` && {
