@@ -1,0 +1,32 @@
+#!/usr/bin/sh
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       tmuxa [OPTIONS] SESSION"
+    echo "Description: Attach a tmux SESSION given environment"
+    echo "Options:
+  -x: run it in X"
+    exit 1;;
+esac
+
+XTERM=urxvt
+
+CC=$(tmux list-clients -F "#{client_name}")
+CCS=$(echo $CC | wc -l)
+
+if [[ $1 == '-x' ]]; then
+  SESSION=$2
+  TMUX_ATTACH="$XTERM -e tmux attach-session -t '$SESSION'"
+else
+  SESSION=$1
+  TMUX_ATTACH="tmux attach-session -t '$SESSION'"
+fi
+
+if [[ $CCS -gt 1 ]]; then
+  echo "[ !! ] Multiple tmux clients. Please have just one"
+  exit 1
+elif [[ -z $CC ]]; then
+  eval exec $TMUX_ATTACH
+else
+  exec tmux switch-client -c $CC -t $SESSION
+fi

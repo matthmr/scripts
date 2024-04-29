@@ -1,0 +1,29 @@
+#!/usr/bin/sh
+
+case $1 in
+  '-h'|'--help')
+    echo "Usage:       tmux-bg"
+    echo "Description: Apply background for urxvt as the tmux client"
+    exit 0
+    ;;
+esac
+
+CC=$(tmux list-clients -F "#{client_name}")
+CCS=$(echo $CC | wc -l)
+
+[[ -z $CC || $CCS -gt 1 ]] && exit 0
+
+# force my tmux to set the BG variable to the current background
+printf '\033]11;?\033\\' > $CC
+
+# get the variable, and set the style
+bg=$(tmux run -C 'showenv -gh BG' 2>/dev/null | cut -d= -f2)
+[[ -z $bg ]] && exit 0
+
+style="bg=#$bg"
+
+# make active withing the session
+tmux set -swp window-style "$style" >&/dev/null
+
+# ... and other sessions as well
+tmux set -g window-style "$style" >&/dev/null
