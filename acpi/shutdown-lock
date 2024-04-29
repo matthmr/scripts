@@ -19,9 +19,9 @@ sleep 1
 
 docs $1 journal
 
-### Wallpaper (only after `wpnew', which uses `wpset')
+### Wallpaper (only after `wpset')
 if [[ -s /tmp/.wp ]]; then
-  wpset -k -r -l
+  wpset -t -k -R -l
 fi
 
 ### Set locks

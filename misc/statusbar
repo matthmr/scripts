@@ -1,10 +1,13 @@
 #!/usr/bin/sh
 
+sleep_pid=""
+this_pid=$$
+
 #### FUNCTIONS
 
 # Disk
 DRIVES=(@STATUSBAR_DRIVES@)
-function _disk() {
+function statusbar_disk() {
   local driveno=${#DRIVES[@]}
   local drivein=$(($RANDOM % $driveno))
   local drive=${DRIVES[drivein]}
@@ -48,7 +51,7 @@ function _disk() {
 }
 
 # Volume
-function _vol() {
+function statusbar_vol() {
   local vol=$(amixer get Master |\
                 grep -Eo '\[[0-9]{1,3}%\] \[-?[0-9]{1,3}\.[0-9]{1,2}dB')
   local db=${vol/\[*%\] /}
@@ -59,7 +62,7 @@ function _vol() {
 }
 
 # Memory
-function _mem() {
+function statusbar_mem() {
   awk -F: '
     /^MemTotal/ {
        total_kb=$2; total=$2/1000000
@@ -76,7 +79,7 @@ function _mem() {
 
 # Network
 IF="eth0"
-function _net() {
+function statusbar_net() {
   local ip=$(awk '
     /^ {11}\|-- 192\.168\.[0-9]{1,3}\.[^0]/ {
       ifm=$0
@@ -115,7 +118,7 @@ function _net() {
 }
 
 # Uptime
-function _uptime() {
+function statusbar_uptime() {
   awk '
     {
       minutes=int($1 / 60); hours=int(minutes / 60)
@@ -127,27 +130,21 @@ function _uptime() {
 }
 
 # Kernel
-function _kernel() {
+function statusbar_kernel() {
   echo "Linux $(cut -d' ' -f3 /proc/version)"
 }
 
 # Time
-function _date() {
+function statusbar_date() {
   local date=$(date +'%Y%m%d-%w %I%M%p')
   echo "$date"
 }
 
-FUNCTIONS=(
-  '_date'
-  '_kernel'
-  '_uptime'
-  '_net'
-  '_mem'
-  '_vol'
-  '_disk')
+FUNCTIONS=('date' 'kernel' 'uptime' 'net' 'mem' 'vol' 'disk')
 
 #### Constructor
 
+# mkbar FUNCS...
 function mkbar() {
   local bar=" "
   local res=""
@@ -158,21 +155,72 @@ function mkbar() {
     bar+="$res | "
   done
 
-  echo -n "${bar%|*}"
+  echo $echo_opt "${bar%|*}"
 }
 
 #### Main
 
 case $1 in
   '--help'|'-h')
-    echo "Usage: statusbar FUNCTIONS..."
-    echo "Description: Output a status given what to ignore"
+    echo "Usage: statusbar [OPT] FUNCTIONS..."
+    echo "Description: Output a status given certain built-in functions"
+    echo "Options:
+  -i INTV: use INTV interval (run continously, updating either when INTV seconds
+    pass, or USR1 signal is sent)
+  -n: output newline at the end
+  -s: handle USR1 as update (sleep indefinitely)"
     echo "Available functions:"
     for func in ${FUNCTIONS[@]}; do
-      echo "  - $func"
-    done ;;
-  *)
-    mkbar $@ ;;
+      echo "  - ${func}"
+    done
+    exit 0;;
 esac
 
-# echo " $IP | $VOL | $MEM | $DISK | $KERNEL | $DATE | $UPTIME "
+FUNCS=""
+
+INTV=""
+req_intv=false
+echo_opt="-n"
+
+for arg in $@; do
+  if $req_intv; then
+    req_intv=false
+    INTV=$arg
+    continue
+  fi
+
+  case $arg in
+    '-i') req_intv=true ;;
+    '-n') echo_opt="" ;;
+    '-s') INTV="infinity" ;;
+    *) FUNCS+="statusbar_$arg "
+  esac
+done
+
+if $req_intv; then
+  echo "[ !! ] Missing interval"
+  exit 1
+fi
+
+if [[ -z $FUNCS ]]; then
+  echo "[ !! ] Missing functions. See \`--help'"
+  exit 1
+fi
+
+if [[ ! -z $INTV ]]; then
+  trap 'kill -9 $sleep_pid >& /dev/null' USR1
+  trap 'kill -9 $sleep_pid $this_pid >& /dev/null' TERM
+
+  echo "$this_pid" > /tmp/statusbar-pid
+
+  while :; do
+    mkbar $FUNCS
+
+    sleep $INTV &
+    sleep_pid=$!
+
+    wait $sleep_pid
+  done
+else
+  mkbar $FUNCS
+fi

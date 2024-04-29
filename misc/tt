@@ -27,8 +27,8 @@ for arg in ${@:1}; do
     MOREPROGOPTS+=" $arg"
   else
     case $arg in
-      '-r') cmd="cat $HOME/tt" ;;
-      '-c') cmd="cat $HOME/ttwp" ;;
+      '-r') cmd="cat $HOME/.tt" ;;
+      '-c') cmd="cat $HOME/.ttwp" ;;
       '-t') use_tmux=true ;;
       '--') defer=true ;;
       *) MOREPROGOPTS+=" $arg" ;;
@@ -88,7 +88,7 @@ if $defer; then
 
       # cursor (invert video). could also be "base05:"
       printf("\033]12;7\033\\")
-    }' > $HOME/ttwp
+    }' > $HOME/.ttwp
 fi
 
 eval $cmd

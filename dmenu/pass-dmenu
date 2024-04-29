@@ -1,0 +1,24 @@
+#!/usr/bin/sh
+
+NOTIFY=herbe
+
+PASS_STORE=$HOME/.password-store
+FILES=$(cd $PASS_STORE; find -type f -name '*.gpg')
+PASS_FILE=$(echo "$FILES" | sed 's!^\./!!g' | dmenu -p 'pass:')
+
+if [[ ! -z $PASS_FILE ]]; then
+  PASSWD=$(printf '' | dmenu -P -p 'passphrase:')
+
+  echo "$PASSWD" |\
+    gpg --decrypt --pinentry-mode loopback --passphrase-fd 0 \
+        $PASS_STORE/$PASS_FILE 2>/dev/null 1>/tmp/.sec
+
+  if [[ $? != 0 ]]; then
+    $NOTIFY "[ !! ] Wrong passphrase" &
+  else
+    $NOTIFY "[ OK ] Contents are in the clipboard. Run \`cxcp' to clear" &
+    cat /tmp/.sec | xclip -selection clipboard
+  fi
+
+  rm /tmp/.sec
+fi

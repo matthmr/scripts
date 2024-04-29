@@ -15,7 +15,6 @@ PID=$(cat $PIDFILE)
 echo "[ == ] kill ${KILL_OPTIONS:--TERM} $PID"
 
 kill ${KILL_OPTIONS:--TERM} $PID
-sleep 3
 
 if [[ -z $(ps -p $PID | sed -n 2p) ]]; then
   echo "[ .. ] Done: killed process, removing PIDFILE"

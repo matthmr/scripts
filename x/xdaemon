@@ -22,7 +22,7 @@ xrdb @XDAEMON_XRESOURCES@ &
 clipmenud &
 
 # > nice pape anon
-@XDAEMON_WPSET@ &
+wpset -d @XDAEMON_WPDIR@ &
 
 # start bar (not for i3)
 if [[ $1 != i3 ]]; then
