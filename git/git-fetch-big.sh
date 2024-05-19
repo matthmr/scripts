@@ -36,8 +36,8 @@ for arg in $@; do
           arg="refs/tags/$arg"
           branch+="$arg:$arg "
         else
-          theirs="refs/tags/${arg##*:}"
-          ours="refs/tags/${arg%%:*}"
+          ours="refs/tags/${arg##*:}"
+          theirs="refs/tags/${arg%%:*}"
           branch+="$theirs:$ours "
         fi ;;
     esac

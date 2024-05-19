@@ -110,7 +110,7 @@ function prompt_yn {
     'n') opts="[y/N] " ;;
   esac
 
-  echo -n "[ .. ] $prompt? $opts"
+  echo -n "[ ?? ] $prompt? $opts"
 }
 
 # with_prompt_response ANS DEFAULT
@@ -136,7 +136,7 @@ function prompt_for_handler {
     if [[ $cmd =~ ^"f " ]]; then
       cmd=${cmd/f /}
       f=$uri
-      $job "$cmd"
+      eval $job "$cmd"
     else
       $job "$cmd" "$uri"
     fi

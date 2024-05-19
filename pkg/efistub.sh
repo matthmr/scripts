@@ -14,7 +14,6 @@ esac
 
 UPDATE=false
 
-SUDO=doas
 PACMAN=pacman
 TARGET=systemd
 ARCH=x86_64
@@ -29,7 +28,7 @@ PKG_FILE=$PMAN_DIR/efistub.tar.zstd
 
 function do_update {
   echo "[ .. ] Downloading package"
-  $SUDO $PACMAN -Sddww $TARGET
+  $PACMAN -Sddww $TARGET
 
   if [[ $? != 0 ]]; then
     echo "[ !! ] Aborting"

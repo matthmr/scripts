@@ -140,7 +140,11 @@ function statusbar_date() {
   echo "$date"
 }
 
-FUNCTIONS=('date' 'kernel' 'uptime' 'net' 'mem' 'vol' 'disk')
+function statusbar_xlayout() {
+  @STATUSBAR_XLAYOUT@
+}
+
+FUNCTIONS=('date' 'disk' 'kernel' 'mem' 'net' 'uptime' 'vol' 'xlayout')
 
 #### Constructor
 

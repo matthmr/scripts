@@ -120,6 +120,17 @@ function op() {
 
     eval $cmd
 
+    checked=$(git rev-parse HEAD)
+
+    if [[ "$(git rev-parse $ref 2>/dev/null)" == "$checked" ]]; then
+      ref=$(git stash create "Stashing update on $(date +%Y%m%d-%w %I%M%p)")
+
+      echo "[ WW ] $local_repo has $local_branch checked out, and with changes\
+, stashing them to ($ref)"
+
+      git restore -SW .
+    fi
+
     if $post_cmd; then
       post_cmd="git -C $local_repo merge-base --is-ancestor $_local_branch $local_branch"
 
@@ -131,6 +142,13 @@ function op() {
         echo "  -> NEEDS MERGE"
       fi
     fi
+
+    # clean-up, otherwise some weird shit happens
+    post_cmd=false
+    local_repo=""
+    local_branch=""
+    remote_repo=""
+    remote_branch=""
   done < $1
 }
 

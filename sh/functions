@@ -91,6 +91,11 @@ function psof {
               pid,ppid,user,priority,nice,rss,s,%cpu,%mem,cputime,tty,command
 }
 
+function c {
+  clear
+  [[ ! -z $TMUX ]] && tmux clear-history
+}
+
 function gitat {
   case $1 in
     '--help'|'-h')
