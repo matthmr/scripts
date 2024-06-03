@@ -32,7 +32,7 @@ SPEC=
 FONT=
 _FONT=
 
-for arg in ${@:2}; do
+for arg in "${@:2}"; do
   if [[ -z $SPEC ]]; then
     SPEC=$(printf $arg | sed 's/./\0\n/g' | while read c; do
       ret=""

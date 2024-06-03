@@ -60,11 +60,6 @@ if [[ ! -f /tmp/schedl/session-lock ]]; then
   sh_jobs=$(find /tmp/schedl -type f \
                  -name '*.sh' 2>/dev/null)
 
-  # TODO: should be a proper job
-  if [[ -f /tmp/schedl/update-system ]]; then
-    session_msg "Note: There is a system session pending"
-  fi
-
   if [[ ! -z $jobs ]]; then
     for job in $(echo $jobs | tr '\n' ' '); do
       session_msg "Schedl Job ($job): $(cat $job)"
@@ -72,7 +67,6 @@ if [[ ! -f /tmp/schedl/session-lock ]]; then
   fi
 
   if [[ ! -z $sh_jobs ]]; then
-    session_msg "Note: There are Schedl script jobs pending"
     tmux new-session -d \
          -s 'schedl' "LOGINCMD=@SESSION_INIT_LOGINCMD@ zsh"
   fi

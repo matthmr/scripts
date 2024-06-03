@@ -123,7 +123,7 @@ function op() {
     checked=$(git rev-parse HEAD)
 
     if [[ "$(git rev-parse $ref 2>/dev/null)" == "$checked" ]]; then
-      ref=$(git stash create "Stashing update on $(date +%Y%m%d-%w %I%M%p)")
+      ref=$(git stash create "Stashing update on $(date +'%Y%m%d-%w %I%M%p')")
 
       echo "[ WW ] $local_repo has $local_branch checked out, and with changes\
 , stashing them to ($ref)"

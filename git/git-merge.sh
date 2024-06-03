@@ -2,7 +2,7 @@
 
 case $1 in
   '--help'|'-h')
-    echo "Usage:       git-merge-these.sh [OPTIONS] THEIRS [BASE]"
+    echo "Usage:       git-merge.sh [OPTIONS] THEIRS [BASE]"
     echo "Description: Operate in files changed in the merge/cherry with THEIRS,
   or future merge/cherry from OURS, with an optional merge base BASE"
     echo "Options:
@@ -291,7 +291,7 @@ function _git_remove_file {
   local with_prompt=$2
 
   if $with_prompt; then
-    local oty="$(git ls-tree -z --format='%(objecttype)')"
+    local oty="$(git ls-tree -z --format='%(objecttype)' $ours $ours_name 2>/dev/null)"
 
     case $oty in
       'tree') echo "[ WW ] Skipping removing \`$ours_name', as it is a tree in \
@@ -301,7 +301,7 @@ OURS" ;;
         git -P show "$ours:$ours_name" | more
 
         echo -n "[ ?? ] Checkout-like rename has resident source ($ours_name). \
-Delete? [y/N] "
+Delete? [Y/n] "
         read ans
 
         if [[ -z "$ans" || "$ans" == 'n' ]]; then
@@ -325,10 +325,10 @@ function _git_checkout_file_from_rename {
   local theirs_name=$2
   local ours_name=$3
 
-  # checkout the rhs ...
+  # checkout `theirs_name'
   _git_checkout_file $theirs_mod $theirs_name $ours_name
 
-  # ... then try to remove the lhs
+  # ... then try to remove `base_name'
   _git_remove_file $base_name true
 }
 
@@ -361,7 +361,7 @@ function _git_merge_file {
 
   if ! git merge-file -p -q --object-id $ours_id $base_id $theirs_id \
        >& /dev/null; then
-    echo -n "[ !! ] File \`$ours_name' conflicts. Resolve? [Y/n] "
+    echo -n "[ !! ] File \`$theirs_name' conflicts. Resolve? [Y/n] "
 
     read ans
 
@@ -392,11 +392,11 @@ $theirs_id $ours_mod $base_mod $theirs_mod" </dev/tty
 
     # TODO: not the best way to do this, but git is very idiosyncratic when it
     # comes to file permissions
-    git add $ours_name
-    oid=$(git hash-object $ours_name)
+    git add $theirs_name
+    oid=$(git hash-object $theirs_name)
     git update-index --verbose --replace --add --remove --cacheinfo \
-        "$mod,$oid,$ours_name"
-    git restore $ours_name
+        "$mod,$oid,$theirs_name"
+    git restore $theirs_name
 
     bail=true
   fi
@@ -406,8 +406,8 @@ $theirs_id $ours_mod $base_mod $theirs_mod" </dev/tty
   # normal merge
   oid=$(git merge-file --object-id $ours_id $base_id $theirs_id)
   git update-index --verbose --replace --add --remove --cacheinfo \
-      "$ours_mod,$oid,$ours_name"
-  git restore $ours_name
+      "$ours_mod,$oid,$theirs_name"
+  git restore $theirs_name
 }
 
 # git_merge_file EDITCMD LIST...
@@ -434,11 +434,11 @@ function _git_rename_file {
   local base_mod=${9}
   local theirs_mod=${10}
 
-  # merge into `ours_name' ...
+  # merge into `theirs_name' ...
   _git_merge_file $editcmd $ours_name $base_name $theirs_name $ours_id \
     $base_id $theirs_id $ours_mod $base_mod $theirs_mod
 
-  # ... then try to remove the lhs
+  # ... then try to remove `base_name'
   _git_remove_file $base_name true
 }
 
@@ -684,11 +684,13 @@ echo '>>>>>>> OURS/THEIRS'; git diff --color=always {4} {6}"
       git_cmd="git_rename_file $edit_cmd"
       preview_cmd="git diff --color=always {5} {6}; \
 echo '>>>>>>> OURS/THEIRS'; git diff --color=always {4} {6}"
+      prompt="Include (rename, diff base/theirs ours/theirs)"
       list="$rename_diff3";;
     'rdo')
       edit_cmd="ediff2"
       git_cmd="git_rename_file $edit_cmd"
       preview_cmd="git diff --color=always {4} {6}"
+      prompt="Include (rename, diff ours/theirs)"
       list="$rename_diff_ours";;
   esac
 
