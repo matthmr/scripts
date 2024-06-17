@@ -2,8 +2,8 @@
 
 case $1 in
   '--help'|'-h')
-	  echo "Usage:       mkukimg.sh <opt:val>"
-	  echo "Description: Makes an Unified Kernel Image"
+    echo "Usage:       mkukimg.sh <opt:val>"
+    echo "Description: Makes an Unified Kernel Image"
     echo "Options:
   kernel=the kernel image
   initrd=the init{rd,ramfs} image
@@ -12,11 +12,6 @@ case $1 in
   ukimg=the resulting ukimg"
     exit 1;;
 esac
-
-if [[ $USER != root ]]; then
-	echo "[ !! ] Need to be root"
-	exit 1
-fi
 
 function try_opts {
   for opt in $@; do
@@ -45,11 +40,11 @@ function try_opts {
 }
 
 function try_defaults {
-  [[ -z $KERNEL ]]  && KERNEL=/boot/vmlinuz-linux
-  [[ -z $INITRD ]]  && INITRD=/boot/initramfs-linux.img
-  [[ -z $STUB ]]    && STUB=/usr/lib/systemd/boot/efi/linuxx64.efi.stub
-  [[ -z $UKIMG ]]   && UKIMG=/boot/EFI/BOOT/BOOTX64.EFI
-  [[ -z $CMDLINE ]] && CMDLINE=/etc/kernel/cmdline
+  [[ -z $KERNEL ]]  && KERNEL=@MKUKIMG_KERNEL@
+  [[ -z $INITRD ]]  && INITRD=@MKUKIMG_INITRD@
+  [[ -z $STUB ]]    && STUB=@MKUKIMG_STUB@
+  [[ -z $UKIMG ]]   && UKIMG=@MKUKIMG_UKIMG@
+  [[ -z $CMDLINE ]] && CMDLINE=@MKUKIMG_CMDLINE@
 }
 
 try_opts $@

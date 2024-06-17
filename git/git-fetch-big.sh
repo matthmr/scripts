@@ -1,5 +1,7 @@
 #!/usr/bin/sh
 
+# TODO: add `init' capability
+
 case $1 in
   '--help'|'-h')
     echo "Usage:       git-fetch-big.sh [OPTIONS]"

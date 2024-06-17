@@ -211,7 +211,7 @@ function fzf_with_prompt {
   local prompt=$1
   local cmd=$2
 
-  fzf -m --prompt "$prompt" --preview "$cmd" --height 40
+  fzf -m --prompt "$prompt" --preview "$cmd" --height=-40%
 }
 
 ################################################################################
@@ -304,7 +304,7 @@ OURS" ;;
 Delete? [Y/n] "
         read ans
 
-        if [[ -z "$ans" || "$ans" == 'n' ]]; then
+        if [[ -z "$ans" || "$ans" == 'y' ]]; then
           git rm -f $ours_name
         fi
     esac

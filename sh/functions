@@ -91,7 +91,7 @@ function psof {
               pid,ppid,user,priority,nice,rss,s,%cpu,%mem,cputime,tty,command
 }
 
-function c {
+function cl {
   clear
   [[ ! -z $TMUX ]] && tmux clear-history
 }
