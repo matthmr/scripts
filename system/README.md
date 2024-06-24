@@ -31,31 +31,16 @@ the `config` repository) runs `xdaemon` before executing the login command.
 As said above, you may set the `LOGINCMD` variable to execute commands before
 launching the proper session.
 
-## Messaging
+## Init
 
-These scripts integrate with another program of mine called `schedl`, which
-allows me propmt the scheduled execution of commands or display scheduled
-messages. The script reponsible for these is `session-msg`.
+You may want your session to executing some commands regardless of
+(or depending on) the type of the session. This is done through the
+`system/session-init.sh` script, which takes a session *type*, and the session
+*name*.
 
-### `session-msg`
-
-If running in X, it'll try to spawn a terminal emulator with tmux. If on a tty,
-it'll try to spawn tmux.
-
-This script **should** only run once. It'll save its messages to
-`/tmp/session-msg.txt`.
-
-The messaging script will call `session-init`.
-
-### `session-init`
-
-`session-init` is a script that inits common programs regardless of session type
-(X, tty, ...)
-
-### `schedl`
-
-Optionally, you may integrate your login stack with `schedl`. By calling the
-`job/schedl.sh` scripts and processing the results.
+The init script can also *attach*, which means bringing the commands into
+attention by calling some sort of terminal to display the outputs/prompt for
+execution/etc.
 
 # About
 

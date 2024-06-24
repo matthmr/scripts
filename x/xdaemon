@@ -29,9 +29,9 @@ if [[ $1 != i3 ]]; then
   polybar-start mh-$1 &
 fi
 
-# start session
-@XDAEMON_SESSION_MSG@ x "$1" &
-
 # I don't think can do this in XKB source
-#        BSP UP LFT RGH DWN
+#         BS UP LFT RGH DWN
 for kc in 51 98 100 102 104; do xset r $kc ; done
+
+# start session
+@XDAEMON_SESSION_INIT@ x "$1" &

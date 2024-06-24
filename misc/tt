@@ -18,7 +18,6 @@ case $1 in
 esac
 
 defer=false
-use_tmux=false
 skip_bg=false
 cmd=''
 
@@ -29,13 +28,13 @@ for arg in ${@:1}; do
     case $arg in
       '-r') cmd="cat $HOME/.tt" ;;
       '-c') cmd="cat $HOME/.ttwp" ;;
-      '-t') use_tmux=true ;;
       '--') defer=true ;;
       *) MOREPROGOPTS+=" $arg" ;;
     esac
   fi
 done
 
+# Generate a new theme
 if $defer; then
   $PROG $PROGOPTS $MOREPROGOPTS |
     awk '

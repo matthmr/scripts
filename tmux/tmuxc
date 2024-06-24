@@ -1,5 +1,8 @@
 #!/usr/bin/sh
 
+# TODO: we could get the client terminal from here, though it'd only work with
+# non-pipes
+
 case $1 in
   '--help'|'-h')
     echo "Usage:       tmuxc COMMAND"
@@ -21,4 +24,6 @@ else
   term="> $CC"
 fi
 
-[[ ! -z $cmd ]] && eval $cmd $term
+[[ -z $cmd ]] && cmd="cat"
+
+eval $cmd $term

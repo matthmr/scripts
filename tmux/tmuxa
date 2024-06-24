@@ -16,7 +16,7 @@ CCS=$(echo $CC | wc -l)
 
 if [[ $1 == '-x' ]]; then
   SESSION=$2
-  TMUX_ATTACH="$XTERM -e tmux attach-session -t '$SESSION'"
+  TMUX_ATTACH="($XTERM -e tmux attach-session -t '$SESSION' &)"
 else
   SESSION=$1
   TMUX_ATTACH="tmux attach-session -t '$SESSION'"
@@ -26,7 +26,7 @@ if [[ $CCS -gt 1 ]]; then
   echo "[ !! ] Multiple tmux clients. Please have just one"
   exit 1
 elif [[ -z $CC ]]; then
-  eval exec $TMUX_ATTACH
+  eval "$TMUX_ATTACH"
 else
   exec tmux switch-client -c $CC -t $SESSION
 fi

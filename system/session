@@ -223,16 +223,15 @@ else
   SESSION=$1
 fi
 
+export SESSION=$SESSION
+
 case $SESSION in
   # TTY session
   'shell')
     LOGIN="$SHELL" ;;
 
   'tmux')
-    # I don't why either
-    TMUXCMD="'LOGINCMD=\"@SESSION_TMUXCMD\" $SHELL'"
-
-    LOGIN="tmux new-session -A -s tmux $TMUXCMD" ;;
+    LOGIN="tmux new-session -A -s tmux" ;;
 
   # X session
   *)
@@ -240,8 +239,6 @@ case $SESSION in
 esac
 
 ####
-
-export SESSION=$SESSION
 
 header "Logging in with ${SESSION:-$(tty)}"
 

@@ -10,16 +10,24 @@ esac
 PIDFILE=$1
 KILL_OPTIONS=${@:2}
 
+if [[ ! -f $PIDFILE ]]; then
+  echo "[ !! ] No such file \`$PIDFILE'"
+  exit 1
+fi
+
+[[ -z $ KILL_OPTIONS ]] && KILL_OPTIONS="-s TERM"
+
 PID=$(cat $PIDFILE)
 
-echo "[ == ] kill ${KILL_OPTIONS:--TERM} $PID"
+echo "[ == ] kill $KILL_OPTIONS $PID"
+eval kill $KILL_OPTIONS $PID
 
-kill ${KILL_OPTIONS:--TERM} $PID
-
-if [[ -z $(ps -p $PID | sed -n 2p) ]]; then
+# FIXME: requires procfs. use linux goddammit
+if [[ ! -d /proc/$PID ]]; then
   echo "[ .. ] Done: killed process, removing PIDFILE"
   rm $PIDFILE 2>/dev/null
+  exit 0
 else
-  echo "[ !! ] Error: process was not killed"
+  echo "[ !! ] Error: process was not killed. Maybe try adding \`-s KILL'?"
   exit 1
 fi
