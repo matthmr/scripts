@@ -1,5 +1,7 @@
 #!/usr/bin/sh
 
+# TODO: this script shouldn't be X-dependent
+
 AS=${0##*/}
 
 XTERM=urxvt

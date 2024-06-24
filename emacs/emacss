@@ -1,12 +1,8 @@
 #!/usr/bin/bash
 
 function help {
-  echo "Usage:       emacss [start|stop|status|restart|toggle|purge]"
+  echo "Usage:       emacss [start|stop|toggle|restart|purge|status]"
   echo "Description: Starts an emacs server"
-}
-
-function log {
-  echo "$EPOCHSECONDS > " $@ 1>&2
 }
 
 case $1 in
@@ -23,130 +19,121 @@ BASE=/tmp/emacs
 
 EMACSSERVER_OPTS="--daemon=$BASE/server"
 
-function emacseval {
+function emacs_eval {
   local lisp_expr=$1
   ${EMACSCLIENT} -e "${lisp_expr}"
 }
 
-function start {
+function emacs_start {
   if [[ -d $BASE && -S $BASE/server ]]; then
-    log "[ !! ] An emacs server is already running"
+    echo "[ !! ] An emacs server is already running"
+
     if [[ -f $BASE/pid ]]; then
-      exit 1
+      return 1
     else
-      log "[ WW ] Found a server running without a PID file; creating one"
-      emacseval "(emacs-pid)" > $BASE/pid
-      exit 1
+      echo "[ WW ] Found a server running without a PID file; creating one"
+      emacs_eval "(emacs-pid)" > $BASE/pid
+      return 1
     fi
   fi
 
-  log "[ .. ] Starting emacs server"
-  log "[ == ] ${EMACSSERVER} ${EMACSSERVER_OPTS} &"
+  echo "[ .. ] Starting emacs server"
+  echo "[ == ] ${EMACSSERVER} ${EMACSSERVER_OPTS} &"
 
-  ${EMACSSERVER} ${EMACSSERVER_OPTS} & </dev/null &>/dev/null
-  pid=$!
+  ${EMACSSERVER} ${EMACSSERVER_OPTS} &
 
-  log "[ .. ] Sleeping"
-  sleep 1
+  local emacs_parent_pid=$!
+  echo "[ == ] Got parent PID of \`$emacs_parent_pid'"
 
-  log "[ == ] Got parent PID of \`$pid'"
-  local emacs_daemon_pid=$(emacseval "(emacs-pid)")
-  log "[ == ] Got deamon PID of \`$pid'"
+  wait $emacs_parent_pid
+
+  local emacs_daemon_pid=$(emacs_eval "(emacs-pid)")
+  echo "[ == ] Got deamon PID of \`$emacs_daemon_pid'"
+
   echo ${emacs_daemon_pid} > $BASE/pid
 }
 
-function stop {
-  local pid;
+function emacs_stop {
+  local emacs_daemon_pid;
 
-  if [[ ! -d $BASE ]]; then
-    log "[ !! ] No emacs server was found"
-    exit 1
-  elif [[ -d $BASE && ! -S $BASE/server ]]; then
-    log "[ !! ] No emacs server was found"
-    exit 1
+  if [[ ! -d $BASE || ! -S $BASE/server ]]; then
+    echo "[ !! ] No emacs server was found"
+    return 1
   fi
 
   if [[ ! -f $BASE/pid ]]; then
-    log "[ WW ] Missing PID file; requerying"
-    pid=$(emacseval "(emacs-pid)")
+    echo "[ WW ] Missing PID file; requerying"
+    emacs_daemon_pid=$(emacs_eval "(emacs-pid)")
   else
-    pid=$(cat $BASE/pid)
+    emacs_daemon_pid=$(cat $BASE/pid)
   fi
 
-  log "[ .. ] Stopping emacs server"
+  echo "[ .. ] Stopping emacs server"
 
-  local emacs_lisp_expr="(kill-emacs)"
+  emacs_eval "(kill-emacs)"
 
-  emacseval "$emacs_lisp_expr" </dev/null &>/dev/null &
-
-  log "[ == ] Got daemon pid of \`$pid'"
+  echo "[ == ] Got daemon pid of \`$emacs_daemon_pid'"
   rm -v $BASE/pid
-  #kill ${pid} 2>/dev/null
 }
 
-function toggle {
-  if [[ -d $BASE ]]; then
-    if [[ -f $BASE/pid ]]; then
-      stop
-    else
-      start
-    fi
-  else
-    start
-  fi
-}
-
-function restart {
+function emacs_restart {
   local timeout=1
 
-  stop && \
-    log "[ .. ] Sleeping $timeout" && \
+  emacs_stop && \
+    echo "[ .. ] Sleeping $timeout" && \
     sleep $timeout && \
-    start
+    emacs_start
 }
 
-function status {
-  log "[ .. ] Getting status for the emacs server"
-
+function emacs_status {
   if [[ -d $BASE && -S $BASE/server ]]; then
     if [[ -f $BASE/pid ]]; then
       local emacs_pid=$(cat $BASE/pid)
-      log "[ OK ] Found an emacs server running with pid of ${emacs_pid}"
-      exit 0
+      echo "[ OK ] Found an emacs server running with pid of ${emacs_pid}"
     else
-      log "[ WW ] Found a server running without a PID file; creating one"
-      emacseval "(emacs-pid)" > $BASE/pid
+      echo "[ WW ] Found a server running without a PID file; creating one"
+      emacs_eval "(emacs-pid)" > $BASE/pid
       local emacs_pid=$(cat $BASE/pid)
-      log "[ OK ] Got pid of \`${emacs_pid}'"
+      echo "[ OK ] Got pid of \`${emacs_pid}'"
     fi
+
+    return 0
   else
-    log "[ !! ] No emacs server was found"
-    exit 1
+    echo "[ !! ] No emacs server was found"
+    return 1
   fi
 }
 
-function purge {
-  if [[ -d $BASE && -f $BASE/pid ]]; then
-    log "[ WW ] Found an instance of emacs"
+function emacs_toggle {
+  emacs_status
+  exited=$?
+
+  [[ $exited == 0 ]] && emacs_stop || emacs_start
+}
+
+function emacs_purge {
+  local emacs_pid=""
+
+  if [[ -d $BASE && -S $BASE/server ]]; then
+    if [[ ! -f $BASE/pid ]]; then
+      emacs_eval "(emacs-pid)" > $BASE/pid
+    fi
+  else
+    echo "[ !! ] No emacs server was found"
+    return 1
   fi
 
-  local emacs_pid=$(emacseval "(emacs-pid)")
-  log "[ OK ] Got pid of \`${emacs_pid}'"
-  kill -TERM $emacs_pid
+  echo "[ OK ] Got pid of \`$(cat $BASE/pid)'"
+  killpid $BASE/pid || killpid $BASE/pid -s KILL
 
-  rm -rf $BASE/pid
-  rm -rf $BASE/server
-  log "[ OK ] Purged emacs server"
+  rm -rf $BASE/server $BASE/pid
+  echo "[ OK ] Purged emacs server"
 }
 
 case $1 in
-  'start')   start   || exit $?;;
-  'stop')    stop    || exit $?;;
-  'status')  status  || exit $?;;
-  'restart') restart || exit $?;;
-  'toggle')  toggle  || exit $?;;
-  'purge')   purge   || exit $?;;
-  *)         help;      exit 1;;
+  'start'|'stop'|'status'|'restart'|'purge'|'toggle') eval emacs_$1; exit $? ;;
+  'help') help; exit 0;;
+  *) echo "[ !! ] Invalid action. See \`help'"; exit 1;;
 esac
 
-log "[ OK ] emacsserver: Done"
+echo "[ OK ] emacsserver: Done"
