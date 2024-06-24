@@ -139,9 +139,14 @@ if [[ -z $theirs ]]; then
   exit 1
 fi
 
+ours=$(git rev-parse $ours)
+theirs=$(git rev-parse $theirs)
+
 if [[ -z $base ]]; then
   base=$(git merge-base $ours $theirs)
 fi
+
+base=$(git rev-parse $base)
 
 if $reverse; then
   _ours=$ours
@@ -150,80 +155,16 @@ if $reverse; then
   theirs=$_ours
 fi
 
+git_root=$(git rev-parse --show-toplevel)
+
 ################################################################################
 
 function flatten {
   echo $@ | tr '\n' ' '
 }
 
-# ediff3 FILE
-function ediff3 {
-  local file=$(realpath $1)
-  local base=$base
-
-  emacsclient -e \
-    "(progn (require 'ediff-vers)
-            (find-file \"$file\")
-            (ediff-vc-merge-internal
-              \"$ours\" \"$theirs\" \"$base\" nil \"$file\"))"
-}
-
-# ediff2 FILE
-function ediff2 {
-  local file=$(realpath $1)
-  local base=$base
-
-  emacsclient -e \
-    "(progn (require 'ediff-vers)
-            (find-file \"$file\")
-            (ediff-vc-merge-internal
-              \"$ours\" \"$theirs\" nil nil \"$file\"))"
-}
-
-# with_editor EDITOR LISTS...
-function with_editor {
-  local editor=$1
-
-  names=""
-
-  while read file rest; do
-    names+="$file "
-  done < <(echo "${@:2}")
-
-  for file in $names; do
-    if [[ $file =~ '--' ]]; then
-      continue
-    fi
-
-    echo -n "[ ?? ] Edit this file: $file [Y/n/q] "
-    read ans
-
-    case $ans in
-      ''|'y') $editor $file;;
-      'q') return;;
-      *) echo "[ .. ] Ignoring";;
-    esac
-  done
-}
-
-# fzf_with_prompt PROMPT CMD
-function fzf_with_prompt {
-  local prompt=$1
-  local cmd=$2
-
-  fzf -m --prompt "$prompt" --preview "$cmd" --height=-40%
-}
-
-################################################################################
-
-# git_diff_inc
-function git_diff_inc {
-  git -P diff --raw --cc --combined-all-paths $diff_opts \
-    $theirs $base $ours -- | tr '\t' ' '
-}
-
-# git_with_stat FUNC ARGLIST LIST...
-function git_with_stat {
+# cmd_with_stat FUNC ARGLIST LIST...
+function cmd_with_stat {
   local func=$1
   local arglist=$2
 
@@ -249,7 +190,99 @@ function git_with_stat {
     theirs_mod=$a9
   done < <(echo "${@:3}")
 
-  eval $func $arglist </dev/tty
+  eval $func $arglist #</dev/tty
+}
+
+
+# ediff_func FUNCTION OURS_ID THEIRS_ID BASE_ID FILE
+function ediff_func {
+  local function=$1
+  local ours_id=$2
+  local theirs_id=$3
+  local base_id=$4
+  local file=$5
+
+  emacsclient -e \
+    "(progn (require 'mh-ediff-merge)
+       (cd \"$git_root\")
+       ($function
+        \"$ours_id\" \"$theirs_id\" \"$base_id\" \"$file\"))"
+}
+
+
+# emacsclient_id THEIRS_ID FILE
+function emacsclient_id {
+  local theirs_id=$1
+  local file=$2
+
+  # create a buffer with name `file', and populate it with `theirs_id'
+  emacsclient -e \
+    "(progn (require 'mh-ediff-merge)
+       (cd \"$git_root\")
+       (let* ((buffer-name \"$git_root/$file\")
+              (buffer (create-file-buffer buffer-name)))
+         (with-current-buffer buffer
+           (mh/git-show-cmd \"$theirs_id\" buffer)
+           (setq buffer-file-name buffer-name)
+           (switch-to-buffer buffer))))"
+}
+
+# edit_ediff3 LIST...
+function edit_ediff3 {
+  cmd_with_stat \
+    "ediff_func mh/ediff-merge3" \
+    '$ours_id $theirs_id $base_id $theirs_name' "$@"
+}
+
+# edit_ediff2 LIST...
+function edit_ediff2 {
+  cmd_with_stat \
+    "ediff_func mh/ediff-merge2" \
+    '$ours_id $theirs_id $base_id $theirs_name' "$@"
+}
+
+# edit_emacsclient_id LIST...
+function edit_emacsclient_id {
+  cmd_with_stat "emacsclient_id" '$theirs_id $theirs_name' "$@"
+}
+
+# with_editor EDITOR LIST...
+function with_editor {
+  local editor=$1
+  local file=""
+
+  while read line; do
+    file=$(echo "${line/ */}")
+
+    echo -n "[ ?? ] Edit this file: $file [Y/n] "
+    read ans </dev/tty
+
+    case $ans in
+      ''|'y') eval $editor "$line";;
+      *) echo "[ .. ] Ignoring";;
+    esac
+  done < <(echo "${@:2}")
+}
+
+# fzf_with_prompt PROMPT CMD
+function fzf_with_prompt {
+  local prompt=$1
+  local cmd=$2
+
+  fzf --bind=ctrl-e:preview-down,ctrl-y:preview-up,\
+ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,'alt-<':preview-top,\
+'alt->':preview-bottom\
+      --prompt "$prompt"\
+      --preview "$cmd"\
+      --height=-40% -m
+}
+
+################################################################################
+
+# git_diff_inc
+function git_diff_inc {
+  git -P diff --raw --cc --combined-all-paths $diff_opts \
+    $theirs $base $ours -- | tr '\t' ' '
 }
 
 ###
@@ -265,8 +298,7 @@ function _git_checkout_file {
   if [[ -d $ours_name ]]; then
     echo -n "[ ?? ] A directory exists in \`ours' with the same name as
 \`$ours_name'. What to do? [new name|(q)uit|(!)shell] "
-
-    read ans
+    read ans </dev/tty
 
     case $ans in
       ''|'q') continue;;
@@ -282,7 +314,7 @@ function _git_checkout_file {
 
 # git_checkout_file LIST...
 function git_checkout_file {
-  git_with_stat _git_checkout_file '$theirs_mod $theirs_name $ours_name' "$@"
+  cmd_with_stat _git_checkout_file '$theirs_mod $theirs_name $ours_name' "$@"
 }
 
 # _git_remove_file OURS_NAME PROMPT_FLAG
@@ -302,7 +334,7 @@ OURS" ;;
 
         echo -n "[ ?? ] Checkout-like rename has resident source ($ours_name). \
 Delete? [Y/n] "
-        read ans
+        read ans </dev/tty
 
         if [[ -z "$ans" || "$ans" == 'y' ]]; then
           git rm -f $ours_name
@@ -316,7 +348,7 @@ Delete? [Y/n] "
 
 # git_remove_file LIST...
 function git_remove_file {
-  git_with_stat _git_remove_file '$ours_name "false"' "$@"
+  cmd_with_stat _git_remove_file '$ours_name "false"' "$@"
 }
 
 # _git_checkout_file_from_rename THEIRS_MOD THEIRS_NAME OURS_NAME BASE_NAME
@@ -334,7 +366,7 @@ function _git_checkout_file_from_rename {
 
 # git_checkout_file_from_rename LIST...
 function git_checkout_file_from_rename {
-  git_with_stat _git_checkout_file_from_rename\
+  cmd_with_stat _git_checkout_file_from_rename\
     '$theirs_mod $theirs_name $ours_name $base_name' "$@"
 }
 
@@ -362,23 +394,21 @@ function _git_merge_file {
   if ! git merge-file -p -q --object-id $ours_id $base_id $theirs_id \
        >& /dev/null; then
     echo -n "[ !! ] File \`$theirs_name' conflicts. Resolve? [Y/n] "
-
-    read ans
+    read ans </dev/tty
 
     if [[ ! -z $ans && $ans != 'y' ]]; then
       return 0
     fi
 
     eval "$editcmd $ours_name $base_name $theirs_name $ours_id $base_id \
-$theirs_id $ours_mod $base_mod $theirs_mod" </dev/tty
+$theirs_id $ours_mod $base_mod $theirs_mod"
     bail=true
   fi
 
   if $mod_conflict; then
     echo -n "[ ?? ] Mod conflicts: ours ($ours_mod), base ($base_mod), \
  theirs ($theirs_mod). What to do? [o|b|t|(q)uit|MOD] "
-
-    read ans
+    read ans </dev/tty
 
     case $ans in
       'o') mod=$ours_mod ;;
@@ -414,7 +444,7 @@ $theirs_id $ours_mod $base_mod $theirs_mod" </dev/tty
 function git_merge_file {
   local editcmd=$1
 
-  git_with_stat \
+  cmd_with_stat \
     _git_merge_file \
     "$editcmd \$ours_name \$base_name \$theirs_name \$ours_id \$base_id \
 \$theirs_id \$ours_mod \$base_mod \$theirs_mod" "${@:2}"
@@ -446,14 +476,14 @@ function _git_rename_file {
 function git_rename_file {
   local editcmd=$1
 
-  git_with_stat \
+  cmd_with_stat \
     _git_rename_file \
     "$editcmd \$ours_name \$base_name \$theirs_name \$ours_id \$base_id \
 \$theirs_id \$ours_mod \$base_mod \$theirs_mod" "${@:2}"
 }
 
-# git_with_prompt CMD PROMPT PREVIEWCMD EDITCMD ACTION OURS...
-function git_with_prompt {
+# cmd_with_prompt CMD PROMPT PREVIEWCMD EDITCMD ACTION LIST...
+function cmd_with_prompt {
   local cmd=$1
   local prompt=$2
   local fzfcmd=$3
@@ -503,9 +533,9 @@ function choose_add {
 }
 
 echo "[ == ] With:
-  OURS: $(git rev-parse $ours)
-  THEIRS: $(git rev-parse $theirs)
-  BASE: $(git rev-parse $base)
+  OURS: $ours
+  THEIRS: $theirs
+  BASE: $base
 "
 
 echo "[ == ] git output (base->theirs/ours->theirs stat), (ours -> theirs file):"
@@ -527,8 +557,8 @@ while read base_mod ours_mod theirs_mod \
   line="$ours_name $base_name $theirs_name $ours_id $base_id $theirs_id \
 $ours_mod $base_mod $theirs_mod$NL"
 
-  echo "  $base_ours_stat $ours_mod $ours_name~$ours_id -> \
-$theirs_mod $theirs_name~$theirs_id"
+  echo "  $base_ours_stat $ours_mod $ours_name:$ours_id -> \
+$theirs_mod $theirs_name:$theirs_id"
 
   case $base_ours_stat in
     # with checkout
@@ -561,22 +591,22 @@ echo ""
 
 ###
 
-[[ -z "$checkout_show" ]] || choose_add "Checkout (show)" "csh"
-[[ -z "$checkout_diff_base" ]] || choose_add "Checkout (diff-base)" "cdb"
-[[ -z "$checkout_diff_base_show" ]] || choose_add "Checkout (diff-base, show)" "cdbs"
-[[ -z "$checkout_diff_ours" ]] || choose_add "Checkout (diff-ours)" "cdo"
-[[ -z "$checkout_diff3" ]] || choose_add "Checkout (diff3)" "cd3"
-[[ -z "$checkout_diff_name" ]] || choose_add "Checkout (diff-name)" "cdn"
-[[ -z "$checkout_diff_name_show" ]] || choose_add "Checkout (diff-name, show)" "cdns"
+[[ -z "$checkout_show" ]] || choose_add "Checkout (AA)" "csh"
+[[ -z "$checkout_diff_base" ]] || choose_add "Checkout (MA/TA)" "cdb"
+[[ -z "$checkout_diff_base_show" ]] || choose_add "Checkout (TT)" "cdbs"
+[[ -z "$checkout_diff_ours" ]] || choose_add "Checkout (AT)" "cdo"
+[[ -z "$checkout_diff3" ]] || choose_add "Checkout (MT)" "cd3"
+[[ -z "$checkout_diff_name" ]] || choose_add "Checkout (RA)" "cdn"
+[[ -z "$checkout_diff_name_show" ]] || choose_add "Checkout (RT)" "cdns"
 
-[[ -z "$remove_diff_base_show" ]] || choose_add "Remove (diff-base, show)" "dsh"
+[[ -z "$remove_diff_base_show" ]] || choose_add "Remove (DD)" "dsh"
 
-[[ -z "$merge_diff_ours" ]] || choose_add "Merge (diff-ours)" "mdo"
-[[ -z "$merge_diff3" ]] || choose_add "Merge (diff3)" "md3"
-[[ -z "$merge_diff3_name" ]] || choose_add "Merge (diff3, rename)" "md3n"
+[[ -z "$merge_diff_ours" ]] || choose_add "Merge (AM)" "mdo"
+[[ -z "$merge_diff3" ]] || choose_add "Merge (MM/TM)" "md3"
+[[ -z "$merge_diff3_name" ]] || choose_add "Merge (RM)" "md3n"
 
-[[ -z "$rename_diff3" ]] || choose_add "Rename (diff3)" "rd3"
-[[ -z "$rename_diff_ours" ]] || choose_add "Rename (diff-ours)" "rdo"
+[[ -z "$rename_diff3" ]] || choose_add "Rename (RR/MR/TR)" "rd3"
+[[ -z "$rename_diff_ours" ]] || choose_add "Rename (AR)" "rdo"
 
 ################################################################################
 
@@ -603,45 +633,45 @@ function do_with_option {
     #### WITH CHECKOUT:
     'csh')
       git_cmd="git_checkout_file"
-      edit_cmd="emacsclient"
+      edit_cmd="edit_emacsclient_id"
       preview_cmd="git show $theirs:{3}"
       prompt="Include (checkout, show theirs)"
       list="$checkout_show";;
     'cdbs')
       git_cmd="git_checkout_file"
-      edit_cmd="emacsclient"
+      edit_cmd="edit_emacsclient_id"
       preview_cmd="git diff --color=always $base $ours -- {1};\
 echo '>>>>>>> THEIRS'; git show $theirs:{1}"
       prompt="Include (checkout, show theirs)"
       list="$checkout_diff_base_show";;
     'cdb')
       git_cmd="git_checkout_file"
-      edit_cmd="emacsclient"
+      edit_cmd="edit_emacsclient_id"
       preview_cmd="git diff --color=always $base $theirs -- {1}"
       prompt="Include (checkout, diff base/theirs)"
       list="$checkout_diff_base";;
     'cdo')
       git_cmd="git_checkout_file"
-      edit_cmd="emacsclient"
+      edit_cmd="edit_emacsclient_id"
       preview_cmd="git diff --color=always $ours $theirs -- {1}"
       prompt="Include (checkout, diff ours/theirs)"
       list="$checkout_diff_ours";;
     'cd3')
       git_cmd="git_checkout_file"
-      edit_cmd="emacsclient"
+      edit_cmd="edit_emacsclient_id"
       preview_cmd="git diff --color=always $theirs $base $ours -- {1}"
       prompt="Include (checkout, diff base/theirs,ours/theirs)"
       list="$checkout_diff3";;
     # also try to remove the origin
     'cdn')
       git_cmd="git_checkout_file_from_rename"
-      edit_cmd="emacsclient"
+      edit_cmd="edit_emacsclient_id"
       preview_cmd="git diff --color=always {5} {6}"
       prompt="Include (checkout, rename base/theirs)"
       list="$checkout_diff_name";;
     'cdns')
       git_cmd="git_checkout_file_from_rename"
-      edit_cmd="emacsclient"
+      edit_cmd="edit_emacsclient_id"
       preview_cmd="git diff --color=always {5} {6}; echo '>>>>>>> OURS'; \
 git show $ours:{1}"
       prompt="Include (checkout, rename base/theirs, type ours)"
@@ -651,7 +681,7 @@ git show $ours:{1}"
     # NOTE: if the file exists in ours as a tree, it won't trigger this
     'dsh')
       git_cmd="git_remove_file"
-      edit_cmd="emacsclient"
+      edit_cmd="edit_emacsclient_id"
       preview_cmd="git diff --color=always $base $ours -- {1}; \
 echo '>>>>>>> OURS'; git show $ours:{1}"
       prompt="Exclude (remove, diff base/ours)"
@@ -659,19 +689,19 @@ echo '>>>>>>> OURS'; git show $ours:{1}"
 
     #### WITH MERGE:
     'mdo')
-      edit_cmd="ediff2"
+      edit_cmd="edit_ediff2"
       git_cmd="git_merge_file $edit_cmd"
       preview_cmd="git diff --color=always $ours $theirs -- {1}"
       prompt="Include (merge, ours/theirs)"
       list="$merge_diff_ours";;
     'md3')
-      edit_cmd="ediff3"
+      edit_cmd="edit_ediff3"
       git_cmd="git_merge_file $edit_cmd"
       preview_cmd="git diff --color=always $theirs $ours $base -- {1}"
       prompt="Include (merge, diff base/theirs,ours/theirs)"
       list="$merge_diff3";;
     'md3n')
-      edit_cmd="ediff3"
+      edit_cmd="edit_ediff3"
       git_cmd="git_merge_file $edit_cmd"
       preview_cmd="git diff --color=always {5} {6}; \
 echo '>>>>>>> OURS/THEIRS'; git diff --color=always {4} {6}"
@@ -680,21 +710,21 @@ echo '>>>>>>> OURS/THEIRS'; git diff --color=always {4} {6}"
 
     #### WITH RENAME-MERGE
     'rd3')
-      edit_cmd="ediff3"
+      edit_cmd="edit_ediff3"
       git_cmd="git_rename_file $edit_cmd"
       preview_cmd="git diff --color=always {5} {6}; \
 echo '>>>>>>> OURS/THEIRS'; git diff --color=always {4} {6}"
       prompt="Include (rename, diff base/theirs ours/theirs)"
       list="$rename_diff3";;
     'rdo')
-      edit_cmd="ediff2"
+      edit_cmd="edit_ediff2"
       git_cmd="git_rename_file $edit_cmd"
       preview_cmd="git diff --color=always {4} {6}"
       prompt="Include (rename, diff ours/theirs)"
       list="$rename_diff_ours";;
   esac
 
-  git_with_prompt \
+  cmd_with_prompt \
     "$git_cmd" "$prompt: " "$preview_cmd" "$edit_cmd" "$action" \
     "$list"
 }
@@ -721,9 +751,9 @@ function do_interactive {
     while :; do
       read -p "Do:
   Quit (q)
-  act (aA)
-  out (oO)
-  edit (eE)
+  Act (aA)
+  Out (oO)
+  Edit (eE)
 > " act
 
       case $act in
