@@ -96,10 +96,10 @@ function cl {
   [[ ! -z $TMUX ]] && tmux clear-history
 }
 
-function gitat {
+function gat {
   case $1 in
     '--help'|'-h')
-      echo "Usage:       gitat DIR ARGS..."
+      echo "Usage:       gat DIR ARGS..."
       echo "Description: Runs \`git -C' at DIR with ARGS"
       return 0;;
     *)

@@ -15,7 +15,7 @@ if [[ ! -f $PIDFILE ]]; then
   exit 1
 fi
 
-[[ -z $ KILL_OPTIONS ]] && KILL_OPTIONS="-s TERM"
+[[ -z $KILL_OPTIONS ]] && KILL_OPTIONS="-s TERM"
 
 PID=$(cat $PIDFILE)
 

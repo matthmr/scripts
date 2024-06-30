@@ -124,7 +124,7 @@ function emacs_purge {
   fi
 
   echo "[ OK ] Got pid of \`$(cat $BASE/pid)'"
-  killpid $BASE/pid || killpid $BASE/pid -s KILL
+  pkill -F $BASE/pid || pkill -KILL -F $BASE/pid
 
   rm -rf $BASE/server $BASE/pid
   echo "[ OK ] Purged emacs server"

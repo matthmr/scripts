@@ -2,7 +2,7 @@
 
 case $1 in
   '--help'|'-h')
-    echo "Usage:       handler.sh [OPTIONS] URI/FILE"
+    echo "Usage:       uhandle [OPTIONS] URI/FILE"
     echo "Description: Opens a URI/FILE given a handler for its type"
     echo "Options:
   -p: ignore URI parameters
