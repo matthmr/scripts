@@ -29,7 +29,7 @@ for arg in $@; do
     '-l') lock=true ;;
     '-k') dry=true ;;
     '-r') file=~/.wp ;;
-    '-R') file=$(cat /tmp/.wp 2>/dev/null) ;;
+    '-R') file="$(cat /tmp/.wp 2>/dev/null)" ;;
     *) file=$arg ;;
   esac
 done
@@ -40,19 +40,19 @@ if [[ -z $file ]]; then
 fi
 
 if $random; then
-  file=$(find $file -type f | shuf -n1)
+  file="$(find "$file" -type f | shuf -n1)"
 fi
 
-file=$(realpath $file)
+file="$(realpath "$file")"
 
 if $tmp; then
-  echo $file > /tmp/.wp
+  echo "$file" > /tmp/.wp
 fi
 
 if $lock; then
-  ln -svf $file ~/.wp
+  ln -svf "$file" ~/.wp
 fi
 
 if ! $dry; then
-  feh --bg-scale --no-fehbg $file
+  feh --bg-scale --no-fehbg "$file"
 fi

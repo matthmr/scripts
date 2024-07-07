@@ -19,7 +19,7 @@ p_var=''
 origin=''
 branch=''
 
-git_fetch_opts=-vunpf
+git_fetch_opts=-pufn
 
 for arg in $@; do
   if [[ ! -z $p_var ]]; then
