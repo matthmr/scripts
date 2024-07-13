@@ -22,6 +22,8 @@ Minor Modes:
     :YYMM
   Project
     :project:file-path"
+    echo "Environment:
+  EDITOR: call \`EDITOR' instead of the default"
   exit 1;;
 esac
 
@@ -31,30 +33,36 @@ WIKI=@DOCS_WIKI@
 JOURNAL=@DOCS_JOURNAL@
 PROJECT=@DOCS_PROJECT_BASE@
 REPO=''
-EDITOR='emacsclient -t'
 XTERM=urxvt
+
+[[ -z $EDITOR ]] && EDITOR='emacsclient -t'
 
 #### Modes
 
-# Expect: FILE_PATH
+# wikicmd FILE_PATH
 function wikicmd {
   local file=''
 
   if [[ -z $1 ]]; then
     echo "[ WW ] Missing command for \`wiki-mode'; defaulting to index"
-    file=index
+    [[ -z $int ]] && file=index
   else
     file=$1
   fi
 
-  if [[ -d $WIKI/$FILE ]]; then
-    REPO="$WIKI/$FILE"
+  if [[ ! -z $int ]]; then
+    REPO=$(find $WIKI/$file '(' -type f -or -type l ')' -name '*.org' | $int)
+    return 0
+  fi
+
+  if [[ -d $WIKI/$file ]]; then
+    REPO="$WIKI/$file"
   else
-    REPO="$WIKI/$FILE.org"
+    REPO="$WIKI/$file.org"
   fi
 }
 
-# Expect: REPO_PATH:FILE_PATH
+# projectcmd REPO_PATH:FILE_PATH
 function projectcmd {
   if [[ -z $1 ]]; then
     echo "[ !! ] Missing command for \`project-mode'; \
@@ -65,22 +73,27 @@ defaulting \`project-mode' is not supported"
   local repo=${1%%:*}
   local file=${1#*:}
 
-  if [[ $repo = $file ]]; then
+  if [[ $repo == $file ]]; then
     file=''
   fi
 
   if [[ -z $file ]]; then
-    file="dev/index.org"
+    [[ -z $int ]] && file="DEV/index.org" || file="DEV"
   elif [[ -d $file ]]; then
-    file="dev/$file"
+    file="DEV/$file"
   else
-    file="dev/$file.org"
+    file="DEV/$file.org"
   fi
 
-  REPO="$project/$repo/$file"
+  if [[ ! -z $int ]]; then
+    REPO=$(find $PROJECT/$repo/$file '(' -type f -or -type l ')' -name '*.org' | $int)
+    return 0
+  fi
+
+  REPO="$PROJECT/$repo/$file"
 }
 
-# Expect: YY, YYMM
+# journalcmd YYMM
 function journalcmd {
   local date=''
 
@@ -104,6 +117,11 @@ defaulting to current date"
       echo "[ !! ] Command doesn't evaluate"
       exit 1 ;;
   esac
+
+  if [[ ! -z $int ]]; then
+    REPO=$(find $REPO '(' -type f -or -type l ')' -name '*.org' | $int)
+    return 0
+  fi
 }
 
 #### Args
@@ -127,51 +145,26 @@ done
 mode=${mode_arg%%:*}
 cmd=${mode_arg#*:}
 
+# there is no `:': there is no `cmd'
+if [[ $cmd == $mode ]]; then
+  cmd=''
+fi
+
 case $mode in
   'wiki')
-    REPO=$WIKI ;;
+    wikicmd $cmd;;
   'journal')
-    REPO=$JOURNAL ;;
+    journalcmd $cmd;;
   'project')
-    REPO=$PROJECT ;;
+    projectcmd $cmd;;
   *)
     echo "[ !! ] Invalid mode"
     exit 1;;
 esac
 
-# there is no `:'
-if [[ $cmd = $mode ]]; then
-  cmd=''
-fi
-
-if [[ ! -z $int ]]; then
-  case $mode in
-    'wiki')
-      CHOOSE=$(find $REPO -type f -name '*.org' | $int) ;;
-    'journal')
-      CHOOSE=$(find $REPO -type f -name '[0-9][0-9].org' | $int) ;;
-    'project')
-      CHOOSE=$(find $REPO/*/dev -type f -name '*.org' | $int) ;;
-  esac
-
-  if [[ -z $CHOOSE ]]; then
-    echo "[ !! ] Chose nothing"
-    exit 1
-  fi
-
-  REPO=$CHOOSE
-else
-  case $mode in
-    'wiki')
-      wikicmd $cmd;;
-    'journal')
-      journalcmd $cmd;;
-    'project')
-      projectcmd $cmd;;
-    *)
-      echo "[ !! ] Invalid mode"
-      exit 1;;
-  esac
+if [[ -z $REPO ]]; then
+  echo "[ !! ] No \`REPO'"
+  exit 1
 fi
 
 echo "[ == ] Running as: $EDITOR $REPO"
@@ -180,11 +173,7 @@ if [[ ! -z $use_tmux ]]; then
   tmux new-session -d -s "docs" -n "emacsclient" $EDITOR $REPO
 
   if [[ $use_tmux == '-t' ]]; then
-    if $use_x; then
-      exec tmuxa -x docs
-    else
-      exec tmuxa docs
-    fi
+    exec tmuxa $($use_x && echo "-x") docs
   fi
 elif $use_x; then
   exec $XTERM -e $EDITOR $REPO

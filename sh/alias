@@ -1,7 +1,6 @@
 #!/usr/bin/bash
 # overrides
 alias lf='lf -single'
-alias tmux='tmux -u'
 alias ed="ed -Ep '(ed) '"
 alias feh='feh --scale-down -B "#303030"'
 alias chess='gnuchess -g'
@@ -19,10 +18,10 @@ alias mk='make'
 alias sl='eza --color=always -l -g --sort type'
 alias xc='xclip -selection clipboard'
 alias g='git'
+alias gp='git -P'
 alias b='busybox'
 alias js='jobs -ld'
 alias bap='bat -p'
-alias gip='git -P'
 alias torrentd='transmission-daemon -e /tmp/transmission.log --log-level=info'
 alias torrentc='transmission-remote'
 alias rss='newsboat'
