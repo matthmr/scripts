@@ -8,10 +8,11 @@ case $1 in
     ;;
 esac
 
-CC=$(tmux list-clients -F "#{client_name}")
-CCS=$(echo $CC | wc -l)
+CT=$(tmux display-message -p "#{client_tty}")
 
-[[ -z $CC || $CCS -gt 1 ]] && exit 0
+if [[ -z "$CT" || "$CT" == "\n" ]]; then
+  exit 0
+fi
 
 # force my tmux to set the BG variable to the current background
 printf '\033]11;?\033\\' > $CC

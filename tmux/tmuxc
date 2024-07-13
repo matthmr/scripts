@@ -13,15 +13,12 @@ case $1 in
 esac
 
 term=""
-CC=$(tmux list-clients -F "#{client_name}")
-CCS=$(echo $CC | wc -l)
+CT=$(tmux display-message -p "#{client_tty}" 2>/dev/null)
 
-if [[ $CCS -gt 1 ]]; then
-  echo "[ !! ] Multiple tmux clients. Please have just one"
-elif [[ -z $CC ]]; then
-  exit 0 # tmux is not yet attached
+if [[ "$CT" == "\n" || -z "$CT" ]]; then
+  exit 0
 else
-  term="> $CC"
+  term="> $CT"
 fi
 
 [[ -z $cmd ]] && cmd="cat"

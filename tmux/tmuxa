@@ -11,8 +11,7 @@ esac
 
 XTERM=urxvt
 
-CC=$(tmux list-clients -F "#{client_name}")
-CCS=$(echo $CC | wc -l)
+CT=$(tmux display-message -p "#{client_tty}" 2>/dev/null)
 
 if [[ $1 == '-x' ]]; then
   SESSION=$2
@@ -22,11 +21,10 @@ else
   TMUX_ATTACH="tmux attach-session -t '$SESSION'"
 fi
 
-if [[ $CCS -gt 1 ]]; then
-  echo "[ !! ] Multiple tmux clients. Please have just one"
-  exit 1
-elif [[ -z $CC ]]; then
+if [[ "$CT" == "\n" ]]; then
+  exit 0
+elif [[ -z "$CT" ]]; then
   eval "$TMUX_ATTACH"
 else
-  exec tmux switch-client -c $CC -t $SESSION
+  exec tmux switch-client -c $CT -t $SESSION
 fi
