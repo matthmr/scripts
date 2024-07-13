@@ -67,6 +67,25 @@ branch=${branch:-master:master}
 
 echo "[ .. ] Running: git fetch $git_fetch_opts --depth=1 $origin -- $branch"
 
+head_ref=$(git rev-parse HEAD)
+checked=false
+
+for ref in $branch; do
+  ref=${ref##*:}
+
+  if [[ "$(git rev-parse $ref 2>/dev/null)" == "$head_ref" ]]; then
+    stash=$(git stash create \
+            "Stashing update on $(date +'%Y%m%d-%w %I%M%p')")
+    checked=true
+
+    if [[ ! -z $stash ]]; then
+      echo "[ WW ] \`$head_ref' is checked out, stashing them to ($ref)"
+
+      git restore -SW -- .
+    fi
+  fi
+done
+
 git fetch $git_fetch_opts --depth=1 $origin -- $branch
 
 if [[ $? != 0 ]]; then
@@ -74,18 +93,8 @@ if [[ $? != 0 ]]; then
   exit 1
 fi
 
-checked=$(git rev-parse HEAD)
+if $checked; then
+  echo "[ .. ] \`$head_ref' is checked out, removing remnant files"
 
-for ref in $branch; do
-  ref=${ref##*:}
-
-  if [[ "$(git rev-parse $ref 2>/dev/null)" == "$checked" ]]; then
-    echo -n "[ ?? ] Fetched ref ($ref) is already checked out, clear \
-working directory? [Y/n] "
-    read ans
-
-    if [[ -z $ans || $ans == 'y' ]]; then
-      git restore -SW -- .
-    fi
-  fi
-done
+  git checkout -f
+fi

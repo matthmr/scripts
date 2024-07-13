@@ -68,7 +68,8 @@ $remote_branch:$local_branch"
     fi
 
     if $checked; then
-      ref=$(git -C $local_repo stash create "Stashing update on $(date +'%Y%m%d-%w %I%M%p')")
+      ref=$(git -C $local_repo stash create \
+                "Stashing update on $(date +'%Y%m%d-%w %I%M%p')")
 
       if [[ ! -z $ref ]]; then
         echo "[ WW ] $local_repo has $local_branch checked out, and with changes\
