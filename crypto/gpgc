@@ -11,6 +11,8 @@ ptyp=''
 input=''
 gpg_opts=''
 
+output=''
+
 case $AS in
   'enc') DO='Encrypt'; gpg_do='-c' ;;
   'dec') DO='Decrypt'; gpg_do='-d' ;;
@@ -22,6 +24,7 @@ case $1 in
   echo "Usage:       $AS [OPTIONS] [INPUT]"
   echo "Description: $DO a file with GPG to STDOUT"
   echo "Options:
+  -s: silent: don't output STDERR (GPG msgs)
   -p PASSWD: decrypt with PASSWD
   -pp PASSWD: call \`pass' to output the PASSWD
   [INPUT]: If no INPUT is given, take it from stdin, which requires \`-p' or
@@ -43,6 +46,7 @@ else
   case $arg in
     '-p') p=true ;;
     '-pp') pp=true ;;
+    '-s') output="2>/dev/null" ;;
     *) input=$arg ;;
   esac
 fi
@@ -58,4 +62,4 @@ case $ptyp in
   'pp') gpg_opts="--passphrase=\"\$(pass show '$passwd')\"" ;;
 esac
 
-eval gpg --batch $gpg_opts -o - $gpg_do $input
+eval gpg --batch $gpg_opts -o - $gpg_do $input $output
