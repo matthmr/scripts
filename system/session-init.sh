@@ -16,8 +16,6 @@ function session_msg {
 
 #### Validation
 
-touch /tmp/session-msg
-
 case $TYPE in
   'x') function validate_session() {
          local tries=5
@@ -43,29 +41,25 @@ validate_session
 
 #### Attaching/Messaging
 
-if [[ -s /tmp/session-msg ]]; then
+if [[ ! -f /tmp/session-lock ]]; then
   sleep 1
 
-  if ! tmux has-session; then
-   # quit tmux before the messages could've been displayed: ignore
-   if [[ $SESSION == 'tmux' ]]; then
-      cp /tmp/session-msg /tmp/session-msg.txt
-      printf '' > /tmp/session-msg
+  touch /tmp/session-lock
 
-     exit 0
-   fi
+  if ! tmux has-session; then
+    # quit tmux before the messages could've been displayed: ignore
+    if [[ $SESSION == 'tmux' ]]; then
+      exit 0
+    fi
 
     tmux new-session -d -s 'tmux'
   fi
 
   # attach with `tmuxa' (tmuxa also switches, we don't want that)
   if [[ -z $(tmux list-clients -F "#{session_attached}") ]]; then
-    tmuxa $([[ $TYPE == 'x' ]] && echo '-x') ''
+    tmuxa $([[ $TYPE == 'x' ]] && echo '-x')
   fi
 
-  tmux display-popup -T 'note' \
-       "cat /tmp/session-msg" >&/dev/null
-
-  cp /tmp/session-msg /tmp/session-msg.txt
-  printf '' > /tmp/session-msg
+  # tmux display-popup -T 'note' \
+  #      "cat /tmp/session-msg" >&/dev/null
 fi

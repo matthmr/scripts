@@ -21,10 +21,14 @@ else
   TMUX_ATTACH="tmux attach-session -t '$SESSION'"
 fi
 
+if [[ ! -z $SESSION ]]; then
+  SESSION="-t $SESSION"
+fi
+
 if [[ "$CT" == "\n" ]]; then
   exit 0
 elif [[ -z "$CT" ]]; then
   eval "$TMUX_ATTACH"
 else
-  exec tmux switch-client -c $CT -t $SESSION
+  exec tmux switch-client -c $CT $SESSION
 fi
