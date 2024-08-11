@@ -42,7 +42,7 @@ function mcd {
 
 function tcd {
   icd ~
-  cd  $1
+  cd $1
 }
 
 function mkscript {
@@ -87,7 +87,7 @@ function unicode {
 }
 
 function psof {
-  /usr/bin/ps --forest -C "$1" -o \
+  /usr/bin/ps --forest "$@" -o \
               pid,ppid,user,priority,nice,rss,s,%cpu,%mem,cputime,tty,command
 }
 

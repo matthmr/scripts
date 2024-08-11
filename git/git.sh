@@ -72,8 +72,8 @@ $remote_branch:$local_branch"
                 "Stashing update on $(date +'%Y%m%d-%w %I%M%p')")
 
       if [[ ! -z $ref ]]; then
-        echo "[ WW ] $local_repo has $local_branch checked out, and with changes\
-  , stashing them to ($ref)"
+        echo "[ WW ] $local_repo has $local_branch checked out, and with \
+changes, stashing them to ($ref)"
 
         git -C $local_repo restore -SW .
       fi
@@ -108,7 +108,9 @@ $remote_branch:$local_branch"
         else
           echo "  -> on \`$local_repo' ($crit): OK"
         fi ;;
-      '') eval $cmd ;;
+      '')
+        eval $cmd
+        echo "  -> on \`$local_repo': CHECK FOR MANUAL UPDATE" ;;
     esac
 
     # clean-up, otherwise some weird shit happens
