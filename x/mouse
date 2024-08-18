@@ -1,0 +1,28 @@
+#!/usr/bin/sh
+
+XMOUSE=mouse
+PROP='Device Accel Constant Deceleration'
+
+# changing acceleration was only needed when the left side of the desk was small
+# for a mousepad
+# FAST_ACC='0.6'
+# LOW_ACC='1'
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       mouse [enable|disable|left|right]"
+    echo "Description: Enables/Disables the X mouse \`$XMOUSE'"
+    exit 0 ;;
+  'enable')
+     xinput $1 $XMOUSE ;;
+  'disable')
+     xinput $1 $XMOUSE ;;
+  'left')
+    xmodmap -e 'pointer = 1 2 3' ;;
+    # xinput set-prop $XMOUSE "$PROP" $FAST_ACC ;;
+  'right')
+    xmodmap -e 'pointer = 3 2 1' ;;
+    # xinput set-prop $MOUSE "$PROP" $LOW_ACC ;;
+  *) echo "[ !! ] Unknown option. See \`--help'"
+     exit 1 ;;
+esac
