@@ -503,15 +503,15 @@ function cmd_with_prompt {
   esac
 
   if [[ ! -z $choose ]]; then
-    if [[ $action =~ [Oo] ]]; then
-      out+="$(echo "$choose" | awk '{printf("%s ", $1)}')"
-    else
-      echo "[ .. ] Running: $cmd"
+    case $action in
+      [Oo]) out+="$(echo "$choose" | awk '{printf("%s ", $1)}')" ;;
+      *)
+        echo "[ .. ] Running: $cmd"
 
-      echo "$choose" | while read line; do
-        eval "$cmd $line"
-      done
-    fi
+        echo "$choose" | while read line; do
+          eval "$cmd $line"
+        done ;;
+    esac
   fi
 }
 
@@ -519,6 +519,7 @@ function cmd_with_prompt {
 
 choose_prompt="
   Quit (q)
+  Show (s)
   Shell (!)"
 choose_avail=""
 
@@ -540,6 +541,7 @@ echo "[ == ] With:
 
 echo "[ == ] git output (base->theirs/ours->theirs stat), (ours -> theirs file):"
 
+git_out=""
 NL=$'\n'
 
 # ::100644 100644 100755 c5f24d6 c5f24d6 c5f24d6 MM Makefile Makefile Makefile
@@ -556,34 +558,37 @@ while read base_mod ours_mod theirs_mod \
 
   line="$ours_name $base_name $theirs_name $ours_id $base_id $theirs_id \
 $ours_mod $base_mod $theirs_mod$NL"
+  fline="  $base_ours_stat $ours_mod $ours_name:$ours_id -> \
+$theirs_mod $theirs_name:$theirs_id$NL"
 
-  echo "  $base_ours_stat $ours_mod $ours_name:$ours_id -> \
-$theirs_mod $theirs_name:$theirs_id"
+  git_out+="$fline"
+
+  echo -n "$fline"
 
   case $base_ours_stat in
     # with checkout
-    AA) checkout_show+="$line";;
-    TT) checkout_diff_base_show+="$line";;
-    MA|TA) checkout_diff_base+="$line";;
-    MT) checkout_diff3+="$line";;
-    AT) checkout_diff_ours+="$line";;
+    AA) checkout_show+="$line"; checkout_show_f+="$fline";;
+    TT) checkout_diff_base_show+="$line"; checkout_diff_base_show_f+="$fline";;
+    MA|TA) checkout_diff_base+="$line"; checkout_diff_base_f+="$fline";;
+    MT) checkout_diff3+="$line"; checkout_diff3_f+="$fline";;
+    AT) checkout_diff_ours+="$line"; checkout_diff_ours_f+="$fline";;
     # from rename
-    RA) checkout_diff_name+="$line";;
-    RT) checkout_diff_name_show+="$line";;
+    RA) checkout_diff_name+="$line"; checkout_diff_name_f+="$fline";;
+    RT) checkout_diff_name_show+="$line"; checkout_diff_name_show_f+="$fline";;
 
     # with remove
-    DD) remove_diff_base_show+="$line";;
+    DD) remove_diff_base_show+="$line"; remove_diff_base_show_f+="$fline";;
 
     # with merge (conflictable)
     # diff2
-    AM) merge_diff_ours+="$line";;
+    AM) merge_diff_ours+="$line"; merge_diff_ours_f+="$fline";;
     # diff3
-    MM|TM) merge_diff3+="$line";;
-    RM) merge_diff3_name+="$line";;
+    MM|TM) merge_diff3+="$line"; merge_diff3_f+="$fline";;
+    RM) merge_diff3_name+="$line"; merge_diff3_name_f+="$fline";;
 
     # with rename (merge conflictable)
-    RR|MR|TR) rename_diff3+="$line";;
-    AR) rename_diff_ours+="$line";;
+    RR|MR|TR) rename_diff3+="$line"; rename_diff3_f+="$fline";;
+    AR) rename_diff_ours+="$line"; rename_diff_ours_f+="$fline";;
   esac
 done < <(git_diff_inc)
 
@@ -613,6 +618,36 @@ echo ""
 choose_prompt="Choose: $choose_prompt
 > "
 choose_avail="${choose_avail%|}"
+
+# git_out_show_typ TYPE
+function git_out_show_typ {
+  local type=$1
+
+  case $type in
+    #### WITH CHECKOUT:
+    'csh') echo "$checkout_show_f";;
+    'cdbs') echo "$checkout_diff_base_show_f";;
+    'cdb') echo "$checkout_diff_base_f";;
+    'cdo') echo "$checkout_diff_ours_f";;
+    'cd3') echo "$checkout_diff3_f";;
+    # also try to remove the origin
+    'cdn') echo "$checkout_diff_name_f";;
+    'cdns') echo "$checkout_diff_name_show_f";;
+
+    #### WITH REMOVE:
+    # NOTE: if the file exists in ours as a tree, it won't trigger this
+    'dsh') echo "$remove_diff_base_show_f";;
+
+    #### WITH MERGE:
+    'mdo') echo "$merge_diff_ours_f";;
+    'md3') echo "$merge_diff3_f";;
+    'md3n') echo "$merge_diff3_name_f";;
+
+    #### WITH RENAME-MERGE
+    'rd3') echo "$rename_diff3_f";;
+    'rdo') echo "$rename_diff_ours_f";;
+  esac
+}
 
 # do_with_option OPTION ACTION
 function do_with_option {
@@ -736,9 +771,8 @@ function do_interactive {
     read -p "$choose_prompt" choose
 
     case $choose in
-      'q')
-        echo "[ .. ] Bye"
-        return 0;;
+      'q') echo "[ .. ] Bye"; return 0;;
+      's') echo "$git_out"; continue ;;
       '!')
         $SHELL; continue;;
     esac
@@ -748,17 +782,22 @@ function do_interactive {
       continue
     fi
 
+    # prompt action
     while :; do
       read -p "Do:
   Quit (q)
+  Show (s)
   Act (aA)
   Out (oO)
   Edit (eE)
 > " act
 
       case $act in
+        # passthrough to `do_with_option'
         [Aa]|[Oo]|[eE]) break;;
+
         'q') quit_action=true; break;;
+        's') git_out_show_typ "$choose"; continue ;;
         '') act="a"; break;;
         *) echo "[ !! ] Option not available"; continue;;
       esac
