@@ -46,7 +46,8 @@ alias cp='cp -iv'
 alias ln='ln -iv'
 alias mv='mv -iv'
 alias diff='/bin/diff --color=always -u'
-alias udiff='/bin/diff --color=always -y --suppress-common-lines'
+alias udiff='/bin/diff -u'
+alias ydiff='/bin/diff --color=always -y --suppress-common-lines'
 alias patch='patch -u'
 
 # directory

@@ -5,6 +5,7 @@ this_pid=$$
 
 #### FUNCTIONS
 
+# min
 # Disk
 DRIVES=(@STATUSBAR_DRIVES@)
 function statusbar_disk() {

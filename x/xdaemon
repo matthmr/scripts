@@ -22,7 +22,7 @@ xrdb @XDAEMON_XRESOURCES@ &
 clipmenud &
 
 # > nice pape anon
-wpset -d @XDAEMON_WPDIR@ &
+wpset -d @XDAEMON_WPDIR@ -b &
 
 # start bar (not for i3)
 if [[ $1 != i3 ]]; then
@@ -31,7 +31,7 @@ fi
 
 # I don't think can do this in XKB source
 #         BS UP LFT RGH DWN
-for kc in 51 98 100 102 104; do xset r $kc ; done
+for kc in 51 98 100 102 104; do xset r $kc; done
 
 # start session
 @XDAEMON_SESSION_INIT@ x "$1" &
