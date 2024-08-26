@@ -271,7 +271,7 @@ function fzf_with_prompt {
 
   fzf --bind=ctrl-e:preview-down,ctrl-y:preview-up,\
 ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,'alt-<':preview-top,\
-'alt->':preview-bottom\
+'alt->':preview-bottom,ctrl-alt-p:half-page-up,ctrl-alt-n:half-page-down\
       --prompt "$prompt"\
       --preview "$cmd"\
       --height=-40% -m
@@ -733,7 +733,7 @@ echo '>>>>>>> OURS'; git show $ours:{1}"
       edit_cmd="edit_ediff3"
       git_cmd="git_merge_file $edit_cmd"
       preview_cmd="git diff --color=always $theirs $ours $base -- {1}"
-      prompt="Include (merge, diff base/theirs,ours/theirs)"
+      prompt="Include (merge, diff ours/theirs,base/theirs)"
       list="$merge_diff3";;
     'md3n')
       edit_cmd="edit_ediff3"
