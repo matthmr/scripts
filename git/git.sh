@@ -53,9 +53,7 @@ function op() {
 
     cmd="git -C $local_repo fetch -puft $remote_repo -- \
 $remote_branch:$local_branch"
-
-    echo "[ .. ] Fetching repository: $local_repo"
-    echo "[ == ] Running: $cmd"
+    cmd="echo \"[ .. ] Output of: $cmd\"; $cmd"
 
     # stash and restore changes if we have `local_repo' checked out
     head_ref=$(git -C $local_repo rev-parse HEAD)
@@ -83,16 +81,18 @@ changes, stashing them to ($ref)"
     case $crit in
       'tag'|'tf'|'rtf')
         eval $cmd >& /tmp/.gitout
-        cat /tmp/.gitout
 
         if grep -q '\[new tag\]' /tmp/.gitout; then
-          echo "  -> on \`$local_repo' ($crit): new tag"
+          echo "[ == ] On \`$local_repo' ($crit): new tag"
         else
-          echo "  -> on \`$local_repo' ($crit): OK"
+          echo "[ == ] On \`$local_repo' ($crit): OK"
         fi
+
+        cat /tmp/.gitout
         ;;
       bf:*|rbf:*)
-        eval $cmd
+        eval $cmd >& /tmp/.gitout
+
         _crit=$crit
         crit=${crit%:*}
         check_branch=${_crit#*:}
@@ -104,13 +104,16 @@ changes, stashing them to ($ref)"
         echo "[ == ] Checking merge with: $post_cmd"
 
         if eval $post_cmd; then
-          echo "  -> on \`$local_repo' ($crit): needs merge"
+          echo "[ .. ] On \`$local_repo' ($crit): needs merge"
         else
-          echo "  -> on \`$local_repo' ($crit): OK"
-        fi ;;
+          echo "[ .. ] On \`$local_repo' ($crit): OK"
+        fi
+
+        cat /tmp/.gitout
+        ;;
       '')
-        eval $cmd
-        echo "  -> on \`$local_repo': CHECK FOR MANUAL UPDATE" ;;
+        echo "[ == ] on \`$local_repo': CHECK FOR MANUAL UPDATE"
+        eval $cmd ;;
     esac
 
     # clean-up, otherwise some weird shit happens
