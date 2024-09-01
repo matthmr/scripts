@@ -1,7 +1,5 @@
 #!/usr/bin/sh
 
-printf '' > /tmp/schedl/schedl-run
-
 function op {
   local file=$file
 
@@ -39,34 +37,23 @@ function op {
   rm /tmp/schedl/schedl-out
 }
 
-function run {
-  local job=$1
-  local timeout=2
-
-  echo -n "[ ?? ] Run \`$job'? [Y/n] "
-  read ans
-
-  if [[ ! -z $ans && $ans != 'y' ]]; then
-    echo "[ !! ] Ignoring ..."
-  else
-    echo "[ .. ] Executing \`$job'. Press C-c to cancel..."
-    sleep $timeout
-    $job
-  fi
-}
-
 ####
 
-for file in $@; do
-  op $file
-done
+if [[ ! -f /tmp/schedl/schedl-run ]]; then
+  touch /tmp/schedl/schedl-run
+
+  for file in $@; do
+    op $file
+  done
+fi
 
 ####
 
 echo "[ == ] Prompting for execution"
 
 while read job; do
-  run $job < /dev/tty
+  # we have to execute this in a different script so that C-c doesn't kill us
+  /home/p/scripts/job/schedl-run.sh $job
 done < /tmp/schedl/schedl-run
 
-rm /tmp/schedl/schedl-run
+# rm /tmp/schedl/schedl-run

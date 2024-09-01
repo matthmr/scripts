@@ -26,7 +26,7 @@ case $1 in
   echo "Options:
   -s: silent: don't output STDERR (GPG msgs)
   -p PASSWD: decrypt with PASSWD
-  -pp PASSWD: call \`pass' to output the PASSWD
+  -pp: call \`pass' to output the PASSWD
   [INPUT]: If no INPUT is given, take it from stdin, which requires \`-p' or
     \`-pp' to be set. If it is given, then stdin might be for prompting the
     passphrase"
@@ -34,22 +34,22 @@ case $1 in
 esac
 
 for arg in $@; do
-if $p; then
-  passwd=$arg
-  ptyp=p
-  p=false
-elif $pp; then
-  passwd=$arg
-  ptyp=pp
-  pp=false
-else
-  case $arg in
-    '-p') p=true ;;
-    '-pp') pp=true ;;
-    '-s') output="2>/dev/null" ;;
-    *) input=$arg ;;
-  esac
-fi
+  if $p; then
+    passwd=$arg
+    ptyp=p
+    p=false
+  elif $pp; then
+    passwd=$arg
+    ptyp=pp
+    pp=false
+  else
+    case $arg in
+      '-p') p=true ;;
+      '-pp') pp=true ;;
+      '-s') output="2>/dev/null" ;;
+      *) input=$arg ;;
+    esac
+  fi
 done
 
 if [[ -z $input && -z $passwd ]]; then
