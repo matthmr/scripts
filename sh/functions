@@ -131,3 +131,10 @@ a \`.txt' file for urls, and \`.db' file for the database. Pass them \
 
   newsboat -u $URL -c $DB ${@:2}
 }
+
+function nohist {
+  fc -W
+  fc -p
+  PREV_HISTFILE=$HISTFILE
+  unset HISTFILE
+}
