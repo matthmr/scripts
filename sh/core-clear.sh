@@ -1,39 +1,37 @@
 #!/usr/bin/bash
 
-case $1 in
-	'-h'|'--help')
-		echo "Usage:       core-clear.sh [-l|--list] [-i|--interactive]"
-		echo "Description: Clear the core at \``cat /proc/sys/kernel/core_pattern`'"
-		exit 1
-		;;
-esac
-
-COREDIR=$(sysctl -n kernel.core_pattern)
+COREDIR=$(cat /proc/sys/kernel/core_pattern)
 COREDIR=${COREDIR%/*}
 
-{
-	[[ -z $COREDIR ]]
-} && {
-	echo '[ !! ] sysctl is not configure to dump on a directory'
-	exit 1
-} || {
-  if [[ -z $(find $COREDIR -type f 2>/dev/null) ]]; then
+case $1 in
+  '-h'|'--help')
+    echo "Usage:       core-clear.sh [-l|--list/-i|--interactive]"
+    echo "Description: Clear the core at \`$COREDIR'"
+    exit 1
+    ;;
+esac
+
+if [[ -z $COREDIR ]]; then
+  echo '[ !! ] sysctl is not configure to dump on a directory'
+  exit 1
+else
+  if [[ -z $(ls -1 $COREDIR 2>/dev/null) ]]; then
     echo "[ !! ] Core directory is empty"
     exit 1
   fi
 
-	pushd $COREDIR > /dev/null
-	case $1 in
-		'-l'|'--list')
-			/bin/ls -lh --color=always
-			popd > /dev/null
-			exit 1;;
+  case $1 in
+    '-l'|'--list')
+      echo "[ == ] Current date is $(date +%s)"
+      echo "[ == ] Current PID is $$"
+      ls -lh --color=always $COREDIR
+      exit 1;;
     '-i'|'--interactive')
       echo "[ == ] Current date is $(date +%s)"
       echo "[ == ] Current PID is $$"
 
       for file in $COREDIR/*; do
-        printf "[Y/n ] Remove ${file}? "
+        printf "[ ?? ] Remove ${file}? [Y/n] "
         read ans
 
         if [[ $ans = 'y' || -z $ans ]]; then
@@ -47,9 +45,8 @@ COREDIR=${COREDIR%/*}
         exit 1
       }
       exit 0;;
-	esac
+  esac
 
-	rm -rv $COREDIR/* 2>/dev/null
-	popd > /dev/null
+  rm -rfv $COREDIR/*
   exit 0
-}
+fi

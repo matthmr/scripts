@@ -33,7 +33,7 @@ p_var=
 
 for arg in $@; do
   if [[ ! -z $p_var ]]; then
-    eval \$p_var=\"$arg\"
+    eval $p_var=$arg
     p_var=''
     continue
   fi

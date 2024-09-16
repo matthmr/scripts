@@ -269,9 +269,7 @@ function fzf_with_prompt {
   local prompt=$1
   local cmd=$2
 
-  fzf --bind=ctrl-e:preview-down,ctrl-y:preview-up,\
-ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up,'alt-<':preview-top,\
-'alt->':preview-bottom,ctrl-alt-p:half-page-up,ctrl-alt-n:half-page-down\
+  fzfc \
       --prompt "$prompt"\
       --preview "$cmd"\
       --height=-40% -m
