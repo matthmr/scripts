@@ -1,6 +1,9 @@
 #### Misc
 
-export LESS="-S -R -I -Q -x2 --use-color --mouse --incsearch"
+# min
+# export LESS="-S -R -I -Q -x2 --use-color --mouse --incsearch"
+export LESS="-S -R -I -Q --use-color --incsearch"
+
 export PAGER="less"
 export EDITOR="emacsc"
 export MPD_HOST=/tmp/mpd-socket
