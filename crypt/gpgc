@@ -11,7 +11,7 @@ ptyp=''
 input=''
 gpg_opts=''
 
-output=''
+verbose=''
 
 case $AS in
   'enc') DO='Encrypt'; gpg_do='-c' ;;
@@ -21,7 +21,7 @@ esac
 
 case $1 in
 '--help'|'-h')
-  echo "Usage:       $AS [OPTIONS] [INPUT]"
+  echo "Usage:       $AS [OPTIONS] [INPUT] [GPG_OPTIONS]"
   echo "Description: $DO a file with GPG to STDOUT"
   echo "Options:
   -s: silent: don't output STDERR (GPG msgs)
@@ -29,7 +29,8 @@ case $1 in
   -pp: call \`pass' to output the PASSWD
   [INPUT]: If no INPUT is given, take it from stdin, which requires \`-p' or
     \`-pp' to be set. If it is given, then stdin might be for prompting the
-    passphrase"
+    passphrase
+  [GPG_OPTIONS]: after INPUT is given, the rest are generic GPG options"
   exit 1;;
 esac
 
@@ -46,8 +47,8 @@ for arg in $@; do
     case $arg in
       '-p') p=true ;;
       '-pp') pp=true ;;
-      '-s') output="2>/dev/null" ;;
-      *) input=$arg ;;
+      '-s') verbose="2>/dev/null" ;;
+      *) [[ -z $input ]] && input=$arg || gpg_opts+="$arg " ;;
     esac
   fi
 done
@@ -58,8 +59,12 @@ if [[ -z $input && -z $passwd ]]; then
 fi
 
 case $ptyp in
-  'p') gpg_opts="--passphrase='$passwd'" ;;
-  'pp') gpg_opts="--passphrase=\"\$(pass show '$passwd')\"" ;;
+  'p') gpg_opts+="--passphrase='$passwd'" ;;
+  'pp') gpg_opts+="--passphrase=\"\$(pass show '$passwd')\"" ;;
 esac
 
-eval gpg --batch $gpg_opts -o - $gpg_do $input $output
+if [[ -z $verbose ]]; then
+  echo "[ .. ] Eval: gpg --batch -o - $gpg_do $input $verbose $gpg_opts" 1>&2
+fi
+
+eval gpg --batch $gpg_opts -o - $gpg_do $input $verbose
