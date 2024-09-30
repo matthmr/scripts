@@ -1,0 +1,18 @@
+#!/bin/sh
+
+[[ -z $FZF ]] && FZF=fzf
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       fzfc OPTIONS"
+    echo "Description: Generic FZF wrapper"
+    echo "Variables:
+  FZF=fzf command"
+    exit 0;;
+esac
+
+exec $FZF \
+  "--bind=ctrl-alt-p:half-page-up,ctrl-alt-n:half-page-down,ctrl-k:kill-line,\
+alt-p:last,alt-n:first,ctrl-c:select-all,alt-c:deselect-all,ctrl-e:preview-down,\
+ctrl-y:preview-up,ctrl-v:preview-half-page-down,alt-v:preview-half-page-up,\
+alt->:preview-bottom,alt-<:preview-top" "$@"

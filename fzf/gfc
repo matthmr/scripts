@@ -1,0 +1,27 @@
+#!/usr/bin/sh
+
+# TODO: we could output a merger with awk script:
+# awk 'BEGIN {files=""} {files=(files " " $2)} END {print files}' |
+# xargs git diff $(cat /tmp/.gitidx) @ master
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       gfc"
+    echo "Description: Outputs a chosen list of files with fzf to commit with \
+git"
+    exit 0
+    ;;
+esac
+
+cd $(git rev-parse --show-toplevel)
+
+out=$(
+  git -P diff --name-only @ |\
+    fzfc \
+      --prompt "Include: " \
+      --preview "git diff -P --color=always @ -- {1}" \
+      --height=-40% -m)
+
+if [[ ! -z $out ]]; then
+  echo "$out" | tr '\n' ' ' | xargs git commit -v --
+fi
