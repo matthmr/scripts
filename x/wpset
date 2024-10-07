@@ -1,5 +1,7 @@
 #!/usr/bin/sh
 
+set -e
+
 tmp=true
 random=false
 lock=false

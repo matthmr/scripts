@@ -15,16 +15,16 @@ if [[ -z "$CT" || "$CT" == "\n" ]]; then
 fi
 
 # force my tmux to set the BG variable to the current background
-printf '\033]11;?\033\\' > $CC
+printf '\033]11;?\033\\' > $CT
+
+# set BG as used
+tmux setenv -gh _BG 1
 
 # get the variable, and set the style
-bg=$(tmux run -C 'showenv -gh BG' 2>/dev/null | cut -d= -f2)
+bg=$(tmux showenv -gh BG 2>/dev/null | cut -d= -f2)
 [[ -z $bg ]] && exit 0
 
 style="bg=#$bg"
 
-# make active withing the session
-tmux set -swp window-style "$style" >&/dev/null
-
-# ... and other sessions as well
 tmux set -g window-style "$style" >&/dev/null
+tmux set -swp window-style "$style" >&/dev/null
