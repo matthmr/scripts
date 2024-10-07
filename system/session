@@ -4,6 +4,11 @@ set -o noglob
 
 printf '\x1b[?1;c'
 
+TTY=$(tty)
+USER=$(whoami)
+HOST="$(hostname) $(uname -r)"
+NOW=$(date +'%a %b %e %Y %H:%M:%S')
+
 SHELL=zsh
 GARR=()
 GIDX=0
@@ -215,7 +220,13 @@ list_choose() {
 
 ################################################################################
 
+# this is set by `openrc's `setup' job, but it'll have high permissions if it
+# writes anything, so we have to do this here
+ttset -t -w default-dark
+clear
+
 if [[ -z $1 ]]; then
+  echo "$USER@$HOST | $TTY | $NOW"
   header "Choose a session to log in with"
   list_choose "${SESSIONS[@]}"
   SESSION=${SESSIONS[$?]}
@@ -227,7 +238,7 @@ export SESSION=$SESSION
 
 case $SESSION in
   # TTY session
-  'shell')
+  'none')
     LOGIN="$SHELL" ;;
 
   'tmux')
@@ -240,7 +251,7 @@ esac
 
 ####
 
-header "Logging in with ${SESSION:-$(tty)}"
+header "Logging in with $SESSION"
 
 sleep 1
 

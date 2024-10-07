@@ -1,0 +1,87 @@
+#!/usr/bin/sh
+
+#### Variables
+
+INPUT_DEV=/dev/input/mice
+PIDFILE=/run/gpm.pid
+SUDO=doas
+
+#### MAIN
+
+case $1 in
+  "--help"|"-h")
+    echo "Usage:       gpm-tty [start|stop|status|toggle|restart] \
+[GPM OPTIONS...]"
+    echo "Description: Controls the GPM process"
+    exit 0;;
+  *)
+    DO=$1;;
+esac
+
+PID=$(cat $PIDFILE 2>/dev/null)
+
+# start_gpm OPTS...
+function start_gpm() {
+  if [[ $USER != 'root' ]]; then
+    echo "[ !! ] Need to be root"
+    exit 1
+  fi
+
+  echo "[ .. ] Starting GPM"
+  gpm -m $INPUT_DEV -t imps2 $@
+}
+
+# stop_gpm
+function stop_gpm() {
+  if [[ $USER != 'root' ]]; then
+    echo "[ !! ] Need to be root"
+    exit 1
+  fi
+
+  if [[ -z $PID ]]; then
+    echo "[ .. ] Found no GPM process running"
+    exit 1
+  fi
+
+  echo "[ .. ] Stopping GPM (pid $PID)"
+  gpm -k
+}
+
+GPM_OPTS=${@:2}
+
+case $DO in
+  'status')
+    if [[ ! -z $PID ]]; then
+      echo "[ .. ] Found one GPM process running with PID: $PID"
+      exit 0
+    else
+      echo "[ .. ] Found no GPM process running"
+      exit 1
+    fi;;
+
+  'toggle')
+    if [[ -z $PID ]]; then
+      start_gpm $GPM_OPTS
+    else
+      stop_gpm
+    fi ;;
+
+  'restart')
+    if [[ -z $PID ]]; then
+      start_gpm $GPM_OPTS
+    else
+      stop_gpm
+      sleep 2
+      start_gpm $GPM_OPTS
+    fi ;;
+
+  'stop')
+    stop_gpm ;;
+
+  'start')
+    start_gpm $GPM_OPTS;;
+
+  *)
+    echo "[ !! ] Missing action. See \`--help'"
+    exit 1;;
+esac

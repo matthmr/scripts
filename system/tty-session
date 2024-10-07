@@ -1,0 +1,12 @@
+#!/usr/bin/sh
+
+# Start gpm
+if ! gpm-tty status; then
+  doas @TTY_SESSION_GPM_TTY@ start
+fi
+
+# should take the foreground
+$@
+
+# Stop gpm
+doas @TTY_SESSION_GPM_TTY@ stop
