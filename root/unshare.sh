@@ -18,9 +18,9 @@ args="$@"
 cmd="su $USER"
 
 if [[ -z $args ]]; then
-  cmd+=" -c \"$SHELL; exit 0\""
+  cmd+=" -s $SHELL"
 else
-  cmd+=" -c \"$args; exit 0\""
+  cmd+=" -c \"$args\""
 fi
 
 eval exec $SUDO unshare -n -- $cmd

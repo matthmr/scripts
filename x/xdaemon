@@ -11,7 +11,6 @@ if [[ -z `pidof sxhkd` ]]; then
   sxhkd -a 'bracketleft' < /dev/null >& /dev/null &
 fi
 
-# Mice are for pussies
 # `xkbset ma` syntax:
 #    [mk-delay> <mk_interval> <mk_time_to_max mk-max_speed> <mk_curve]
 xkbset ma 30 10 25 15 2 &

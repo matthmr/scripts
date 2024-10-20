@@ -8,14 +8,18 @@ PROP='Device Accel Constant Deceleration'
 # FAST_ACC='0.6'
 # LOW_ACC='1'
 
+speed=''
+
+p_var=''
+
 case $1 in
   '--help'|'-h')
-    echo "Usage:       mouse [enable|disable|left|right]"
+    echo "Usage:       mouse [on|on|left|right|speed] [value]"
     echo "Description: Enables/Disables the X mouse \`$XMOUSE'"
     exit 0 ;;
-  'enable')
+  'on')
      xinput $1 $XMOUSE ;;
-  'disable')
+  'off')
      xinput $1 $XMOUSE ;;
   'left')
     xmodmap -e 'pointer = 1 2 3' ;;
@@ -23,6 +27,16 @@ case $1 in
   'right')
     xmodmap -e 'pointer = 3 2 1' ;;
     # xinput set-prop $MOUSE "$PROP" $LOW_ACC ;;
+  'speed')
+    p_var='speed' ;;
   *) echo "[ !! ] Unknown option. See \`--help'"
      exit 1 ;;
 esac
+
+if [[ ! -z $p_var ]]; then
+  eval $p_var="$2"
+fi
+
+if [[ ! -z $speed ]]; then
+  xinput set-prop $XMOUSE 269 $speed
+fi
