@@ -4,7 +4,7 @@ alias lf='lf -single'
 alias ed="ed -Ep '(ed) '"
 alias feh='feh --scale-down -B "#303030"'
 alias ip='ip -color=auto'
-alias ps='ps --forest --deselect --ppid 2 -o pid,ppid,user,priority,nice,rss,s,%cpu,%mem,cputime,tty,command'
+alias ps='ps --forest --deselect --ppid 2 --deselect --pid 2 -o pid,ppid,user,priority,nice,rss,s,%cpu,%mem,cputime,tty,command'
 alias pkill='pkill --echo'
 alias kill='/usr/bin/kill --verbose'
 alias objdump='objdump --disassembler-color=on'
@@ -32,6 +32,7 @@ alias c='clear'
 alias em='emacsc'
 alias ec='emacsclient'
 alias tl='tree -Cpug --si'
+alias cs='cl;tux'
 
 # coreutils overrides
 alias grep='grep --color=always'
