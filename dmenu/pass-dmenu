@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 
-NOTIFY=herbe
+NOTIFY=herbec
 
 PASS_STORE=$HOME/.password-store
 FILES=$(cd $PASS_STORE; find -type f -name '*.gpg')

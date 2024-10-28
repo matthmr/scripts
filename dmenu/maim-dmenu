@@ -2,7 +2,7 @@
 # Made by mH (https://github.com/matthmr)
 
 MAIM="maim --quiet -o -B -d 0.25 -u"
-NOTIFY=herbe
+NOTIFY=herbec
 
 OPT="\
 window root

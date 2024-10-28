@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 
-NOTIFY=herbe
+NOTIFY=herbec
 
 usage() {
 	echo "Usage:       taskmsg [msg]"

@@ -9,7 +9,7 @@ case $1 in
 esac
 
 INTERVAL=2
-NOTIFY=herbe
+NOTIFY=herbec
 PID=$(pidof sxhkd)
 
 if [[ -z $PID ]]; then
