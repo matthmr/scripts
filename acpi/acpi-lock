@@ -1,15 +1,15 @@
 #!/usr/bin/bash
 
 # -t: use tmux
+# $2: ACPI action
 
 SUDO=doas
 
-AS=${0##*/}
-COMMAND=${AS/-lock/}
-CONFIRM=@SHUTDOWN_LOCK_CONFIRM@
+ACTION=$2
+CONFIRM=@ACPI_LOCK_CONFIRM@
 USER_SHELL=/bin/zsh
 
 # clear them first
 unset LOGINCMD
 
-exec $CONFIRM
+exec $CONFIRM $ACTION

@@ -1,16 +1,19 @@
 #!/usr/bin/bash
 
-AS=${0##*/}
-AS=${AS/-confirm/}
-SUDO=doas
+# $1: ACPI action
 
-case $AS in
+SUDO=doas
+ACTION=$1
+
+case $1 in
   'shutdown') COMMAND="poweroff now";;
   'reboot') COMMAND="reboot now";;
+  'suspend') COMMAND="$(realpath @SUSPEND_CONFIRM_ACPI@)";;
+  'hibernate') COMMAND="$(realpath @HIBERNATE_CONFIRM_ACPI@)";;
   *) echo '[ !! ] Invalid command!'; exit 1 ;;
 esac
 
-read -p "[ ?? ] ${AS}? [Y/n] " ans
+read -p "[ ?? ] ${ACTION}? [Y/n] " ans
 
 if [[ -z $ans || $ans == 'y' ]]; then
   echo "ACPI event sent:" "waiting to send ACPI event; press C-c to ignore it"

@@ -7,6 +7,10 @@
 AS=${0##*/}
 AS_SESSION=${AS/do/}
 
+if [[ "$AS_SESSION" == 'acpi' ]]; then
+  AS_SESSION=''
+fi
+
 use_x=false
 use_tmux=false
 force=false
@@ -18,15 +22,26 @@ for arg in $@; do
     '-x') use_x=true; use_tmux=true ; SWITCH='-t' ;;
     '-t') use_tmux=true; SWITCH='-t' ;;
     '-f') force=true ;;
+    '-h')
+      echo "Usage:       doacpi [OPTIONS] [ACTION]"
+      echo "Description: Call the ACPI stack given OPTIONS and optional ACTION.
+             If ACTION is empty, then you'll take it from the name of the script
+             caller doACTION (e.g. doshutdown, dosuspend)"
+      echo "Options:
+  -x: be aware of X
+  -t: be aware of tmux
+  -f: force: don't call \`lock', go straight to \`confirm'"
+      exit 0 ;;
+    *) [[ -z $AS_SESSION ]] && AS_SESSION=$arg
   esac
 done
 
 unset LOGINCMD
 
 if $force; then
-  LOGINCMD="@DOSHUTDOWN_LOGINCMD_CONFIRM@ $SWITCH"
+  LOGINCMD="@DOACPI_LOGINCMD_CONFIRM@ $SWITCH $AS_SESSION"
 else
-  LOGINCMD="@DOSHUTDOWN_LOGINCMD_LOCK@ $SWITCH"
+  LOGINCMD="@DOACPI_LOGINCMD_LOCK@ $SWITCH $AS_SESSION"
 fi
 
 if $use_tmux; then
