@@ -2,15 +2,17 @@
 
 file=/tmp/.wp.png
 
-if [[ ! -f "$file" ]]; then
-  if [[ -s /tmp/.wp ]]; then
-    source="$(cat /tmp/.wp)"
-  else
-    source=~/.wp
-  fi
+if [[ -s /tmp/.wp ]]; then
+  source="$(cat /tmp/.wp)"
+elif [[ -f /tmp/.wp.img ]]; then
+  source="$(realpath /tmp/.wp.img)"
+else
+  source="$(realpath ~/.wp)"
+fi
 
+if [[ ! -f /tmp/.wp.i3lock || "$(cat /tmp/.wp.i3lock)" != "$source" ]]; then
+  echo "$source" > /tmp/.wp.i3lock
   ffmpeg -y -i "$source" -vf 'scale=1920x1080' "$file" -v 0
 fi
 
 i3lock -i "$file" -e -f -b -n -t -p default
-rm $file

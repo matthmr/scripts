@@ -19,7 +19,7 @@ xkbset ma 30 10 25 15 2 &
 clipmenud &
 
 # > nice pape anon
-wpset -d @XDAEMON_WPDIR@ &
+wpset -d @XDAEMON_WPDIR@ -w &
 
 # start bar (not for i3)
 if [[ $1 != i3 ]]; then

@@ -6,7 +6,7 @@ tmp=true
 random=false
 lock=false
 dry=false
-browser=false
+write=false
 file=''
 
 case $1 in
@@ -18,8 +18,8 @@ case $1 in
     echo "Options:
   -t: don't set TMP
   -k: dry: don't call FEH
-  -l: lock
-  -b: browser mode; create a JPEG copy for browsers in /tmp/.wp.jpg
+  -w: write (link) source image
+  -l: lock (link to HOME)
   -r: FILE from ~/.wp
   -R: FILE from /tmp/.wp
   -d: FILE from random in directory (FILE)"
@@ -31,8 +31,8 @@ for arg in $@; do
     '-t') tmp=false ;;
     '-d') random=true ;;
     '-l') lock=true ;;
-    '-b') browser=true ;;
     '-k') dry=true ;;
+    '-w') write=true ;;
     '-r') file=~/.wp ;;
     '-R') file="$(cat /tmp/.wp 2>/dev/null)" ;;
     *) file=$arg ;;
@@ -55,18 +55,13 @@ if $tmp; then
 fi
 
 if $lock; then
-  ln -svf "$file" ~/.wp
+  ln -svnf "$file" ~/.wp
+fi
+
+if $write; then
+  ln -svnf "$file" /tmp/.wp.img
 fi
 
 if ! $dry; then
   feh --bg-scale --no-fehbg "$file"
-fi
-
-if $browser; then
-  # use ffmpeg to convert the file, or simple copy it
-  if [[ ! $(file --dereference --mime $file) =~ '/jpeg' ]]; then
-    ffmpeg -y -v 0 -i $file /tmp/.wp.jpg
-  else
-    cp -L $file /tmp/.wp.jpg
-  fi
 fi
