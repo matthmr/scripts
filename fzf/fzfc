@@ -15,4 +15,5 @@ exec $FZF \
   "--bind=ctrl-alt-p:half-page-up,ctrl-alt-n:half-page-down,ctrl-k:kill-line,\
 alt-p:last,alt-n:first,ctrl-c:select-all,alt-c:deselect-all,alt-j:preview-down,\
 alt-k:preview-up,ctrl-v:preview-half-page-down,alt-v:preview-half-page-up,\
-alt->:preview-bottom,alt-<:preview-top,ctrl-space:toggle" "$@"
+alt->:preview-bottom,alt-<:preview-top,ctrl-space:toggle,\
+ctrl-s:preview(cat {}),ctrl-alt-s:toggle-preview" "$@"
