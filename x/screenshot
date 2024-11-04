@@ -1,26 +1,50 @@
 #!/usr/bin/env bash
-#UPDATE(20221122): no longer using `~p/scripts/date/long.sh'
 
-AS=${0##*/}
+SELF=$$
 
+FILENAME=""
+SCREENSHOT_DIR="."
 SCREENSHOT="shotgun"
 SCREENSHOT_OPTS=""
-SCREENSHOT_DIR=@SCREENSHOT_SHOTGUN_DIR@
-SCREENSHOT_TMP_DIR=@SCREENSHOT_TMP_DIR@
 NOTIFY=herbec
 
-OPT_X11_GEOM=@SCREENSHOT_X11_GEOM@
+OPT_X11_GEOM="hacksaw -r"
 
 OPT="\
 window root
 select
 "
 
-function feeddmenu {
-	echo -ne "$1" | dmenu -p "$2"
+quick=false
+full=false
+dir=false
+
+for arg in $@; do
+  case $arg in
+    '-h'|'--help')
+      echo "Usage:       screenshot [OPTIONS...] [FILENAME]"
+      echo "Description: Screenshot given options"
+      echo "Options:
+  -d: FILENAME is a directory whose filename may either prompt or use it from
+      options
+  -f: take fullscreen screenshot
+  -q: quick: use DATEFMT for filename, assumes \`-d'"
+      echo "Note:
+  Uses dmenu to prompt for options if \`-f' is not provided, or for FILENAME if
+  it's not apparent"
+      exit 0 ;;
+    '-d') dir=true ;;
+    '-f') full=true ;;
+    '-q') dir=true; quick=true ;;
+    *) FILENAME="$arg" ;;
+  esac
+done
+
+function with_dmenu {
+  echo -ne "$1" | dmenu -p "$2" || kill $SELF
 }
 
-function feedopt {
+function sel_to_opt {
   [[ -z $1 ]] && exit 1
 
   case $1 in
@@ -33,27 +57,34 @@ function feedopt {
   esac
 }
 
-case $AS in
-  'screenshot-quick')
-    FILENAME=/tmp/$(date +"%Y%m%d%H%M%S").png
-    SCREENSHOT_OPTS='-s';;
-  'screenshot-quick-dir')
-    FILENAME=$SCREENSHOT_TMP_DIR/$(date +"%Y%m%d%H%M%S").png
-    SCREENSHOT_OPTS='-s';;
-  *)
-    FILENAME=`feeddmenu "" "filename"`
-    if [[ -z $FILENAME ]]; then
-      exit 1
-    else
-      OPT=`feeddmenu "$OPT" "option"`
-      SCREENSHOT_OPTS=$(feedopt "$OPT")
-    fi
-    FILENAME=$FILENAME.png;;
-esac
-
-if [[ $AS = 'screenshot-dir' ]]; then
-  FILENAME=$SCREENSHOT_DIR/$FILENAME
+if $dir; then # || [[ -d "$FILENAME" ]]
+  SCREENSHOT_DIR="$(echo $FILENAME | sed -E 's!/+$!!')"
+  FILENAME=""
 fi
 
-$SCREENSHOT $SCREENSHOT_OPTS $FILENAME
+if $quick; then
+  FILENAME="${SCREENSHOT_DIR}/$(date +"%Y%m%d%H%M%S").png"
+fi
+
+if $full; then
+  SCREENSHOT_OPTS='-s'
+
+else
+  SEL=$(with_dmenu "$OPT" 'option')
+  SCREENSHOT_OPTS="$(sel_to_opt $SEL)"
+fi
+
+if [[ -z "$FILENAME" ]]; then
+  if [[ $SCREENSHOT_DIR == '.' || -z $SCREENSHOT_DIR ]]; then
+    PROMPT="<FILENAME>.png (full)"
+    SCREENSHOT_DIR=""
+  else
+    PROMPT="${SCREENSHOT_DIR}/<FILENAME>.png"
+    SCREENSHOT_DIR="${SCREENSHOT_DIR}/"
+  fi
+
+  FILENAME="${SCREENSHOT_DIR}$(with_dmenu '' "$PROMPT").png"
+fi
+
+$SCREENSHOT $SCREENSHOT_OPTS "$FILENAME"
 $NOTIFY 'Screenshot taken' "Save as $FILENAME"
