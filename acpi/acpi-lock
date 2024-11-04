@@ -1,11 +1,11 @@
 #!/usr/bin/bash
 
+# $1: ACPI action
 # -t: use tmux
-# $2: ACPI action
 
 SUDO=doas
 
-ACTION=$2
+ACTION=$1
 CONFIRM=@ACPI_LOCK_CONFIRM@
 USER_SHELL=/bin/zsh
 

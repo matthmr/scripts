@@ -5,7 +5,7 @@
 SUDO=doas
 ACTION=$1
 
-case $1 in
+case $ACTION in
   'shutdown') COMMAND="poweroff now";;
   'reboot') COMMAND="reboot now";;
   'suspend') COMMAND="$(realpath @SUSPEND_CONFIRM_ACPI@)";;
