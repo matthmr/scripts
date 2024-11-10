@@ -1,12 +1,14 @@
 #!/usr/bin/sh
 
+GPMC=$(which gpmc | xargs realpath)
+
 # Start gpm
-if ! gpm-tty status; then
-  doas @TTY_SESSION_GPM_TTY@ start
+if ! $GPMC status; then
+  doas $GPMC start
 fi
 
 # should take the foreground
 $@
 
 # Stop gpm
-doas @TTY_SESSION_GPM_TTY@ stop
+doas $GPMC stop

@@ -8,17 +8,15 @@ SUDO=doas
 
 #### MAIN
 
-case $1 in
-  "--help"|"-h")
-    echo "Usage:       gpm-tty [start|stop|status|toggle|restart] \
-[GPM OPTIONS...]"
-    echo "Description: Controls the GPM process"
-    exit 0;;
-  *)
-    DO=$1;;
-esac
-
 PID=$(cat $PIDFILE 2>/dev/null)
+DO=$1
+
+function help_gpm() {
+  echo "Usage:       gpmc [start|stop|status|toggle|restart] \
+[GPM OPTIONS...]"
+  echo "Description: Controls the GPM process"
+  exit 0
+}
 
 # start_gpm OPTS...
 function start_gpm() {
@@ -81,7 +79,10 @@ case $DO in
   'start')
     start_gpm $GPM_OPTS;;
 
+  'help'|'--help'|'-h')
+    help_gpm ;;
+
   *)
-    echo "[ !! ] Missing action. See \`--help'"
+    echo "[ !! ] Invalid action. See \`help'"
     exit 1;;
 esac
