@@ -138,7 +138,7 @@ function prompt_for_handler {
       f=$uri
       eval $job "$cmd"
     else
-      $job "$cmd" "$uri"
+      $job $cmd "$uri"
     fi
   else
     echo "[ !! ] Cmd is empty"

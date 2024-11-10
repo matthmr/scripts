@@ -220,9 +220,13 @@ list_choose() {
 
 ################################################################################
 
-# this is set by `openrc's `setup' job, but it'll have high permissions if it
-# writes anything, so we have to do this here
-ttset -t -w default-dark
+# only themes called for `TERM' value of `linux' should write
+if [[ ! -f /tmp/.tt.txt ]]; then
+  ttset -t -w default-dark
+else
+  cat /tmp/.tt.txt
+fi
+
 clear
 
 if [[ -z $1 ]]; then

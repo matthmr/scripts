@@ -13,9 +13,10 @@ speed=''
 p_var=''
 
 case $1 in
-  '--help'|'-h')
+  'help'|'--help'|'-h')
     echo "Usage:       mouse [on|on|left|right|speed] [value]"
     echo "Description: Enables/Disables the X mouse \`$XMOUSE'"
+    echo "Note:        On \`speed', lower is faster"
     exit 0 ;;
   'on')
      xinput $1 $XMOUSE ;;
@@ -33,10 +34,18 @@ case $1 in
      exit 1 ;;
 esac
 
-if [[ ! -z $p_var ]]; then
+if [[ ! -z $p_var && ! -z $2 ]]; then
   eval $p_var="$2"
+  p_var=""
 fi
 
+case $p_var in
+  'speed')
+    xinput list-props $XMOUSE | awk -F: "/$PROP/ {\
+      speed=\$2; gsub(/^[ \t]+/,\"\", speed); \
+      printf(\"%s\n\", speed)}"
+esac
+
 if [[ ! -z $speed ]]; then
-  xinput set-prop $XMOUSE 269 $speed
+  xinput set-prop $XMOUSE "$PROP" $speed
 fi
