@@ -1,0 +1,19 @@
+#!/usr/bin/sh
+
+THIS=${0##*/}
+
+case $1 in
+  '-h'|'--help')
+    echo "Usage:       $THIS OPTIONS..."
+    echo "Description: Manipulates the X clipboard"
+    exit 0;;
+esac
+
+XCLIP_OPTS=""
+
+case $THIS in
+  'xc') XCLIP_OPTS="-i" ;;
+  'xp') XCLIP_OPTS="-o" ;;
+esac
+
+eval exec xclip $XCLIP_OPTS -selection clipboard $@

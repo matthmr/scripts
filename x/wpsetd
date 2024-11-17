@@ -1,0 +1,29 @@
+#!/usr/bin/sh
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       wpsetd DIRECTORY INTV [OPTIONS]"
+    echo "Description: Call \`wpset -d' on DIRECTORY, given its OPTIONS"
+    exit 0;;
+  *) dir=$1;;
+esac
+
+intv=$2
+
+if [[ -z $dir ]]; then
+  echo "[ !! ] Missing directory. See \`--help'"
+  exit 1
+fi
+
+if [[ -z $intv ]]; then
+  echo "[ !! ] Missing interval. See \`--help'"
+  exit 1
+fi
+
+rest="${@:3}"
+
+while :; do
+  eval wpset -d $dir $rest
+
+  sleep $intv
+done

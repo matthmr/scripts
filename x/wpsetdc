@@ -1,0 +1,20 @@
+#!/usr/bin/sh
+
+case $1 in
+  'help'|'--help'|'-h')
+    echo "Usage:       wpsetdc (next|kill|stop|cont)"
+    echo "Description: Controller for \`wpsetd'"
+    exit 0 ;;
+  'kill') pid=$(pgrep '^wpsetd$')
+          if [[ ! -z $pid ]]; then
+            sleep_pid=$(pgrep -P $pid)
+
+            kill $pid
+            kill $sleep_pid
+          fi ;;
+  'next') pgrep '^wpsetd$' | xargs -r pgrep -P | xargs -r kill ;;
+  'stop') pgrep '^wpsetd$' | xargs -r pgrep -P | xargs -r kill -STOP ;;
+  'cont') pgrep '^wpsetd$' | xargs -r pgrep -P | xargs -r kill -CONT ;;
+  *) echo "[ !! ] Unknown action. See \`help'"
+     exit 1 ;;
+esac
