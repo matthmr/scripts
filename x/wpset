@@ -11,7 +11,7 @@ file=''
 
 case $1 in
   '--help'|'-h')
-    echo "Usage:       wpset [OPTIONS...] [FILE]"
+    echo "Usage:       wpset [OPTIONS...] [FILE] [FEH_OPTIONS]"
     echo "Description: Sets or tests FILE as the current wallpaper. Unless
   \`-t' is given, it will echo the path of the wallpaper in /tmp/.wp. If \`-l' is
   given, it'll link the path to ~/.wp, which is restorable by \`-r'"
@@ -26,6 +26,8 @@ case $1 in
     exit 0;;
 esac
 
+feh_opts=""
+
 for arg in $@; do
   case $arg in
     '-t') tmp=false ;;
@@ -35,7 +37,7 @@ for arg in $@; do
     '-w') write=true ;;
     '-r') file=~/.wp ;;
     '-R') file="$(cat /tmp/.wp 2>/dev/null)" ;;
-    *) file=$arg ;;
+    *) if [[ -z $file ]]; then file=$arg; else feh_opts+=" $arg"; fi ;;
   esac
 done
 
@@ -63,5 +65,9 @@ if $write; then
 fi
 
 if ! $dry; then
-  feh --bg-scale --no-fehbg "$file"
+  if [[ -z $feh_opts ]]; then
+    feh_opts="--bg-scale"
+  fi
+
+  eval feh --no-fehbg $feh_opts "$file"
 fi

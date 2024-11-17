@@ -220,17 +220,8 @@ list_choose() {
 
 ################################################################################
 
-# only themes called for `TERM' value of `linux' should write
-if [[ ! -f /tmp/.tt.txt ]]; then
-  ttset -t -w default-dark
-else
-  cat /tmp/.tt.txt
-fi
-
-clear
-
 if [[ -z $1 ]]; then
-  echo "$USER@$HOST | $TTY | $NOW"
+  # echo "$USER@$HOST | $TTY | $NOW"
   header "Choose a session to log in with"
   list_choose "${SESSIONS[@]}"
   SESSION=${SESSIONS[$?]}

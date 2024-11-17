@@ -16,7 +16,7 @@ esac
 cd $(git rev-parse --show-toplevel)
 
 out=$(
-  git -P diff --name-only @ |\
+  git -P diff --no-renames --name-only @ |\
     fzfc \
       --prompt "Include: " \
       --preview "git diff -P --color=always @ -- {1}" \

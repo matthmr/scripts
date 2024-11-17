@@ -19,12 +19,11 @@ function help {
     dir:<path>: declare dir as 9p volume
     mem:<n>: host memory amount
     cpu:<n>: host cpu core count
+    arch:<type>: vm cpu architecture; suffix of \`qemu-system-'
 
   NOTE:
     [QEMU OPTIONS...] may be raw options to the vm command
     use \`@' instead of \`\"' to denote joining"
-  echo "Variables:
-    VM=vm command"
   exit 1
 }
 
@@ -40,13 +39,14 @@ case "$1" in
 esac
 
 [[ -z $1 ]] && help
-[[ -z $VM ]] && VM='qemu-system-x86_64'
+
+VM='qemu-system-x86_64'
 
 VM_CMDLINE_COMMON="-enable-kvm -cpu host"
 VM_CMDLINE="$VM_CMDLINE_COMMON"
 
 OPT_INC=('a' 'n' 's')
-OPT_PAIR=('iso' 'disk' 'mem' 'cpu' 'dir')
+OPT_PAIR=('iso' 'disk' 'mem' 'cpu' 'dir' 'arch')
 
 AUDIO="-audiodev alsa,id=alsa,driver=alsa,out.frequency=48000,out.channels=2,out.dev=default,out.try-poll=off,timer-period=1000 \
 -device ich9-intel-hda \
@@ -109,6 +109,7 @@ function parse_pair_opt {
         "mem")  VM_CMDLINE+=" -m $value" ; break;;
         "cpu")  VM_CMDLINE+=" -smp $value" ; break;;
         "dir")  VM_CMDLINE+=" -virtfs local,path=$value,mount_tag=hostdir,id=hostdir,security_model=passthrough" ; break;;
+        "arch") VM="qemu-system-$value"; break;;
         *)      return 1;;
       esac
     fi
