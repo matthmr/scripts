@@ -1,0 +1,24 @@
+#!/usr/bin/sh
+
+MSG=""
+ARGV="$#"
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       msgp MSG CMDLINE"
+    echo "Description: Exec CMDLINE given MSG as STDOUT input from a pipe"
+    echo "Note:        If MSG is \`-', then the *last* argument is MSG, the ones
+             before, excluding \`-' itself, are the CMDLINE. For example:
+  msgp foo xc -i -> echo foo | xc -i
+  msgp - xc -i foo -> echo foo | xc -i (useful for \`uhandle')"
+    exit 0;;
+  '-') MSG="${@:ARGV}"; ARGV=$((ARGV-2)); CMDLINE="${@:2:ARGV}";;
+  *) MSG="$1"; CMDLINE=${@:2}
+;;
+esac
+
+if [[ -z "$CMDLINE" ]]; then
+  exit 1
+fi
+
+exec echo "$MSG" | $CMDLINE
