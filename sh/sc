@@ -1,0 +1,43 @@
+#!/usr/bin/sh
+
+run=true
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       s [OPTIONS...]"
+    echo "Description: Use fzf to run a script that's not exported in PATH"
+    echo "Options:
+  -e: just echo the name of the script"
+    exit 0
+    ;;
+esac
+
+for arg in $@; do
+  case $arg in
+    '-e') run=false ;;
+  esac
+done
+
+scripts_root=$(realpath @SC_SCRIPTS_DIR@)
+
+script=$(find $scripts_root -type f \
+              -and -not -path '*/GIT/*' \
+              -and '(' -name '*.sh' -or -regex '[^.]*$' ')' |\
+         sed "s!$scripts_root/!!" |\
+         fzfc --height=-40%)
+
+if [[ -z $script ]]; then
+  exit 0
+fi
+
+script="$scripts_root/$script"
+
+if ! $run; then
+  echo $script
+  exit 0
+fi
+
+if [[ ! -z "$script" ]]; then
+  read -p "$script> Command line: " cmdline
+  eval exec "$script" $cmdline
+fi

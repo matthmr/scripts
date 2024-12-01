@@ -1,0 +1,23 @@
+#!/usr/bin/sh
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       bt CORE [OPTIONS]"
+    echo "Description: Prints a non-interactive backtrace of a CORE file using \
+\`lldb'"
+    echo "Options:
+  -i: make interactive"
+    exit 0 ;;
+  *)
+    CORE=$1 ;;
+esac
+
+if [[ -z $CORE ]]; then
+  echo "[ !! ] Missing CORE. See \`--help'"
+  exit 1
+fi
+
+case $2 in
+  '-i') lldb --core $CORE --one-line $'bt\nf' ;;
+  *) lldb -b --core $CORE --one-line $'bt\nf' ;;
+esac
