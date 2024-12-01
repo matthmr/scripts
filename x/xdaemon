@@ -15,6 +15,10 @@ fi
 #    [mk-delay> <mk_interval> <mk_time_to_max mk-max_speed> <mk_curve]
 xkbset ma 30 10 25 15 2 &
 
+# xmodmap: RCTL = Control_R, C-RCTL = CAPS (apparently this doesn't work via
+# XKB...)
+xmodmap -e 'keycode 109 = Control_R Caps_Lock'
+
 # clipmenu
 clipmenud &
 

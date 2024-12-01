@@ -18,6 +18,7 @@ select
 quick=false
 full=false
 dir=false
+sel=false
 
 for arg in $@; do
   case $arg in
@@ -28,6 +29,7 @@ for arg in $@; do
   -d: FILENAME is a directory whose filename may either prompt or use it from
       options
   -f: take fullscreen screenshot
+  -s: go into select mode
   -q: quick: use DATEFMT for filename, assumes \`-d'"
       echo "Note:
   Uses dmenu to prompt for options if \`-f' is not provided, or for FILENAME if
@@ -36,6 +38,7 @@ for arg in $@; do
     '-d') dir=true ;;
     '-f') full=true ;;
     '-q') dir=true; quick=true ;;
+    '-s') sel=true ;;
     *) FILENAME="$arg" ;;
   esac
 done
@@ -68,7 +71,8 @@ fi
 
 if $full; then
   SCREENSHOT_OPTS='-s'
-
+elif $sel; then
+  SCREENSHOT_OPTS="-g $($OPT_X11_GEOM)"
 else
   SEL=$(with_dmenu "$OPT" 'option')
   SCREENSHOT_OPTS="$(sel_to_opt $SEL)"
@@ -84,7 +88,18 @@ if [[ -z "$FILENAME" ]]; then
   fi
 
   FILENAME="${SCREENSHOT_DIR}$(with_dmenu '' "$PROMPT").png"
+else
+  SCREENSHOT_DIR="${FILENAME%/*}"
 fi
+
+while :; do
+  if [[ -f "$FILENAME" ]]; then
+    FILENAME="${SCREENSHOT_DIR}$(with_dmenu \
+      '' "(already exists) ${SCREENSHOT_DIR}/<FILANAME>.png").png"
+  else
+    break
+  fi
+done
 
 $SCREENSHOT $SCREENSHOT_OPTS "$FILENAME"
 $NOTIFY 'Screenshot taken' "Save as $FILENAME"

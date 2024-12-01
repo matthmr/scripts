@@ -4,7 +4,7 @@
 
 AS=${0##*/}
 
-XTERM=urxvt
+XTERM='urxvt -T urxvt'
 EMACSCLIENT=emacsclient
 
 case $1 in
