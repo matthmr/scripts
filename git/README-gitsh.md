@@ -42,8 +42,8 @@ the file.
 
 ### branch-fork
 
-The `bf` criterion triggers when a defined branch is not the ancestor of
-`LOCAL_REPO_BRANCH`, it has the following syntax:
+The `bf` criterion triggers when the defined branch (`FORK_BRANCH`) is not
+parented by `LOCAL_REPO_BRANCH`, it has the following syntax:
 ```
   bf:FORK_BRANCH:/path/to/git/repo ...
 ```

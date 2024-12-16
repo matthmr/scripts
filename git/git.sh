@@ -99,16 +99,16 @@ changes, stashing them to ($ref)"
 
         [[ -z $check_branch ]] && check_branch=master
 
-        post_cmd="git -C $local_repo merge-base --is-ancestor $check_branch $local_branch"
-
-        echo "[ == ] Checking merge with: $post_cmd"
+        post_cmd="git -C $local_repo merge-base --is-ancestor \
+$local_branch $check_branch"
 
         if eval $post_cmd; then
-          echo "[ .. ] On \`$local_repo' ($crit): needs merge"
-        else
           echo "[ .. ] On \`$local_repo' ($crit): OK"
+        else
+          echo "[ .. ] On \`$local_repo' ($crit): needs merge"
         fi
 
+        echo "[ == ] Checking merge with: $post_cmd"
         cat /tmp/.gitout
         ;;
       '')

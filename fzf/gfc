@@ -4,22 +4,27 @@
 # awk 'BEGIN {files=""} {files=(files " " $2)} END {print files}' |
 # xargs git diff $(cat /tmp/.gitidx) @ master
 
+HEAD='--staged'
+
 case $1 in
   '--help'|'-h')
-    echo "Usage:       gfc"
+    echo "Usage:       gfc [-@]"
     echo "Description: Outputs a chosen list of files with fzf to commit with \
 git"
+    echo "Options:
+  -@: diff against HEAD. Default is against staging"
     exit 0
     ;;
+  -@) HEAD='HEAD'
 esac
 
 cd $(git rev-parse --show-toplevel)
 
 out=$(
-  git -P diff --no-renames --name-only @ |\
+  git -P diff --no-renames --name-only "$HEAD" |\
     fzfc \
       --prompt "Include: " \
-      --preview "git diff -P --color=always @ -- {1}" \
+      --preview "git diff -P --color=always $HEAD -- {1}" \
       --height=-40% -m)
 
 if [[ ! -z $out ]]; then
