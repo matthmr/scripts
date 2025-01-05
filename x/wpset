@@ -17,12 +17,13 @@ case $1 in
   given, it'll link the path to ~/.wp, which is restorable by \`-r'"
     echo "Options:
   -t: don't set TMP
+  -w: write (LINK) source image
   -k: dry: don't call FEH
-  -w: write (link) source image
-  -l: lock (link to HOME)
-  -r: FILE from ~/.wp
-  -R: FILE from /tmp/.wp
-  -d: FILE from random in directory (FILE)"
+  -r: FILE from TMP
+  -R: FILE from LINK
+  -L: FILE from LOCK
+  -d: FILE from random in directory (FILE)
+  -l: lock (link to home: LOCK)"
     exit 0;;
 esac
 
@@ -35,8 +36,9 @@ for arg in $@; do
     '-l') lock=true ;;
     '-k') dry=true ;;
     '-w') write=true ;;
-    '-r') file=~/.wp ;;
+    '-r') file=/tmp/.wp.img ;;
     '-R') file="$(cat /tmp/.wp 2>/dev/null)" ;;
+    '-L') file=~/.wp ;;
     *) if [[ -z $file ]]; then file=$arg; else feh_opts+=" $arg"; fi ;;
   esac
 done

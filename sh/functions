@@ -134,7 +134,7 @@ a \`.txt' file for urls, and \`.db' file for the database. Pass them \
 
 function nohist {
   fc -W
-  # fc -p
-  PREV_HISTFILE=$HISTFILE
+
+  PREV_HISTFILE="$HISTFILE"
   unset HISTFILE
 }
