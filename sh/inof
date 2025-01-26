@@ -1,0 +1,18 @@
+#!/usr/bin/sh
+
+MSG=""
+ARGV="$#"
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       inof CMDLINE MSG"
+    echo "Description: Exec CMDLINE given MSG as STDIN input from a pipe"
+    exit 0 ;;
+  *) CMDLINE="$1"; MSG="${@:2}" ;;
+esac
+
+if [[ -z "$CMDLINE" ]]; then
+  exit 1
+fi
+
+exec echo "$MSG" | eval "$CMDLINE"

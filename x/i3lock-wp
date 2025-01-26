@@ -1,11 +1,35 @@
 #!/usr/bin/sh
 
+prec1='/tmp/.wp'; prec2='/tmp/.wp.img'
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       i3lock-wp [OPTIONS...]"
+    echo "Description: Call \`i3lock' with some wallpaper chosen"
+    echo "Options:
+  -r: prefer from TMP
+  -R: prefer from LINK"
+    ;;
+  '-r') prec1='/tmp/.wp'; prec2='/tmp/.wp.img' ;;
+  '-R') prec1='/tmp/.wp.img'; prec2='/tmp/.wp' ;;
+esac
+
 file=/tmp/.wp.png
 
-if [[ -s /tmp/.wp ]]; then
-  source="$(cat /tmp/.wp)"
-elif [[ -f /tmp/.wp.img ]]; then
-  source="$(realpath /tmp/.wp.img)"
+# source_from PREC
+function source_from {
+  case $1 in
+    '/tmp/.wp')
+      cat /tmp/.wp ;;
+    '/tmp/.wp.img')
+      realpath /tmp/.wp.img ;;
+  esac
+}
+
+if [[ -f $prec1 ]]; then
+  source="$(source_from $prec1)"
+elif [[ -f $prec2 ]]; then
+  source="$(source_from $prec2)"
 else
   source="$(realpath ~/.wp)"
 fi
