@@ -4,6 +4,13 @@ case $1 in
   '--help'|'-h')
     echo "Usage:       herbec NOTIFICATION"
     echo "Description: Generic herbe wrapper"
+    echo "Note:        NOTIFICATION can be \`kill', which will kill any other \
+herbec instance running"
+    exit 0;;
+  'kill')
+    pkill -TERM 'herbe$' | grep -v $$ | while read pid; do
+      kill -TERM $pid
+    done
     exit 0;;
 esac
 

@@ -4,6 +4,7 @@ AS=${0##*/}
 
 p=false
 pp=false
+cmdline_args=false
 
 passwd=''
 ptyp=''
@@ -11,6 +12,7 @@ ptyp=''
 input=''
 gpg_opts=''
 
+cmdline=''
 verbose=''
 
 case $AS in
@@ -21,7 +23,7 @@ esac
 
 case $1 in
 '--help'|'-h')
-  echo "Usage:       $AS [OPTIONS] [INPUT] [GPG_OPTIONS]"
+  echo "Usage:       $AS [OPTIONS] [INPUT] [GPG_OPTIONS] [-- CMDLINE]"
   echo "Description: $DO a file with GPG to STDOUT"
   echo "Options:
   -s: silent: don't output STDERR (GPG msgs)
@@ -30,7 +32,8 @@ case $1 in
   [INPUT]: If no INPUT is given, take it from stdin, which requires \`-p' or
     \`-pp' to be set. If it is given, then stdin might be for prompting the
     passphrase
-  [GPG_OPTIONS]: after INPUT is given, the rest are generic GPG options"
+  [GPG_OPTIONS]: after INPUT is given, the rest are generic GPG options
+  [-- CMDLINE]: after being separated by \`--', take STDOUT as STDIN of CMDLINE"
   exit 1;;
 esac
 
@@ -43,11 +46,14 @@ for arg in $@; do
     passwd=$arg
     ptyp=pp
     pp=false
+  elif $cmdline_args; then
+    cmdline+="$arg "
   else
     case $arg in
       '-p') p=true ;;
       '-pp') pp=true ;;
       '-s') verbose="2>/dev/null" ;;
+      '--') cmdline_args=true; cmdline="| " ;;
       *) [[ -z $input ]] && input=$arg || gpg_opts+="$arg " ;;
     esac
   fi
@@ -64,7 +70,8 @@ case $ptyp in
 esac
 
 if [[ -z $verbose ]]; then
-  echo "[ .. ] Eval: gpg --batch -o - $gpg_do $input $verbose $gpg_opts" 1>&2
+  echo "[ .. ] Eval: gpg --batch -o - $gpg_do $input $verbose $gpg_opts \
+$cmdline" 1>&2
 fi
 
-eval gpg --batch $gpg_opts -o - $gpg_do $input $verbose
+eval gpg --batch $gpg_opts -o - $gpg_do $input $verbose $cmdline

@@ -83,7 +83,7 @@ function mkproj {
 }
 
 function unicode {
-  printf "$@" | iconv -f UTF8 -t UTF16BE | xxd
+  echo -n "$@" | iconv -f UTF8 -t UTF16BE | xxd
 }
 
 function psof {
