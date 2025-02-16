@@ -1,6 +1,7 @@
 #!/bin/sh
 
-[[ -z $FZF ]] && FZF=fzf
+# min
+[[ -z $FZF ]] && FZF='fzf --no-mouse'
 
 case $1 in
   '--help'|'-h')
