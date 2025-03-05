@@ -22,7 +22,7 @@ VIDEOPLAYER=mpv
 
 FETCHURL=curl
 IMGVIEW=feh
-GIFVIEW=nsxiv
+GIFVIEW=mpv
 PDFVIEW=zathura
 DEC=dec
 

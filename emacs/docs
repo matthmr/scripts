@@ -51,14 +51,14 @@ function wikicmd {
   fi
 
   if [[ ! -z $int ]]; then
-    REPO=$(find $WIKI/$file '(' -type f -or -type l ')' -name '*.org' | $int)
+    REPO=$(find $WIKI/$file '(' -type f -or -type l ')' -name '*.md' | $int)
     return 0
   fi
 
   if [[ -d $WIKI/$file ]]; then
     REPO="$WIKI/$file"
   else
-    REPO="$WIKI/$file.org"
+    REPO="$WIKI/$file.md"
   fi
 }
 
@@ -78,15 +78,15 @@ defaulting \`project-mode' is not supported"
   fi
 
   if [[ -z $file ]]; then
-    [[ -z $int ]] && file="DEV/index.org" || file="DEV"
+    [[ -z $int ]] && file="DEV/index.md" || file="DEV"
   elif [[ -d $file ]]; then
     file="DEV/$file"
   else
-    file="DEV/$file.org"
+    file="DEV/$file.md"
   fi
 
   if [[ ! -z $int ]]; then
-    REPO=$(find $PROJECT/$repo/$file '(' -type f -or -type l ')' -name '*.org' | $int)
+    REPO=$(find $PROJECT/$repo/$file '(' -type f -or -type l ')' -name '*.md' | $int)
     return 0
   fi
 
@@ -109,7 +109,7 @@ defaulting to current date"
     [0-9][0-9][0-9][0-9])
       local yy=${date:0:2}
       local mm=${date:2:2}
-      REPO="$JOURNAL/20$yy/$mm.org" ;;
+      REPO="$JOURNAL/20$yy/$mm.md" ;;
     [0-9][0-9])
       local yy=${date:0:2}
       REPO="$JOURNAL/20$yy" ;;
@@ -119,7 +119,7 @@ defaulting to current date"
   esac
 
   if [[ ! -z $int ]]; then
-    REPO=$(find $REPO '(' -type f -or -type l ')' -name '*.org' | $int)
+    REPO=$(find $REPO '(' -type f -or -type l ')' -name '*.md' | $int)
     return 0
   fi
 }
