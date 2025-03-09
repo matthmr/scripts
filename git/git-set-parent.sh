@@ -20,5 +20,5 @@ fi
 git cat-file commit $ours |\
   sed -E "s/parent [^ ]+$/parent $(git rev-parse $parent^0)/" > /tmp/.gitcmt
 
-echo "[ .. ] Done. $ours is now parented by $parent"
+echo "[ .. ] Done. $ours is now parented by $parent" 1>&2
 git hash-object -t commit -w /tmp/.gitcmt

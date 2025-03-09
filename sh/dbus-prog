@@ -2,20 +2,22 @@
 
 case $1 in
   '--help'|'-h')
-    echo "Usage:       dbus-prog [options] <prog>"
-    echo "Description: Starts or kills a program with dbus"
+    echo "Usage:       dbus-prog [OPTIONS...] [PROG]"
+    echo "Description: Starts or kills some PROG program with dbus"
     echo "Options:
   --start: start (default)
   --file: use environment file
   --list: lists dbus-like processes
-  --stop: stop
-  --no-prog: ignore the program
-  --no-bus: ignore the killing dbus"
+  --stop: kill program and the bus
+  --keep-bus: ignore the killing dbus"
     exit 1;;
 esac
 
+self="$$"
+SHELL=/usr/bin/zsh
+
 no_prog=false
-no_bus=false
+keep_bus=false
 
 on_file=false
 on_sys=false
@@ -23,45 +25,35 @@ on_sys=false
 op=start
 prog=""
 
-for arg in ${@:1}; do
+for arg in $@; do
   case $arg in
     '--start')
       op=start;;
     '--stop')
       op=stop;;
-
     '--list')
       no_prog=true
       op=list;;
-
     '--file')
       on_file=true;;
-
-    '--no-prog')
-      no_prog=true;;
-    '--no-bus')
-      no_bus=true;;
+    '--keep-bus')
+      keep_bus=true;;
     *)
       prog+="$arg "
   esac
 done
 
 if [[ -z $prog && $no_prog == 'false' ]]; then
-  echo "[ !! ] No program was specified"
-  exit 1
+  echo "[ WW ] No program was specified. Defaulting to SHELL"
+  prog="$SHELL"
 fi
 
 case $op in
   'list')
     echo "[ == ] pgrep -af dbus"
-    pgrep -af dbus ;;
+    pgrep -af dbus | grep -v "^$self" ;;
 
   'start')
-    if $no_prog; then
-      echo "[ !! ] \`--no-prog' cannot be used with empty \`--start'"
-      exit 1
-    fi
-
     echo "[ == ] dbus-launch $prog"
 
     if $on_file; then
@@ -91,7 +83,7 @@ case $op in
       sleep 5
     fi
 
-    if ! $no_bus; then
+    if ! $keep_bus; then
       echo "[ == ] pkill -f -TERM 'dbus-daemon.*--session$'"
       eval pkill -f -TERM 'dbus-daemon.*--session$'
     fi ;;
