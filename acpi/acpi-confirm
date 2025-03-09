@@ -5,11 +5,14 @@
 SUDO=doas
 ACTION=$1
 
+# so that `doas' can execute this without prompt for a password
+SUSPEND="$(realpath @ACPI_CONFIRM_SUSPEND@)"
+
 case $ACTION in
   'shutdown') COMMAND="poweroff now";;
   'reboot') COMMAND="reboot now";;
-  'suspend') COMMAND="$(realpath @SUSPEND_CONFIRM_ACPI@)";;
-  'hibernate') COMMAND="$(realpath @HIBERNATE_CONFIRM_ACPI@)";;
+  'suspend') COMMAND="$SUSPEND mem";;
+  'hibernate') COMMAND="$SUSPEND disk";;
   *) echo '[ !! ] Invalid command!'; exit 1 ;;
 esac
 

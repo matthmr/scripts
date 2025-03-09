@@ -1,9 +1,15 @@
 #!/usr/bin/bash
 
+ACTION=''
+
 case $1 in
   '--help'|'-h')
-    echo "Usage:       suspend.sh"
-    echo "Description: Suspends the system"
+    echo "Usage:       suspend.sh (mem|disk)"
+    echo "Description: Suspends (mem) or hibernates (disk) the system"
+    exit 1;;
+  'mem'|'disk') ACTION="$1" ;;
+  *)
+    echo "[ !! ] What are you doing?"
     exit 1;;
 esac
 
@@ -12,20 +18,7 @@ if [[ $USER != root ]]; then
   exit 1
 fi
 
-STATE=
-SYSFS=
-
-case ${0##*/} in
-  'suspend.sh')
-    STATE="mem" ;;
-  'hibernate.sh')
-    STATE="disk" ;;
-  *)
-    echo "[ !! ] What are you doing?"
-    exit 1;;
-esac
-
 echo "[ OK ] Handing over to openrc"
 sleep 1
 
-echo "$STATE" > /sys/power/state
+echo $ACTION > /sys/power/state
