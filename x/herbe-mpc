@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 # MPC_FORMAT='[%title%|%file%][ - %artist%[ "%album%"][ (%date%)]]'
-MPC_FORMAT='%file%'
+MPC_FORMAT='[%title%|%file%]'
 THIS="$$"
 
 case $1 in

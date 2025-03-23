@@ -7,6 +7,6 @@ export LESS="-S -R -I -Q --use-color --incsearch"
 export PAGER="less"
 export EDITOR="emacsc"
 export MPD_HOST=/tmp/mpd-socket
-export MPC_FORMAT='%file%'
+export MPC_FORMAT='[%title%|%file%]'
 export EMACS_SOCKET_NAME=/tmp/emacs/server
 export ALTERNATE_EDITOR=emacs
