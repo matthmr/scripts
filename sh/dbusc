@@ -1,15 +1,22 @@
 #!/usr/bin/bash
 
+function log {
+  echo "$@" 1>&2
+}
+
+THIS=$0
+THIS=${THIS##*/}
+
 case $1 in
   '--help'|'-h')
-    echo "Usage:       dbus-prog [OPTIONS...] [PROG]"
+    echo "Usage:       $THIS [OPTIONS...] [PROG]"
     echo "Description: Starts or kills some PROG program with dbus"
     echo "Options:
-  --start: start (default)
-  --file: use environment file
-  --list: lists dbus-like processes
-  --stop: kill program and the bus
-  --keep-bus: ignore the killing dbus"
+  -s, --start: start (default)
+  -f, --file: use environment file
+  -l, --list: lists dbus-like processes
+  -S, --stop: kill program and the bus
+  -k, --keep-bus: ignore the killing dbus"
     exit 1;;
 esac
 
@@ -27,37 +34,37 @@ prog=""
 
 for arg in $@; do
   case $arg in
-    '--start')
+    '-s'|'--start')
       op=start;;
-    '--stop')
+    '-S'|'--stop')
       op=stop;;
-    '--list')
+    '-l'|'--list')
       no_prog=true
       op=list;;
-    '--file')
+    '-f'|'--file')
       on_file=true;;
-    '--keep-bus')
+    '-k'|'--keep-bus')
       keep_bus=true;;
     *)
       prog+="$arg "
   esac
 done
 
-if [[ -z $prog && $no_prog == 'false' ]]; then
-  echo "[ WW ] No program was specified. Defaulting to SHELL"
-  prog="$SHELL"
-fi
-
 case $op in
   'list')
-    echo "[ == ] pgrep -af dbus"
+    log "[ == ] pgrep -af dbus"
     pgrep -af dbus | grep -v "^$self" ;;
 
   'start')
-    echo "[ == ] dbus-launch $prog"
+    if [[ -z $prog && $no_prog == 'false' ]]; then
+      log "[ WW ] No program was specified. Defaulting to SHELL"
+      prog="$SHELL"
+    fi
+
+    log "[ == ] dbus-launch $prog"
 
     if $on_file; then
-      echo "[ == ] Using file"
+      log "[ == ] Using file"
 
       if [[ ! -f /tmp/dbus-env ]]; then
         export DBUS_SESSION_BUS_ADDRESS=$(dbus-launch sh -c "echo \$DBUS_SESSION_BUS_ADDRESS")
@@ -76,15 +83,19 @@ case $op in
       rm -v /tmp/dbus-env
     fi
 
+    if [[ -z $prog ]]; then
+      no_prog=true
+    fi
+
     if ! $no_prog; then
-      echo "[ == ] pkill -f -TERM $prog"
+      log "[ == ] pkill -f -TERM $prog"
       eval pkill -f -TERM $prog
-      echo "[ == ] sleep 5"
+      log "[ == ] sleep 5"
       sleep 5
     fi
 
     if ! $keep_bus; then
-      echo "[ == ] pkill -f -TERM 'dbus-daemon.*--session$'"
+      log "[ == ] pkill -f -TERM 'dbus-daemon.*--session$'"
       eval pkill -f -TERM 'dbus-daemon.*--session$'
     fi ;;
 esac

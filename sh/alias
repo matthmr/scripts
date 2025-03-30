@@ -13,7 +13,7 @@ alias objdump='objdump --disassembler-color=on'
 # shortenings
 alias chess='gnuchess -g'
 alias rp='realpath'
-alias xa='xargs -t -r -p'
+alias x='xargs -t -r -p'
 alias mk='make'
 alias g='git'
 alias t='tig'
@@ -63,3 +63,7 @@ alias ....='../../..'
 # functional
 alias man="GROFF_NO_SGR=1 LESS_TERMCAP_md=$'\e[01;31m' LESS_TERMCAP_me=$'\e[0m' LESS_TERMCAP_se=$'\e[0m' LESS_TERMCAP_so=$'\e[01;44;33m' LESS_TERMCAP_ue=$'\e[0m' LESS_TERMCAP_us=$'\e[01;32m' /usr/bin/man"
 alias 80c="echo '--------------------------------------------------------------------------------'"
+
+# fix: I don't use (and have never used) ghostscript: `gs t' is a typo for
+# `g st' (git status)
+alias gs=true
