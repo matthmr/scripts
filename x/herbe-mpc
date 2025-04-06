@@ -5,13 +5,13 @@ THIS="$$"
 
 case $1 in
   '--help'|'-h')
-    echo "Usage:       herbe-mpc EVENT..."
+    echo "Usage:       herbe-mpc [COMMAND] [OPTIONS...] EVENT..."
     echo "Description: Enters a loop calling herbe everytime EVENT is sent by \
 MPD"
-    echo "Options:
-  - EVENT=kill: kill any other herbe-mpc instance running
-  - EVENT=stop: suspend any other herbe-mpc instance running
-  - EVENT=cont: continue any other herbe-mpc instance running "
+    echo "Commands:
+  - kill: kill any other herbe-mpc instance running
+  - stop: suspend any other herbe-mpc instance running
+  - cont: continue any other herbe-mpc instance running"
     exit 0 ;;
   'kill')
     pkill -f '^mpc idle$'

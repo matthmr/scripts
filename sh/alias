@@ -9,6 +9,7 @@ alias pkill='pkill --echo'
 alias kill='/usr/bin/kill --verbose'
 alias killall='/usr/bin/killall --verbose'
 alias objdump='objdump --disassembler-color=on'
+alias bat='bat -p'
 
 # shortenings
 alias chess='gnuchess -g'
