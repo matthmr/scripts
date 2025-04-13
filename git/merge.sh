@@ -1,6 +1,6 @@
 case $1 in
   '--help'|'-h')
-    echo "Usage:       git-merge.sh [OPTIONS] HEAD"
+    echo "Usage:       merge.sh [OPTIONS] HEAD"
     echo "\
 Description: Crudely set the MERGE_HEAD of some current revision to
              \`HEAD'"
@@ -34,6 +34,11 @@ fi
 function do_write_merge {
   local gitdir=$1
   local merge_branch=$2
+
+  if ! git rev-parse $merge_branch; then
+    echo "[ !! ] Branch doesn't exist! Merging it would be *BAD*!"
+    exit 1
+  fi
 
   echo "$merge_branch" > $gitdir/MERGE_HEAD
 

@@ -1,6 +1,6 @@
 # Syntax
 
-This is the syntax for files processed by `git.sh`
+This is the syntax for files processed by `git/track.sh`
 
 ```
   LOCAL_REPO_ORIGIN [LOCAL_REPO_BRANCH] [REMOTE_REPO_ORIGIN] [REMOTE_REPO_BRANCH]

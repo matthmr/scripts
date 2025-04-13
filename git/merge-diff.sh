@@ -1,10 +1,10 @@
 #!/bin/sh
 
-set -e
+# TODO: interactive fzfc version with CSV FILEs?
 
 case $1 in
   '--help'|'-h')
-    echo "Usage:       git-merge-diff.sh [OPTIONS] FILE OURS THEIRS [BASE]"
+    echo "Usage:       merge-diff.sh [OPTIONS] FILE OURS THEIRS [BASE]"
     echo "\
 Description: Displays a diff of successfully merged changes, where
              the file may conflict. No ouput means the merged files is the same

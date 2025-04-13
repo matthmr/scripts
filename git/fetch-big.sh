@@ -4,7 +4,7 @@
 
 case $1 in
   '--help'|'-h')
-    echo "Usage:       git-fetch-big.sh [OPTIONS]"
+    echo "Usage:       fetch-big.sh [OPTIONS]"
     echo "Description: git-fetch(1) for big repositories"
     echo "Options:
   -o ORIGIN: use ORIGIN as origin. default is \`origin'

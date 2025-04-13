@@ -2,7 +2,7 @@
 
 case $1 in
   '-h'|'--help')
-    echo "Usage:       git.sh FILES..."
+    echo "Usage:       track.sh FILES..."
     echo "Description: Update git-controlled packages"
     exit 1 ;;
   '')

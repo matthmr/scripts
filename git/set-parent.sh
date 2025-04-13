@@ -4,7 +4,7 @@ set -e
 
 case $1 in
   '-h'|'--help')
-    echo "Usage:       git-set-parent.sh OURS PARENT"
+    echo "Usage:       set-parent.sh OURS PARENT"
     echo "Description: Set parent of OURS to PARENT"
     exit 0;;
 esac

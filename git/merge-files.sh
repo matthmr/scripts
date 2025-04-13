@@ -1,10 +1,10 @@
 #!/usr/bin/bash
 
-gitidx=/home/p/scripts/git/git-index.sh
+gitidx=@GIT_MERGE_FILES_INDEX@
 
 case $1 in
   '--help'|'-h')
-    echo "Usage:       git-merge.sh [OPTIONS] THEIRS [BASE]"
+    echo "Usage:       merge-files.sh [OPTIONS] THEIRS [BASE]"
     echo "Description: Operate in files changed in the merge/cherry with THEIRS,
   or future merge/cherry from OURS, with an optional merge base BASE"
     echo "Options:
@@ -12,7 +12,6 @@ case $1 in
   -k: ignore renames
   -R: reverse THEIRS and OURS
   -o OURS: use OURS as OURS, instead of HEAD
-  -w: write index of HEAD as THEIRS/BASE. Will exit the script
   -r[otb]: read from index as OURS/THEIRS/BASE"
     echo "Environment:
   MERGE_EDITOR: use this editor, instead of emacsclient -t"

@@ -27,7 +27,7 @@ theirs=''
 
 case $1 in
   '--help'|'-h')
-    echo "Usage: git-merge-big.sh [OPTIONS] GIT_FETCH_BIG_OPTIONS"
+    echo "Usage: merge-big.sh [OPTIONS] GIT_FETCH_BIG_OPTIONS"
     echo "\
 Description: Sets up merging on a big git repository, with the current HEAD as
              ours, and the parent as a 'theirs'-type revision"
