@@ -14,6 +14,7 @@ esac
 
 term=""
 CT=$(tmux display-message -p "#{client_tty}" 2>/dev/null)
+export TTY="$CT"
 
 if [[ "$CT" == "\n" || -z "$CT" ]]; then
   exit 0

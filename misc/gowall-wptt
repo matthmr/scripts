@@ -1,0 +1,49 @@
+#!/usr/bin/bash
+
+case $1 in
+  '--help'|'-h')
+    echo "Usage:       gowall-wptt"
+    echo "\
+Description: Integrate \`gowall', \`wpset' and tinted-themeing to
+             generate a \`tt' variant of \`wpset's wallpaper with \`gowall'"
+    exit 0 ;;
+esac
+
+theme=$(cat /tmp/.tt)
+theme_file=$(find @GOWALL_WPTT_TINTED_SHELL_SCRIPTS@ -name "*$theme*" \
+                  2>/dev/null)
+
+if [[ -z $theme_file ]]; then
+  echo "[ !! ] Theme \`$theme' not found"
+  exit 1
+fi
+
+echo "[ .. ] Using $theme from $theme_file"
+
+json="{\"name\":\"theme\",\"colors\":["
+colors=$(
+  sed -En 's!/!!g; s/^color.*="(([0-9a-fA-F]{2}\/?){3})".*/\1/p' \
+      $theme_file) # | sort | uniq
+
+for color in $colors; do
+  json+="\"#$color\","
+done
+
+json="${json%,}]}"
+
+echo $json > /tmp/.theme.json
+
+mime=$(file -Li /tmp/.wp.img)
+fmt=""
+
+case $mime in
+  */jpg*) fmt="jpg" ;;
+  */jpeg*) fmt="jpeg" ;;
+  */png*) fmt="png" ;;
+  # TODO: webm
+esac
+
+echo "[ == ] gowall convert /tmp/.wp.img - -f $fmt -t /tmp/.theme.json"
+
+gowall convert /tmp/.wp.img - -f $fmt -t /tmp/.theme.json \
+       > /tmp/.wp.theme.img && wpset -t /tmp/.wp.theme.img
