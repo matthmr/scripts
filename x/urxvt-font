@@ -52,7 +52,7 @@ for arg in "${@:2}"; do
     if [[ $arg =~ ^: ]]; then
       FONT="${_FONT}${arg}"
     else
-      FONT=$arg
+      FONT=$(echo $arg | sed 's/ /\\ /g')
     fi
 
     echo $SPEC | tr ' ' '\n' |
