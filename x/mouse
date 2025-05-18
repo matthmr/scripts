@@ -14,14 +14,14 @@ p_var=''
 
 case $1 in
   'help'|'--help'|'-h')
-    echo "Usage:       mouse [on|on|left|right|speed] [value]"
+    echo "Usage:       mouse [on|off|left|right|speed] [value]"
     echo "Description: Enables/Disables the X mouse \`$XMOUSE'"
     echo "Note:        On \`speed', lower is faster"
     exit 0 ;;
   'on')
-     xinput $1 $XMOUSE ;;
+     xinput enable $XMOUSE ;;
   'off')
-     xinput $1 $XMOUSE ;;
+     xinput disable $XMOUSE ;;
   'left')
     xmodmap -e 'pointer = 1 2 3' ;;
     # xinput set-prop $XMOUSE "$PROP" $FAST_ACC ;;
@@ -44,6 +44,7 @@ case $p_var in
     xinput list-props $XMOUSE | awk -F: "/$PROP/ {\
       speed=\$2; gsub(/^[ \t]+/,\"\", speed); \
       printf(\"%s\n\", speed)}"
+    exit 0;;
 esac
 
 if [[ ! -z $speed ]]; then
