@@ -10,6 +10,6 @@ CONFIRM=@ACPI_LOCK_CONFIRM@
 USER_SHELL=/bin/zsh
 
 # clear them first
-unset LOGINCMD
+unset INIT
 
 exec $CONFIRM $ACTION

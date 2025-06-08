@@ -36,24 +36,24 @@ for arg in $@; do
   esac
 done
 
-unset LOGINCMD
+unset INIT
 
 if $force; then
-  LOGINCMD="@DOACPI_LOGINCMD_CONFIRM@ $AS_SESSION $SWITCH"
+  INIT="@DOACPI_ACPI_CONFIRM@ $AS_SESSION $SWITCH"
 else
-  LOGINCMD="@DOACPI_LOGINCMD_LOCK@ $AS_SESSION $SWITCH"
+  INIT="@DOACPI_ACPI_LOCK@ $AS_SESSION $SWITCH"
 fi
 
 if $use_tmux; then
-  tmux new-session -d -s "$AS_SESSION" "LOGINCMD=\"$LOGINCMD\" zsh"
+  tmux new-session -d -s "$AS_SESSION" "INIT=\"$INIT\" zsh"
 
   if [[ $? == 1 ]]; then
     tmux kill-session -t "$AS_SESSION"
 
-    tmux new-session -d -s "$AS_SESSION" "LOGINCMD=\"$LOGINCMD\" zsh"
+    tmux new-session -d -s "$AS_SESSION" "INIT=\"$INIT\" zsh"
   fi
 
   tmuxa $($use_x && echo '-x') "$AS_SESSION"
 else
-  exec $LOGINCMD
+  exec $INIT
 fi

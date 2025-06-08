@@ -7,7 +7,7 @@ case $1 in
     echo "Usage:       unshare.sh [COMMAND]"
     echo "\
 Description: Run COMMAND within an unshared network environment. If
-             empty, spawn a shell instead. Pass LOGINCMD and the shell to
+             empty, spawn a shell instead. Pass INIT and the shell to
              execute a preamble command before spawning the shell"
     exit 0
     ;;

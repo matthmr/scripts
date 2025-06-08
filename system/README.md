@@ -14,7 +14,7 @@ the bash array with programs you'd like to login to.
 Once you choose a session to login with, it'll be saved in the global `SESSION`,
 which should be handled by the login program.
 
-You may execute a command in the shell by setting the `LOGINCMD` variable.
+You may execute a command in the shell by setting the `INIT` variable.
 
 ## X
 
@@ -28,7 +28,7 @@ the `config` repository) runs `xdaemon` before executing the login command.
 
 ## TTY
 
-As said above, you may set the `LOGINCMD` variable to execute commands before
+As said above, you may set the `INIT` variable to execute commands before
 launching the proper session.
 
 ## Init
