@@ -13,6 +13,7 @@ fi
 
 use_x=false
 use_tmux=false
+use_shell=false
 force=false
 
 SWITCH=''
@@ -21,6 +22,7 @@ for arg in $@; do
   case $arg in
     '-x') use_x=true; use_tmux=true ; SWITCH='-t' ;;
     '-t') use_tmux=true; SWITCH='-t' ;;
+    '-s') use_shell=true ;;
     '-f') force=true ;;
     '-h'|'--help')
       echo "Usage:       doacpi [OPTIONS] [ACTION]"
@@ -30,6 +32,7 @@ for arg in $@; do
       echo "Options:
   -x: be aware of X
   -t: be aware of tmux
+  -s: launch within shell
   -f: force: don't call \`lock', go straight to \`confirm'"
       exit 0 ;;
     *) [[ -z $AS_SESSION ]] && AS_SESSION=$arg
@@ -39,18 +42,22 @@ done
 unset INIT
 
 if $force; then
-  INIT="@DOACPI_ACPI_CONFIRM@ $AS_SESSION $SWITCH"
+  ACPICMD="@DOACPI_ACPI_CONFIRM@ $AS_SESSION $SWITCH"
 else
-  INIT="@DOACPI_ACPI_LOCK@ $AS_SESSION $SWITCH"
+  ACPICMD="@DOACPI_ACPI_LOCK@ $AS_SESSION $SWITCH"
+fi
+
+if $use_shell; then
+  ACPICMD="INIT=\"$ACPICMD\" zsh"
 fi
 
 if $use_tmux; then
-  tmux new-session -d -s "$AS_SESSION" "INIT=\"$INIT\" zsh"
+  tmux new-session -d -s "$AS_SESSION" "$ACPICMD"
 
   if [[ $? == 1 ]]; then
     tmux kill-session -t "$AS_SESSION"
 
-    tmux new-session -d -s "$AS_SESSION" "INIT=\"$INIT\" zsh"
+    tmux new-session -d -s "$AS_SESSION" "$ACPICMD"
   fi
 
   tmuxa $($use_x && echo '-x') "$AS_SESSION"
