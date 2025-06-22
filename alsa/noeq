@@ -1,0 +1,16 @@
+#!/usr/bin/sh
+
+case $1 in
+  '--help'|'-h')
+    echo "\
+Usage:       noeq CMDLINE"
+    echo "\
+Description: Execute CMDLINE without alsa's equalizer. A lot of programs don't
+             like it"
+    exit 0;;
+  '')
+     echo "[ !! ] Missing CMDLINE. See \`--help'."
+     exit 1;;
+esac
+
+exec env ALSA_PCM='plug:generic_boost' $@
