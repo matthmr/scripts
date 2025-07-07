@@ -13,4 +13,4 @@ Description: Execute CMDLINE without alsa's equalizer. A lot of programs don't
      exit 1;;
 esac
 
-exec env ALSA_PCM='plug:generic_boost' $@
+exec env ALSA_PCM='plug:generic_boost' "${@}"
