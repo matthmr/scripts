@@ -56,6 +56,8 @@ select(. != null) | \
 .lengthText.simpleText, \
 .viewCountText.simpleText"
 
+JQUERY_ID=".contents.twoColumnBrowseResultsRenderer.tabs[0].tabRenderer.endpoint.browseEndpoint.browseId"
+
 function ytch_load_video {
   echo "[ == ] Running: $MPV $MPV_OPTS $1"
   $MPV $MPV_OPTS "$1"
@@ -189,6 +191,9 @@ BEGIN {
     printf("%s\x00", $0);
   }
 }' > $BASE/contents.zsv
+
+echo -n "[ .. ] id: "
+$JQ -r "$JQUERY_ID" $BASE/results.json
 
 ytch_search $BASE/contents.zsv
 exit $?
