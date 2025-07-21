@@ -1,0 +1,12 @@
+#!/usr/bin/sh
+
+case $1 in
+  '--help'|'-h')
+    echo \
+"Usage:       safesh"
+    echo \
+"Description: Launches a safe shell"
+    exit 0 ;;
+esac
+
+doas unshare -n -- sh -c '@SAFESH_UNSHARE_SET_LO@; exec env INIT="exec zsh -l" su mh -Pc @SAFESH_NOEQ@'
