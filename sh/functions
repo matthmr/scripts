@@ -10,6 +10,7 @@ function tux {
   _/\\ __)/_)
   \\/-____\\/
   "
+  tty
 }
 
 function google {

@@ -1,0 +1,21 @@
+#!/usr/bin/sh
+
+case $1 in
+  '--help'|'-h')
+    echo \
+"Usage:       layout [LAYOUT] [VARIANT]"
+    echo \
+"Description: Prints or sets X layout LAYOUT"
+    exit 0 ;;
+  *) LAYOUT="$1"; VARIANT="$2" ;;
+esac
+
+if [[ -z $LAYOUT ]]; then
+  @XLAYOUT_KBDLAYOUT@
+  exit 0
+fi
+
+cmd="setxkbmap $LAYOUT $VARIANT"
+
+echo "I: $cmd"
+eval $cmd
