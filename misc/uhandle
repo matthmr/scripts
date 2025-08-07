@@ -3,6 +3,7 @@
 case $1 in
   '--help'|'-h')
     echo "Usage:       uhandle [OPTIONS] URI/FILE"
+
     echo "Description: Opens a URI/FILE given a handler for its type"
     echo "Options:
   -p: ignore URI parameters
@@ -20,7 +21,7 @@ EDITOR=emacsc
 AUDIOPLAYER=mpv
 VIDEOPLAYER=mpv
 
-FETCHURL=curl
+FETCHURL='curl -Ls'
 IMGVIEW=feh
 GIFVIEW=mpv
 PDFVIEW=zathura
@@ -37,22 +38,23 @@ function HIGHLIGHT {
 
 int=false
 fork=false
-as='remote'
 ignore_params=false
 remote_uri=false
+ignore_uri=false
 
 ignore_params_def='n'
 local_def='n'
 fork_def='n'
 override_def='n'
 
-handler=handle_uri
+handler=handle_def_remote
 job=""
 uri=""
+ccmd=""
 
 for arg in $@; do
   case $arg in
-    '-d') as='local'; handler=handle_file; local_def='y' ;;
+    '-d') handler=handle_def_local; local_def='y' ;;
     '-i') int=true ;;
     '-p') ignore_params=true; ignore_params_def='y' ;;
     '-f') fork=true; fork_def='y' ;;
@@ -61,7 +63,7 @@ for arg in $@; do
 done
 
 if [[ -z $uri ]]; then
-  echo "[ !! ] Missing URI or FILE"
+  echo "E: Missing URI or FILE"
   exit 1
 fi
 
@@ -69,7 +71,7 @@ fi
 if [[ $uri =~ ^https?:// ]]; then
   remote_uri=true
 else
-  handler=handle_file
+  handler=handle_def_local
   local_def='y'
 fi
 
@@ -89,66 +91,64 @@ function mktmpuri {
 
 # fetch_into_local URI
 function fetch_into_local {
-  if $remote_uri; then
-    local uri=$1
-
-    tmp_uri=$(mktmpuri $uri)
-    $FETCHURL -Ls $uri > $tmp_uri
-  fi
-
-  echo $tmp_uri
-}
-
-# prompt_yn PROMPT DEFAULT
-function prompt_yn {
-  local prompt=$1
-  local def=$2
-  local opts=""
-
-  case $def in
-    'y') opts="[Y/n] " ;;
-    'n') opts="[y/N] " ;;
-  esac
-
-  echo -n "[ ?? ] $prompt? $opts"
-}
-
-# with_prompt_response ANS DEFAULT
-function prompt_y {
-  local ans=$1
-  local def=$2
-
-  case $def in
-    'y') [[ -z $ans || $ans == 'y' ]] ;;
-    'n') ! [[ -z $ans || $ans == 'n' ]] ;;
-  esac
-}
-
-# prompt_for_handler URI JOB
-function prompt_for_handler {
   local uri=$1
-  local job=${@:2}
+  rm /tmp/.uri 2>/dev/null
 
-  echo -n "[ .. ] Handle with: "
+  # tmp_uri=$(mktmpuri $uri)
+  eval $FETCHURL $uri > /tmp/.uri # $tmp_uri
+
+  echo /tmp/.uri
+}
+
+# prompt_for_handler
+function prompt_for_handler {
+  echo -n "----------------------------------------
+[OPTIONS] [CMDLINE]
+Options (uppercase sets it to false):
+  -pP: ignore URI params: $ignore_params_def
+  -dD: fetch locally (URI only): $local_def
+  -fF: fork: $fork_def
+  -,: use \`,' as a substitute for the file name
+> "
   read cmd
+  echo "----------------------------------------"
 
   if [[ ! -z $cmd ]]; then
-    if [[ $cmd =~ ^"f " ]]; then
-      cmd=${cmd/f /}
-      f=$uri
-      eval $job "$cmd"
-    else
-      $job $cmd "$uri"
+    # iterate every character and set each option accordingly
+    if [[ $cmd =~ ^- ]]; then
+      local cmd_opt="$(echo -n $cmd | grep -Eo '^ *-[pdfPDF,]+')"
+      local len="${#cmd_opt}"
+
+      cmd="$(echo -n $cmd | sed -E 's/^ *-[pdfPDF,]+ *//')"
+
+      for (( i = 1; i < len; i++)); do
+        local c="${cmd_opt:$i:1}"
+
+        case $c in
+          'p') ignore_params=true;;
+          'd') handler=handle_def_local;;
+          'f') fork=true;;
+
+          'P') ignore_params=false;;
+          'D') handler=handle_def_remote;;
+          'F') fork=false;;
+
+          ',') ignore_uri=true;;
+
+          *) echo "E: unknown option"; exit 1;;
+        esac
+      done
     fi
-  else
-    echo "[ !! ] Cmd is empty"
+
+    # empty command means handle with defaults
+    ccmd="$cmd"
   fi
 }
 
-# handle_file FILE JOB
-function handle_file {
-  local uri=$1
-  local job=${@:2}
+# handle_def_local URI JOB
+function handle_def_local {
+  local uri="$1"
+  local job="${@:2}"
 
   case $uri in
     *.pgp) $DEC $uri | HIGHLIGHT; return 0 ;;
@@ -166,10 +166,10 @@ function handle_file {
   esac
 }
 
-# handle_uri URI JOB
-function handle_uri {
-  local uri=$1
-  local job=${@:2}
+# handle_def_remote URI JOB
+function handle_def_remote {
+  local uri="$1"
+  local job="${@:2}"
 
   case $uri in
     *.png|*.jpg|*.jpeg|*.webp|*.bmp) $job $IMGVIEW $uri ;;
@@ -183,70 +183,56 @@ function handle_uri {
 
 #### MAIN
 
-# fetch
+# prompt interactively
+if $int; then
+  prompt_for_handler
+fi
+
+# handle remote URI
 if $remote_uri; then
-  # uri
-  ans=$ignore_params_def
-
-  if $int; then
-    prompt_yn "Ignore URI params" $ignore_params_def
-    read ans
-  fi
-
-  if $(prompt_y "$ans" "$ignore_params_def"); then
+  if $ignore_params; then
     uri=$(ignoreuriparam $uri)
   fi
 
-  ans=$local_def
-
-  if $int; then
-    prompt_yn "Fetch locally" $local_def
-    read ans
-  fi
-
-  if $(prompt_y "$ans" "$local_def"); then
+  if [[ $handler == "handle_def_local" ]]; then
     uri=$(fetch_into_local $uri)
-    handler=handle_file
-  else
-    handler=handle_uri
   fi
+fi
+
+if $fork; then
+  job="setsid -f "
 fi
 
 # job
 #   fork-if: !(as == local && remote_uri): we cannot fork if we have a local
 #   file, because we immediately remove it in the end
-while [[ $as != 'local' || $remote_uri != 'true' ]]; do
-  ans=$fork_def
+# while [[ $as != 'local' || $remote_uri != 'true' ]]; do
+#   # we'd have to call `wait' anyway, might as well not even fork at all
+#   if [[ $remote_uri == 'true' && $handler == 'handle_def_local' ]]; then
+#     break
+#   fi
+#   if $fork; then
+#     job=" &"
+#   fi
+#   break
+# done
 
-  # we'd have to call `wait' anyway, might as well not even fork at all
-  if [[ $remote_uri == 'true' && $handler == 'handle_file' ]]; then
-    break
-  fi
+if [[ ! -z $ccmd ]]; then
+  handler="$ccmd"
 
-  if $int; then
-    prompt_yn "Fork" $fork_def
-    read ans
-  fi
-
-  if $(prompt_y "$ans" "$fork_def"); then
-    job="setsid -f"
-    used_job=true
-  fi
-
-  break
-done
-
-if $int; then
-  prompt_yn "Override handler" $override_def
-  read ans
-
-  if $(prompt_y "$ans" "$override_def"); then
-    handler="prompt_for_handler"
+  if $ignore_uri; then
+    sub_uri="s!( ,|^,)( |$)! $uri !"
+    handler="$(echo -n "$ccmd" | sed -E "$sub_uri")"
+    uri=""
   fi
 fi
 
-$handler "$uri" "$job"
+[[ -z "$job" ]] && job_st="fg" || job_st="bg"
 
-if [[ $remote_uri == 'true' && $handler == 'handle_file' ]]; then
-  rm -v "$uri"
+if [[ -z "$ccmd" ]]; then
+  echo "I: default: $uri ($job_st)"
+  $handler "$uri" $job
+else
+  echo "I: custom: $handler $uri ($job_st)"
+  $job $handler "$uri"
 fi
